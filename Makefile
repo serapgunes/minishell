@@ -1,19 +1,23 @@
-SRCS	= 	main.c		\
+NAME			=	minishell
+SRCS	= 	main.c check.c path_find.c
 
 
 OBJS			=	$(SRCS:.c=.o)
 RM				=	rm -f
 CFLAGS			=	-Wall -Wextra -Werror
 CC 				= 	cc
-LIBFT_DIR		= 	libft
+LIBFT_DIR		= 	./libft
 LIBFT 			= 	$(LIBFT_DIR)/libft.a
 READLINE_FLAGS 	= 	$(shell pkg-config --cflags --libs readline)
-NAME			=	minishell
 
-all: $(NAME)
+
+all: $(LIBFT) $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT)
 	$(CC) $(OBJS) $(LIBFT) $(READLINE_FLAGS) -o $(NAME)
+
+$(LIBFT):
+		$(MAKE) -C $(LIBFT_DIR)
 
 clean:
 	$(RM) $(OBJS)
@@ -26,3 +30,4 @@ fclean: clean
 re: fclean all
 
 .PHONY: all clean fclean re
+

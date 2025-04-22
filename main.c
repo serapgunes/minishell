@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/04/19 22:29:11 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/04/22 17:00:51 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,9 @@
 void	execute_command(char *input)
 {
 	pid_t	pid;
-    char	*args[] = {input, NULL};
+    char	**args;
     
+	args =  ft_split(input , ' ');
 	pid = fork();
 	if (pid < 0)
 	{
@@ -32,7 +33,7 @@ void	execute_command(char *input)
 	else
 		wait(NULL);
 }
-}
+
 
 int	main(void)
 {
@@ -44,16 +45,19 @@ int	main(void)
 
 		if (!input)
 			break;
-
 		if (*input)
 			add_history(input);
 
-		if (ft_strcmp(input, "exit") == 0)
+		if (strcmp(input, "exit") == 0)
 		{
 			free(input);
 			break;
 		}
-
+		if(is_only_spaces(input))
+		{
+			free(input);
+			continue;
+		}
 		execute_command(input);
 		free(input);
 	}
