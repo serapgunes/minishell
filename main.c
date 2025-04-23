@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/04/22 17:00:51 by segunes          ###   ########.fr       */
+/*   Updated: 2025/04/23 12:12:05 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,7 +26,7 @@ void	execute_command(char *input)
 	}
 	else if (pid == 0)
 	{
-		execve(input, args, NULL);
+		execve(pathname(input), args, NULL);
 		perror("execve hatasi");
 		exit(1);
 	}

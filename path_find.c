@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 17:18:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/04/22 17:53:07 by segunes          ###   ########.fr       */
+/*   Updated: 2025/04/23 12:04:29 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 const char *pathname(char *command)
 {
 	const char *path;
-	const char **path_env;
+	char **path_env;
 	const char *join;
 	const char *temp;
 	int i;
@@ -24,7 +24,7 @@ const char *pathname(char *command)
 	path = getenv("PATH");//getenv ile ortam değişkenlerine erişiyoruz
 	if(!path)
 		return (NULL);//erişemezsek null döndürüyoruz
-	path_env = ft_split(path, ":");//bu değişkenlerde her konuma bakıyoruz 
+	path_env = ft_split(path, ':');//bu değişkenlerde her konuma bakıyoruz 
 	//"/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" örneğin bu şekilde bir ortam değişkeni aldıysak 
 	// /usr/local/sbin ilk başta buraya kadar ayırıyoruz
 	// /usr/local/bin
@@ -55,5 +55,5 @@ const char *pathname(char *command)
 		}
 		i++;
 	}
-
+	return (NULL);
 }
