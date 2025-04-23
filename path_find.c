@@ -3,12 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   path_find.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42.fr>            +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/22 17:18:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/04/23 12:04:29 by segunes          ###   ########.fr       */
+/*   Created: 2025/04/23 12:25:32 by segunes           #+#    #+#             */
+/*   Updated: 2025/04/23 12:25:38 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+
 
 #include "minishell.h"
 
