@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/04/23 12:30:11 by segunes          ###   ########.fr       */
+/*   Updated: 2025/04/29 18:39:53 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,8 +15,9 @@
 void	execute_command(char *input)
 {
 	pid_t	pid;
-    char	**args;
-    
+
+	char **args;
+	
 	args =  ft_split(input , ' ');
 	pid = fork();
 	if (pid < 0)
@@ -35,9 +36,9 @@ void	execute_command(char *input)
 }
 
 
-int	main(void)
+int	main(int argc, char **argv, char **env)
 {
-	char	*input;
+	 char	*input;
 
 	while (1)
 	{
@@ -47,12 +48,11 @@ int	main(void)
 			break;
 		if (*input)
 			add_history(input);
+		// if(builtin(argc, argv,env) == 0)
+		//  	continue;
 
-		if (strcmp(input, "exit") == 0)
-		{
-			free(input);
-			break;
-		}
+
+		if (strcmp(input,"exit"))
 		if(is_only_spaces(input))
 		{
 			free(input);

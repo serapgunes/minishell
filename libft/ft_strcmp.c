@@ -1,30 +1,22 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
+/*   ft_strcmp.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/04/29 18:13:01 by segunes          ###   ########.fr       */
+/*   Created: 2025/04/29 16:17:47 by segunes           #+#    #+#             */
+/*   Updated: 2025/04/29 16:18:15 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#ifndef MINISHELL_H
-# define MINISHELL_H
+#include "libft.h"
 
-#include <stdio.h>
-#include <unistd.h> 
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include "libft/libft.h"
+int ft_strcmp(char *s1, char *s2)
+{
+	int i = 0;
 
-void	execute_command(char *input);
-int	is_only_spaces(char *str);
-const char *pathname(char *command);
-int builtin(int argc, char **argv, char **env);
-
-#endif
+	while((s1[i] == s2[i]) && s1[i] && s2[i])
+		i++;
+	return (s1[i]-s2[i]);
+}

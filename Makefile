@@ -1,5 +1,5 @@
 NAME			=	minishell
-SRCS	= 	main.c check.c path_find.c
+SRCS	= 	main.c check.c path_find.c builtin.c
 
 
 OBJS			=	$(SRCS:.c=.o)
