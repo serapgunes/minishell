@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   history.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:46:38 by segunes           #+#    #+#             */
-/*   Updated: 2025/04/23 12:48:09 by segunes          ###   ########.fr       */
+/*   Updated: 2025/04/30 18:58:44 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+//struct
 
 void	print_history(t_list *history)
 {
@@ -23,6 +24,7 @@ void	print_history(t_list *history)
 		current = current->next;
 	}
 }
+
 void	add_to_history(t_list **history, char *input)
 {
 	t_list	*new_node;
