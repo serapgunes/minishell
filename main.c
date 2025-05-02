@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/04/30 18:58:11 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/02 08:31:33 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,10 +47,13 @@ int	args_count(char **args)
 
 int	main(int argc, char **argv, char **env)
 {
-	 char	*input;
-	 int	arg_count;
+	char	*input;
+	int		arg_count;
+	t_list *history;
+	
 	(void)argv;
 	(void)argc;
+	history = NULL;
 	while (1)
 	{
 		input = readline("minishell$ ");
@@ -63,8 +66,8 @@ int	main(int argc, char **argv, char **env)
 		}
 		if (*input)
 		{
-			//yazılanları historye ekle
 			add_history(input);
+			add_to_history(&history, input);
 		}
 		char **args = ft_split(input, ' ');
 		if (!args)
@@ -73,7 +76,7 @@ int	main(int argc, char **argv, char **env)
             continue;
         }
 		arg_count = args_count(args);
-		if(builtin(arg_count, args, env) == 0)
+		if(builtin(arg_count, args, env, history) == 0)
 		{	
 			continue;
 		}

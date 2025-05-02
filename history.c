@@ -6,31 +6,64 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:46:38 by segunes           #+#    #+#             */
-/*   Updated: 2025/04/30 18:58:44 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/02 08:38:07 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-//struct
+
+static t_list	*ft_lstnew(void *content)
+{
+	t_list	*node;
+
+	node = (t_list *)malloc(sizeof(t_list));
+	if (!node)
+		return (NULL);
+	node->content = content;
+	node->next = NULL;
+	return (node);
+}
+
+static void	ft_lstadd_back(t_list **lst, t_list *new)
+{
+	t_list	*last;
+
+	if (!lst || !new)
+		return ;
+	if (!*lst)
+	{
+		*lst = new;
+		return ;
+	}
+	last = *lst;
+	while (last->next)
+		last = last->next;
+	last->next = new;
+}
 
 void	print_history(t_list *history)
 {
 	t_list	*current;
+	int		i;
+
+	i = 1;
 
 	current = history;
 	while (current)
 	{
-		printf("%s\n", (char *)current->content);
+		printf("%d	%s\n", i,  (char *)current->content);
 		current = current->next;
+		i++;
 	}
 }
+//arka arkaya history gönder hatalı mı?
 
 void	add_to_history(t_list **history, char *input)
 {
 	t_list	*new_node;
 
 	new_node = ft_lstnew(ft_strdup(input));
-	if (!new_node)
+	if	(!new_node)
 	{
 		perror("Failed to allocate memory for history");
 		return;

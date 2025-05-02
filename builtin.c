@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/04/30 18:59:22 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/02 08:31:04 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,12 +54,10 @@ int builtin_env(char **env)
     return (1);
 }
 
-int builtin(int argc, char **argv, char **env)
+int builtin(int argc, char **argv, char **env, t_list *history)
 {
 	if(argc >= 1 && ft_strcmp(argv[0], "exit") == 0)
-	{
 		return (builtin_exit(argc,argv));
-	}	
 	else if (ft_strcmp(argv[0], "env") == 0)
 	{
 		if (control_env(argc) == 1)
@@ -68,7 +66,8 @@ int builtin(int argc, char **argv, char **env)
 	}
 	else if (ft_strcmp(argv[0], "history") == 0)
 	{
-		//print history
+		print_history(history);
+		return (0);
 	}
 
 	return (1);
