@@ -6,13 +6,13 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/02 08:31:04 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/02 16:25:44 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int builtin_exit(int argc, char **argv)
+static int builtin_exit(int argc, char **argv)
 {
 	if(argc > 2)
 	{	
@@ -21,17 +21,17 @@ int builtin_exit(int argc, char **argv)
 	}
 	if (argc == 2)
     {
-        if (!ft_isdigit(argv[1]))
-        {
-            write(1, "exit: numeric argument required\n", 32);
-            return (0);
-        }
-        exit(1);
-    }
-    exit(0);
+		if (!ft_isdigit(argv[1]))
+		{
+			write(1, "exit: numeric argument required\n", 32);
+			return (0);
+		}
+		exit(1);
+	}
+	exit(0);
 }
 
-int control_env(int argc)
+static int control_env(int argc)
 {
 	if(argc > 1)
 	{	
@@ -41,23 +41,23 @@ int control_env(int argc)
 	return(1);	
 }
 
-int builtin_env(char **env)
+static int builtin_env(char **env)
 {
-    int i;
+	int i;
 
-    i = 0;
-    while (env[i])
-    {
-        printf("%s\n", env[i]);
-        i++;
-    }
-    return (1);
+	i = 0;
+	while (env[i])
+	{
+		printf("%s\n", env[i]);
+		i++;
+	}
+	return (1);
 }
 
 int builtin(int argc, char **argv, char **env, t_list *history)
 {
-	if(argc >= 1 && ft_strcmp(argv[0], "exit") == 0)
-		return (builtin_exit(argc,argv));
+	if (argc >= 1 && ft_strcmp(argv[0], "exit") == 0)
+		return (builtin_exit(argc,argv));//exit dsdjf
 	else if (ft_strcmp(argv[0], "env") == 0)
 	{
 		if (control_env(argc) == 1)
@@ -72,3 +72,4 @@ int builtin(int argc, char **argv, char **env, t_list *history)
 
 	return (1);
 }
+ 

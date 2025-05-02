@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/02 08:31:33 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/02 16:11:11 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ void	execute_command(char *input)
 		wait(NULL);
 }
 
-int	args_count(char **args)
+static int	args_count(char **args)
 {
 	int	i;
 
@@ -50,6 +50,7 @@ int	main(int argc, char **argv, char **env)
 	char	*input;
 	int		arg_count;
 	t_list *history;
+	int history_seen = 0;
 	
 	(void)argv;
 	(void)argc;
@@ -65,23 +66,31 @@ int	main(int argc, char **argv, char **env)
 			continue;
 		}
 		if (*input)
-		{
 			add_history(input);
-			add_to_history(&history, input);
-		}
 		char **args = ft_split(input, ' ');
 		if (!args)
-        {
-            free(input);
-            continue;
-        }
-		arg_count = args_count(args);
-		if(builtin(arg_count, args, env, history) == 0)
-		{	
+		{
+			free(input);
 			continue;
 		}
+		arg_count = args_count(args);
+		if (builtin(arg_count, args, env, history) == 0)
+		{
+			if (ft_strcmp(args[0], "history") != 0)
+			{
+				if (history_seen == 1)
+					add_to_history(&history, input);
+				history_seen = 1;
+			}
+			else
+				add_to_history(&history, input);
+			//free_args
+			continue;
+		}
+		add_to_history(&history, input);
 		execute_command(input);
 		free(input);
 	}
+	//free_history
 	return (0);
 }

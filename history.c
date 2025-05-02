@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:46:38 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/02 08:38:07 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/02 15:59:55 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,23 +41,6 @@ static void	ft_lstadd_back(t_list **lst, t_list *new)
 	last->next = new;
 }
 
-void	print_history(t_list *history)
-{
-	t_list	*current;
-	int		i;
-
-	i = 1;
-
-	current = history;
-	while (current)
-	{
-		printf("%d	%s\n", i,  (char *)current->content);
-		current = current->next;
-		i++;
-	}
-}
-//arka arkaya history gönder hatalı mı?
-
 void	add_to_history(t_list **history, char *input)
 {
 	t_list	*new_node;
@@ -69,4 +52,20 @@ void	add_to_history(t_list **history, char *input)
 		return;
 	}
 	ft_lstadd_back(history, new_node);
+}
+
+void print_history(t_list *history)
+{
+	t_list	*current;
+	int		i;
+
+	i = 1;
+	current = history;
+	while (current)
+	{
+		if (current->content)
+			printf("%d\t%s\n", i, (char *)current->content);
+		current = current->next;
+		i++;
+	}
 }
