@@ -6,29 +6,41 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/08 11:56:12 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/08 12:15:02 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+// static int builtin_exit(int argc, char **argv)
+// {
+// 	if(argc > 2)
+// 	{	
+// 		write(1, "exit: too many arguments\n", 25);
+// 		return (0);
+// 	}
+// 	if (argc == 2)
+//     {
+// 		if (!ft_isdigit(argv[1]))
+// 		{
+// 			write(1, "exit: numeric argument required\n", 32);
+// 			return (0);
+// 		}
+// 		exit(1);
+// 	}
+// 	exit(0);
+// }
+
+//exit flsl 'den artık çıkmıyor (norrmal terminalde çıkıyor, bunu soralım)
 static int builtin_exit(int argc, char **argv)
 {
-	if(argc > 2)
-	{	
-		write(1, "exit: too many arguments\n", 25);
-		return (0);
-	}
-	if (argc == 2)
+    (void)argv;
+    if (argc > 1)
     {
-		if (!ft_isdigit(argv[1]))
-		{
-			write(1, "exit: numeric argument required\n", 32);
-			return (0);
-		}
-		exit(1);
-	}
-	exit(0);
+        write(2, "exit: no arguments allowed\n", 27);
+        return (1);
+    }
+    exit(0);
 }
 
 static int control_env(int argc)
@@ -90,7 +102,7 @@ static int	builtin_cd(int argc, char **argv)
 	}
 	if (argc == 1) //eğer sadece cd varsa bir şey yapmayıp geri dönecek(normal terminalde böyle değil ama pdf'te yapın dememiş)
 		return (0);
-	if (chdir(argv[1]) != 0) 	//argv[1]'deki yola dizini değiştirmeye ççalışır. (o başarılı, -1 başarısız)
+	if (chdir(argv[1]) != 0) 	//argv[1]'deki yola dizini değiştirmeye ççalışır. (0 başarılı, 1 başarısız)
 	{
 		printf("cd : %s No such file or directory\n", argv[1]);
 		return (1);
