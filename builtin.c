@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/06 14:07:44 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/08 11:56:12 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,22 +100,31 @@ static int	builtin_cd(int argc, char **argv)
 
 int builtin(int argc, char **argv, char **env, t_list *history)
 {
-	if (argc >= 1 && ft_strcmp(argv[0], "exit") == 0)
-		return (builtin_exit(argc,argv));//exit dsdjf
-	else if (ft_strcmp(argv[0], "env") == 0)
-	{
-		if (control_env(argc) == 1)
-			return (builtin_env(env));
-		return (0);
-	}
-	else if (ft_strcmp(argv[0], "history") == 0)
-	{
-		print_history(history);
-		return (0);
-	}
-	else if (ft_strcmp(argv[0], "echo") == 0)
-		return (builtin_echo(argc, argv));
-	else if (ft_strcmp(argv[0], "cd") == 0)
-		return (builtin_cd(argc, argv));
-	return (1);
+    if (argc >= 1 && ft_strcmp(argv[0], "exit") == 0)
+    {
+        builtin_exit(argc, argv);
+        return (0);
+    }
+    else if (ft_strcmp(argv[0], "env") == 0)
+    {
+        if (control_env(argc) == 1)
+            builtin_env(env);
+        return (0);
+    }
+    else if (ft_strcmp(argv[0], "history") == 0)
+    {
+        print_history(history);
+        return (0);
+    }
+    else if (ft_strcmp(argv[0], "echo") == 0)
+    {
+        builtin_echo(argc, argv);
+        return (0);
+    }
+    else if (ft_strcmp(argv[0], "cd") == 0)
+    {
+        builtin_cd(argc, argv);
+        return (0);
+    }
+    return (1);
 }

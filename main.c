@@ -6,33 +6,47 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/06 13:52:38 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/08 11:46:23 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	execute_command(char *input)
+void execute_command(char *input)
 {
-	pid_t	pid;
+    pid_t pid;
+    char **args;
+    const char *path;
 
-	char **args;
-	
-	args =  ft_split(input , ' ');
-	pid = fork();
-	if (pid < 0)
-	{
-		perror("fork hatasi");
-		return;
-	}
-	else if (pid == 0)
-	{
-		execve(pathname(args[0]), args, NULL);
-		perror("execve hatasi");
-		exit(1);
-	}
-	else
-		wait(NULL);
+    args = ft_split(input, ' ');
+    if (!args || !args[0])
+    {
+        //free_args(args);
+        return;
+    }
+    path = pathname(args[0]);
+    if (!path)
+    {
+        printf("%s: command not found\n", args[0]);
+       // free_args(args);
+        return;
+    }
+    pid = fork();
+    if (pid < 0)
+    {
+        perror("fork hatasi");
+        //free_args(args);
+        return;
+    }
+    else if (pid == 0)
+    {
+        execve(path, args, NULL);
+        perror("execve hatasi");
+        exit(1);
+    }
+    else
+        wait(NULL);
+    //free_args(args);
 }
 
 static int	args_count(char **args)
@@ -60,7 +74,7 @@ int	main(int argc, char **argv, char **env)
 		input = readline("minishell$ ");
 		if (!input)
 			break;
-		if(is_only_spaces(input))
+		if (is_only_spaces(input))
 		{
 			free(input);
 			continue;
