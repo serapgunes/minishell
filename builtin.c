@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/09 14:19:04 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/09 18:22:48 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,35 @@ static int builtin_env(char **env)
 	return (1);
 }
 
+void echo_skip(int argc, char **argv)
+{
+	int i;
+	int j;
+
+	i =1;
+	if (ft_strcmp(argv[1], "-n") == 0)
+	 	i = 2;
+	while (i < argc)
+	{
+		j=0;
+		while(argv[i][j])
+		{
+			if(ft_strcmp(argv[i], 34) != 0 && ft_strcmp(argv[i], 39) == 0)
+			{
+				if(argv[i][j] != 39)
+					j++;
+			}
+			while(argv[i][j] == '"')
+				j++;
+			printf("%c", argv[i][j]);
+			if (i < (argc - 1))
+				printf(" "); 		//argümanlar arası bir boşluk olması için
+			j++;
+		}
+		i++;
+	}
+}
+
 static int builtin_echo(int argc, char **argv)
 {
 	int	i;
@@ -59,13 +88,7 @@ static int builtin_echo(int argc, char **argv)
 		add_newline = 0;
 		i++;
 	}
-	while (i < argc)
-	{
-		printf("%s", argv[i]);
-		if (i < (argc - 1))
-			printf(" "); 		//argümanlar arası bir boşluk olması için
-		i++;
-	}
+	echo_skip(argc, argv);
 	if (add_newline == 1)
 		printf("\n");
 	return (0);
