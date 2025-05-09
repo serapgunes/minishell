@@ -6,41 +6,22 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/08 12:29:57 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/09 14:19:04 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// static int builtin_exit(int argc, char **argv)
-// {
-// 	if(argc > 2)
-// 	{	
-// 		write(1, "exit: too many arguments\n", 25);
-// 		return (0);
-// 	}
-// 	if (argc == 2)
-//     {
-// 		if (!ft_isdigit(argv[1]))
-// 		{
-// 			write(1, "exit: numeric argument required\n", 32);
-// 			return (0);
-// 		}
-// 		exit(1);
-// 	}
-// 	exit(0);
-// }
-
-//exit flsl 'den artık çıkmıyor (norrmal terminalde çıkıyor, bunu soralım)
-static int builtin_exit(int argc, char **argv)
+static int	builtin_exit(int argc, char **argv)
 {
-    (void)argv;
-    if (argc > 1)
-    {
-        write(2, "exit: no arguments allowed\n", 27);
-        return (1);
-    }
-    exit(0);
+	(void)argv;
+	if (argc > 1)
+	{
+		write(2, "exit: no arguments allowed\n", 27);
+		return (1);
+	}
+	printf("exit\n");
+	exit(0);
 }
 
 static int control_env(int argc)
@@ -110,38 +91,38 @@ static int	builtin_cd(int argc, char **argv)
 	return (0);
 }
 
-int builtin(int argc, char **argv, char **env, t_list *history)
+int	builtin(int argc, char **argv, char **env, t_list *history)
 {
-    if (argc >= 1 && ft_strcmp(argv[0], "exit") == 0)
-    {
-        builtin_exit(argc, argv);
-        return (0);
-    }
-    else if (ft_strcmp(argv[0], "env") == 0)
-    {
-        if (control_env(argc) == 1)
-            builtin_env(env);
-        return (0);
-    }
-    else if (ft_strcmp(argv[0], "history") == 0)
-    {
-        print_history(history);
-        return (0);
-    }
-    else if (ft_strcmp(argv[0], "echo") == 0)
-    {
-        builtin_echo(argc, argv);
-        return (0);
-    }
-    else if (ft_strcmp(argv[0], "cd") == 0)
-    {
-        builtin_cd(argc, argv);
-        return (0);
-    }
+	if (argc >= 1 && ft_strcmp(argv[0], "exit") == 0)
+	{
+		builtin_exit(argc, argv);
+		return (0);
+	}
+	else if (ft_strcmp(argv[0], "env") == 0)
+	{
+		if (control_env(argc) == 1)
+			builtin_env(env);
+		return (0);
+	}
+	else if (ft_strcmp(argv[0], "history") == 0)
+	{
+		print_history(history);
+		return (0);
+	}
+	else if (ft_strcmp(argv[0], "echo") == 0)
+	{
+		builtin_echo(argc, argv);
+		return (0);
+	}
+	else if (ft_strcmp(argv[0], "cd") == 0)
+	{
+		builtin_cd(argc, argv);
+		return (0);
+	}
 	else if (ft_strcmp(argv[0], "export") == 0)
-    {
-        builtin_export(argc, argv, env);
-        return (0);
-    }
-    return (1);
+	{
+		builtin_export(argc, argv, env);
+		return (0);
+	}
+	return (1);
 }
