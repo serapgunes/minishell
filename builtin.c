@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/10 14:29:06 by segunes          ###   ########.fr       */
+/*   Updated: 2025/05/10 16:01:58 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,7 @@ int	builtin(int argc, char **argv, char **env, t_list *history)
 	}
 	else if (ft_strcmp(argv[0], "echo") == 0)
 	{
-		builtin_echo(argc, argv);
+		builtin_echo(argc, argv,env);
 		return (0);
 	}
 	else if (ft_strcmp(argv[0], "cd") == 0)
