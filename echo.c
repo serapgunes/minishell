@@ -6,13 +6,12 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:20:45 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/10 16:25:36 by segunes          ###   ########.fr       */
+/*   Updated: 2025/05/10 22:21:08 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// Ortam değişkenini bulup yazdırır
 void print_env_var(char *var_name, char **env) {
 	int i;
 
@@ -20,47 +19,45 @@ void print_env_var(char *var_name, char **env) {
 	if (!env) 
 		return; 
 	while (env[i]) {
-		char *equal = ft_strchr(env[i], '=');// = bunun adresini tutuyor
-		if (equal && ft_strncmp(env[i], var_name, equal - env[i]) == 0 //strncmp ile var_name ve env[i] karşılaştırılıyor tamamen eşleşiyormu diye
-			&& ft_strlen(var_name) == (size_t)(equal - env[i])) {
-			printf("%s", equal + 1); // '=' sonrası değeri yazdırıyoruz
+		char *equal = ft_strchr(env[i], '=');
+		if (equal && ft_strncmp(env[i], var_name, equal - env[i]) == 0
+			&& ft_strlen(var_name) == (size_t)(equal - env[i]))
+			{
+			printf("%s", equal + 1); // '=' sonrası değer
 			return;
 		}
 		i++;
 	}
-	// Değişken yoksa bir şey yazma
+	// Değişken yoksa bir şey yazma (Bash gibi)
 }
 
+// echo içindeki argümanları işler
 void print_arg_cleaned(char *arg, char **env) {
-	int j;
-	int single;
-	int in_double;
-	int start;
-	
-	j = 0;
-	single = 0;
-	in_double = 0;
+	int j = 0;
+	int in_single_quote = 0;
+	int in_double_quote = 0;
+
 	while (arg[j]) {
-		if (arg[j] == '\'' && !in_double) {
-			single = !single;
+		if (arg[j] == '\'' && !in_double_quote) {
+			in_single_quote = !in_single_quote;
 			j++;
 			continue;
 		}
-		if (arg[j] == '"' && !single) {
-			in_double = !in_double;
+		if (arg[j] == '"' && !in_single_quote) {
+			in_double_quote = !in_double_quote;
 			j++;
 			continue;
 		}
-		if (arg[j] == '$' && !single) {
+		if (arg[j] == '$' && !in_single_quote) {
 			j++; // '$' sonrası karaktere geç
-			start = j;
+			int start = j;
 			// Değişken adı okuma
-			while (arg[j] && (ft_isalnum(arg[j]) || arg[j] == '_'))
+			while (arg[j] && (isalnum(arg[j]) || arg[j] == '_'))
 				j++;
 
 			if (j > start) {
 				char var_name[256] = {0};
-				ft_strlcpy(var_name, &arg[start], j - start);
+				ft_strncpy(var_name, &arg[start], j - start);
 				print_env_var(var_name, env);
 				continue; // $ sonrası yazdırıldı, devam et
 			}
