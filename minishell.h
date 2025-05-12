@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/10 15:50:13 by segunes          ###   ########.fr       */
+/*   Updated: 2025/05/12 19:17:28 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,11 +34,12 @@ const char *pathname(char *command);
 int 		builtin(int argc, char **argv, char **env, t_list *history);
 void		add_to_history(t_list **history, char *input);
 void		print_history(t_list *history);
-int			builtin_export(int argc, char **argv, char **env);
 int builtin_echo(int argc, char **argv, char **env);
 int	builtin_cd(int argc, char **argv);
 int builtin_env(char **env);
 int	builtin_exit(int argc, char **argv);
 int control_env(int argc);
+int builtin_export(int argc, char **argv);
+int builtin_export_process(int argc, char **argv, int status, int i);
 
 #endif

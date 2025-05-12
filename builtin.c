@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/10 16:01:58 by segunes          ###   ########.fr       */
+/*   Updated: 2025/05/12 16:21:33 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,7 +42,7 @@ int	builtin(int argc, char **argv, char **env, t_list *history)
 	}
 	else if (ft_strcmp(argv[0], "export") == 0)
 	{
-		builtin_export(argc, argv, env);
+		builtin_export(argc, argv);
 		return (0);
 	}
 	return (1);

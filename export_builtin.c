@@ -3,15 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   export_builtin.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 12:27:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/08 13:15:19 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/12 19:22:56 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
+extern char **environ;
 
 //argümansız export, tüm ortam değişkenlerini alfabetik sırayla listeler.
 //Shell'de ayarlanmış tüm değişkenleri ve değerlerini ekrana yazar.
@@ -24,101 +25,264 @@
 // declare : bir değişkenin özelliklerini tanımlamak veya değiştirmek için kullanılır.
 // -x : değişkeni ortam değişkeni olarak işaretler.Yani bu değişkeni child processes'e aktarılabilir hale getirir.
 
-static void	copy_env(char **env, char **env_copy, int env_count)
-{
-	int	i;
-
-	i = 0;
-	while (i < env_count)
-	{
-		env_copy[i] = env[i];
-		i++;
-	}
-	env_copy[env_count] = NULL;
-}
 
 //bubble sort : iki bitişik eleman karşılaştırılır ve gerekiyorsa yer değiştirilir.
 //her adımda en büyük değer sona atılır. Sona atılan değerler bir daha kontrol edilmeez.
 
-static void	sort_env(char **env_copy, int env_count) //alfabetik sıralamak için
+
+static int is_valid_identifier(const char *name)
 {
-	int		i;
-	int		j;
-	int		swap; //döngüde değişim yapılıp yapılmadığını kontrol eder.
-	char	*temp;
+	int i;
+
+	if (!name || name[0] == '\0' || (name[0] >= '0' && name[0] <= '9'))
+		return (0);
+	i = 0;
+	while (name[i])
+	{
+		if (!((name[i] >= 'a' && name[i] <= 'z') || (name[i] >= 'A' && name[i] <= 'Z') ||
+			(name[i] >= '0' && name[i] <= '9') || name[i] == '_'))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+static char *strip_quotes_process(const char *value, char *out, int len)
+{
+	int i;
+	int j;
 
 	i = 0;
-	while (i < env_count - 1) // neden sonuncu indeks için döngüye girmiyor? İlk turda en büyük eleman sona oturduğundan sonraki turlarda sona yerleşmiş olan elemanı tekrar kontrol etmeye gerek yok.
+	j = 0;
+	while (i < len)
+	{
+		if (value[i] != '"')
+		{
+			out[j] = value[i];
+			j++;
+		}
+		i++;
+	}
+	out[j] = '\0';
+	return (out);
+}
+
+static char *strip_quotes(const char *value)
+{
+	int quote_count;
+	int len;
+	char *out;
+
+	quote_count = 0;
+	len = 0;
+	while (value[len])
+	{
+		if (value[len] == '"')
+			quote_count++;
+		len++;
+	}
+	if (quote_count % 2 != 0)
+		return (NULL);
+	out = malloc(len - quote_count + 1);
+	if (!out)
+		return (NULL);
+	return (strip_quotes_process(value, out, len));
+}
+
+static int find_in_environ(const char *name)
+{
+	int i, len;
+	char *env;
+
+	i = 0;
+	len = strlen(name);
+	while (environ[i])
+	{
+		env = environ[i];
+		if (strncmp(env, name, len) == 0 && env[len] == '=')
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+static int update_environ_extend(const char *name, char *env_val)
+{
+	char **new_env;
+	int count;
+	int i;
+
+	(void)name;
+	count = 0;
+	while (environ[count])
+		count++;
+	new_env = malloc(sizeof(char *) * (count + 2));
+	if (!new_env)
+	{
+		free(env_val);
+		return (1);
+	}
+	i = 0;
+	while (i < count)
+	{
+		new_env[i] = environ[i];
+		i++;
+	}
+	new_env[count] = env_val;
+	new_env[count + 1] = NULL;
+	free(environ);
+	environ = new_env;
+	return (0);
+}
+
+static int update_environ(const char *name, const char *value)
+{
+	char *entry;
+	char *env_val;
+	int idx;
+
+	(void)name;
+	entry = ft_strjoin(name, "=");
+	if (!entry)
+		return (1);
+	env_val = ft_strjoin(entry, value);
+	free(entry);
+	if (!env_val)
+		return (1);
+	idx = find_in_environ(name);
+	if (idx >= 0)
+	{
+		free(environ[idx]);
+		environ[idx] = env_val;
+		return (0);
+	}
+	return (update_environ_extend(name, env_val));
+}
+
+static void print_export(char **env, int count)
+{
+	int i;
+	char *eq;
+
+	i = 0;
+	while (i < count)
+	{
+		eq = ft_strchr(env[i], '=');
+		if (eq)
+			printf("declare -x %.*s=\"%s\"\n", (int)(eq - env[i]), env[i], eq + 1);
+		else
+			printf("declare -x %s\n", env[i]);
+		i++;
+	}
+}
+static void sort_env(char **env, int count)
+{
+	int i, j;
+	char *tmp;
+
+	i = 0;
+	while (i < count - 1)
 	{
 		j = 0;
-		swap = 0;
-		while (j < env_count - i - 1) //2 bitişik elemanı karşılaştırmak için
+		while (j < count - i - 1)
 		{
-			if (ft_strcmp(env_copy[j], env_copy[j + 1]) > 0)
+			if (strcmp(env[j], env[j + 1]) > 0)
 			{
-				temp = env_copy[j];
-				env_copy[j] = env_copy[j + 1];
-				env_copy[j + 1] = temp;
-				swap = 1;
+				tmp = env[j];
+				env[j] = env[j + 1];
+				env[j + 1] = tmp;
 			}
 			j++;
 		}
-		if (!swap) //eğer swap 0 sa zaten sıralı demektir ve direkt çıkılır
-			break;
 		i++;
 	}
 }
-
-static void	print_export(char **env_copy, int env_count)
+static int print_sorted_environ(void)
 {
-	int		i;
-	char	*name;
-	char	*value;
-	char	*temp;
+	char **copy;
+	int count;
+	int i;
 
+	count = 0;
+	while (environ[count])
+		count++;
+	copy = malloc(sizeof(char *) * (count + 1));
+	if (!copy)
+		return (1);
 	i = 0;
-	while (i < env_count)
+	while (i < count)
 	{
-		temp = ft_strdup(env_copy[i]);  // Geçici bir kopya oluştur
-		if (!temp)
-			return; // hata mesajıa gerek var mı?
-		name = temp; //o anki ortam değişkeninin tam satırını (örnek PATH=/usr/bin:/bin) tutar.
-		value = ft_strchr(temp, '='); // = 'i bulmal gerekiyor. (ilk = bulunduğu adresi döner.)
-		if (value)
-		{
-			*value = '\0';  // = işaretini null a dönüştürerek değişken ismi ve değeri ayrılıypr. Mesela PATH=/usr/bin:/bin : "PATH" ve "usr/bin:/bin" oluyor.
-			value++;
-			printf("declare -x %s=\"%s\"\n", name, value);
-		}
-		else // = yoksa demek ki sadece isimden oluşuyor.
-		{
-			printf("declare -x %s\n", name);
-		}
-		free(temp);
+		copy[i] = environ[i];
 		i++;
 	}
-}
-
-int	builtin_export(int argc, char **argv, char **env)
-{
-	char	**env_copy;
-	int		env_count;
-
-	(void)argv;
-	env_count = 0;
-	if (argc > 1)
-	{
-		printf("export : no arguments allowed\n");
-		return (1);
-	}
-	while (env[env_count])
-		env_count++;
-	env_copy = malloc(sizeof(char *) * (env_count + 1));
-	if (!env_copy)
-		return (1);
-	copy_env(env, env_copy, env_count);
-	sort_env(env_copy, env_count);
-	print_export(env_copy, env_count);
-	free(env_copy);
+	copy[count] = NULL;
+	sort_env(copy, count);
+	print_export(copy, count);
+	free(copy);
 	return (0);
 }
+
+static int builtin_export_handle(char *arg, char *eq, int argc, char **argv, int status, int i)
+{
+	char *name, *value, *stripped;
+	if (eq)
+	{
+		*eq = '\0';
+		name = arg;
+		value = eq + 1;
+		stripped = strip_quotes(value);
+		if (!stripped)
+		{
+			printf("export: unmatched quote in '%s=%s'\n", name, value);
+			*eq = '=';
+			return (builtin_export_process(argc, argv, status + 1, i));
+		}
+		value = stripped;
+	}
+	else
+	{
+		name = arg;
+		value = "";
+	}
+	if (!is_valid_identifier(name))
+	{
+		printf("export: '%s': not a valid identifier\n", name);
+		status = 1;
+	}
+	else if (update_environ(name, value))
+	{
+		printf("export: failed to set '%s'\n", name);
+		status = 1;
+	}
+	if (eq)
+	{
+		*eq = '=';
+		free(stripped);
+	}
+	return (builtin_export_process(argc, argv, status, i));
+}
+
+int builtin_export_process(int argc, char **argv, int status, int i)
+{
+	char *arg, *eq;
+	while (i < argc)
+	{
+		arg = argv[i++];
+		eq = ft_strchr(arg, '=');
+		return (builtin_export_handle(arg, eq, argc, argv, status, i));
+	}
+	return (status);
+}
+
+int builtin_export(int argc, char **argv)
+{
+	int status;
+	int i;
+
+	status = 0;
+	i = 1;
+	if (argc == 1)
+		return (print_sorted_environ());
+	return (builtin_export_process(argc, argv, status, i));
+}
+ 

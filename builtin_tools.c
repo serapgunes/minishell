@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   builtin_tools.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:28:23 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/10 14:30:37 by segunes          ###   ########.fr       */
+/*   Updated: 2025/05/12 16:12:12 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+extern char **environ;
 
 int	builtin_exit(int argc, char **argv)
 {
@@ -36,15 +38,12 @@ int control_env(int argc)
 
 int builtin_env(char **env)
 {
-	int i;
+    int i = 0;
 
-	i = 0;
-	while (env[i])
-	{
-		printf("%s\n", env[i]);
-		i++;
-	}
-	return (1);
+    (void)env;
+    while (environ[i])
+        printf("%s\n", environ[i++]);
+    return (0);
 }
 
 //chdir (change directory): geçerli çalışma dizinini belirtilen bir yola değiştiren sistem çağrısı
