@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:28:23 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/12 16:12:12 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/14 11:40:30 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,11 +38,17 @@ int control_env(int argc)
 
 int builtin_env(char **env)
 {
-    int i = 0;
+    int i;
 
+	i = 0;
     (void)env;
+
     while (environ[i])
-        printf("%s\n", environ[i++]);
+    {
+        if (ft_strchr(environ[i], '='))
+            printf("%s\n", environ[i]);
+        i++;
+    }
     return (0);
 }
 

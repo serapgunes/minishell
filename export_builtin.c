@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 12:27:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/12 19:22:56 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/14 13:28:36 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,9 @@ static int is_valid_identifier(const char *name)
 {
 	int i;
 
+	i = 0;
 	if (!name || name[0] == '\0' || (name[0] >= '0' && name[0] <= '9'))
 		return (0);
-	i = 0;
 	while (name[i])
 	{
 		if (!((name[i] >= 'a' && name[i] <= 'z') || (name[i] >= 'A' && name[i] <= 'Z') ||
@@ -141,7 +141,6 @@ static int update_environ(const char *name, const char *value)
 	char *env_val;
 	int idx;
 
-	(void)name;
 	entry = ft_strjoin(name, "=");
 	if (!entry)
 		return (1);
@@ -161,24 +160,35 @@ static int update_environ(const char *name, const char *value)
 
 static void print_export(char **env, int count)
 {
-	int i;
-	char *eq;
+    int i;
+    char *eq;
 
-	i = 0;
-	while (i < count)
-	{
-		eq = ft_strchr(env[i], '=');
-		if (eq)
-			printf("declare -x %.*s=\"%s\"\n", (int)(eq - env[i]), env[i], eq + 1);
-		else
-			printf("declare -x %s\n", env[i]);
-		i++;
-	}
+    i = 0;
+    while (i < count)
+    {
+        eq = ft_strchr(env[i], '=');
+        if (eq)
+        {
+            if (*(eq + 1) == '\0')
+                printf("declare -x %.*s=\"\"\n", (int)(eq - env[i]), env[i]);
+            else
+                printf("declare -x %.*s=\"%s\"\n",
+                       (int)(eq - env[i]), env[i], eq + 1);
+        }
+        else
+            printf("declare -x %s\n", env[i]);
+        i++;
+    }
 }
-static void sort_env(char **env, int count)
+static void	sort_env(char **env, int count)
 {
-	int i, j;
-	char *tmp;
+	int		i;
+	int		j;
+	char	*key1;
+	char	*key2;
+	char	*eq1;
+	char	*eq2;
+	char	*tmp;
 
 	i = 0;
 	while (i < count - 1)
@@ -186,17 +196,28 @@ static void sort_env(char **env, int count)
 		j = 0;
 		while (j < count - i - 1)
 		{
-			if (strcmp(env[j], env[j + 1]) > 0)
+			key1 = ft_strdup(env[j]);
+			key2 = ft_strdup(env[j + 1]);
+			eq1 = ft_strchr(key1, '=');
+			eq2 = ft_strchr(key2, '=');
+			if (eq1)
+				*eq1 = '\0';
+			if (eq2)
+				*eq2 = '\0';
+			if (ft_strcmp(key1, key2) > 0)
 			{
 				tmp = env[j];
 				env[j] = env[j + 1];
 				env[j + 1] = tmp;
 			}
+			free(key1);
+			free(key2);
 			j++;
 		}
 		i++;
 	}
 }
+
 static int print_sorted_environ(void)
 {
 	char **copy;
@@ -224,43 +245,58 @@ static int print_sorted_environ(void)
 
 static int builtin_export_handle(char *arg, char *eq, int argc, char **argv, int status, int i)
 {
-	char *name, *value, *stripped;
-	if (eq)
-	{
-		*eq = '\0';
-		name = arg;
-		value = eq + 1;
-		stripped = strip_quotes(value);
-		if (!stripped)
+    char *name;
+    char *value;
+    char *stripped;
+
+    if (eq)
+    {
+        *eq = '\0';
+        name = arg;
+        value = eq + 1;
+        if (!is_valid_identifier(name)) 
 		{
-			printf("export: unmatched quote in '%s=%s'\n", name, value);
-			*eq = '=';
-			return (builtin_export_process(argc, argv, status + 1, i));
-		}
-		value = stripped;
-	}
-	else
-	{
-		name = arg;
-		value = "";
-	}
-	if (!is_valid_identifier(name))
-	{
-		printf("export: '%s': not a valid identifier\n", name);
-		status = 1;
-	}
-	else if (update_environ(name, value))
-	{
-		printf("export: failed to set '%s'\n", name);
-		status = 1;
-	}
-	if (eq)
-	{
-		*eq = '=';
-		free(stripped);
-	}
-	return (builtin_export_process(argc, argv, status, i));
+            printf("export: '%s': not a valid identifier\n", name);
+            *eq = '=';
+            return (builtin_export_process(argc, argv, status + 1, i));
+        }
+        stripped = strip_quotes(value);
+        if (!stripped)
+        {
+            printf("export: unmatched quote in '%s=%s'\n", name, value);
+            *eq = '=';
+            return (builtin_export_process(argc, argv, status + 1, i));
+        }
+        value = stripped;
+        if (update_environ(name, value))
+        {
+            printf("export: failed to set '%s'\n", name);
+            status = 1;
+        }
+        free(stripped);
+        *eq = '=';
+    }
+    else
+    {
+        name = arg;
+        if (!is_valid_identifier(name)) 
+		{
+            printf("export: '%s': not a valid identifier\n", name);
+            return (builtin_export_process(argc, argv, status + 1, i));
+        }
+        if (find_in_environ(name) < 0)
+        {
+            char *env_entry = ft_strdup(name);
+            if (!env_entry || update_environ_extend(name, env_entry))
+            {
+                printf("export: failed to export '%s'\n", name);
+                status = 1;
+            }
+        }
+    }
+    return (builtin_export_process(argc, argv, status, i));
 }
+
 
 int builtin_export_process(int argc, char **argv, int status, int i)
 {
@@ -285,4 +321,3 @@ int builtin_export(int argc, char **argv)
 		return (print_sorted_environ());
 	return (builtin_export_process(argc, argv, status, i));
 }
- 
