@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/08 11:46:23 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/18 18:45:40 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,8 @@ int	main(int argc, char **argv, char **env)
 			continue;
 		}
 		arg_count = args_count(args);
-		if (builtin(arg_count, args, env, history) == 0)
+		int builtin_result = builtin(arg_count, args, env, history);
+		if (builtin_result == 0 || builtin_result == 1 || builtin_result == 2)
 		{
 			if (ft_strcmp(args[0], "history") != 0)
 			{

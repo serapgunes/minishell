@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/12 16:21:33 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/18 19:52:08 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,10 +15,7 @@
 int	builtin(int argc, char **argv, char **env, t_list *history)
 {
 	if (argc >= 1 && ft_strcmp(argv[0], "exit") == 0)
-	{
-		builtin_exit(argc, argv);
-		return (0);
-	}
+ 		return (builtin_exit(argc, argv));
 	else if (ft_strcmp(argv[0], "env") == 0)
 	{
 		if (control_env(argc) == 1)
@@ -31,19 +28,15 @@ int	builtin(int argc, char **argv, char **env, t_list *history)
 		return (0);
 	}
 	else if (ft_strcmp(argv[0], "echo") == 0)
-	{
-		builtin_echo(argc, argv,env);
-		return (0);
-	}
+    	return (builtin_echo(argc, argv, env));
 	else if (ft_strcmp(argv[0], "cd") == 0)
-	{
-		builtin_cd(argc, argv);
-		return (0);
-	}
+ 		return (builtin_cd(argc, argv));
 	else if (ft_strcmp(argv[0], "export") == 0)
-	{
-		builtin_export(argc, argv);
-		return (0);
-	}
+		return (builtin_export(argc, argv));
+	else if (ft_strcmp(argv[0], "pwd") == 0)
+        return (builtin_pwd());
+	else if (ft_strcmp(argv[0], "unset") == 0)
+        return (builtin_unset(argc, argv));
+	printf("%s: command not found\n", argv[0]);
 	return (1);
 }

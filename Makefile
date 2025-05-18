@@ -1,6 +1,16 @@
 NAME			=	minishell
-SRCS	= 	main.c check.c path_find.c builtin.c history.c export_builtin.c echo.c builtin_tools.c
-
+SRCS			=	built_cd.c			\
+					built_echo.c 		\
+					built_env.c			\
+					built_exit.c 		\
+					built_export.c		\
+					built_pwd.c 		\
+					built_unset.c		\
+					builtin.c 			\
+					check.c				\
+					history.c 			\
+					main.c				\
+					path_find.c 		\
 
 OBJS			=	$(SRCS:.c=.o)
 RM				=	rm -f
