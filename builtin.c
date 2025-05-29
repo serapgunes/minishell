@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   builtin.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/18 19:52:08 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/29 17:37:00 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,7 +36,7 @@ int	builtin(int argc, char **argv, char **env, t_list *history)
 	else if (ft_strcmp(argv[0], "pwd") == 0)
         return (builtin_pwd());
 	else if (ft_strcmp(argv[0], "unset") == 0)
-        return (builtin_unset(argc, argv));
-	printf("%s: command not found\n", argv[0]);
+        return (builtin_unset(argc, argv));	
+	//printf("%s: command not found\n", argv[0]);
 	return (1);
 }

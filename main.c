@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/18 18:45:40 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/29 18:32:41 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,6 +79,11 @@ int	main(int argc, char **argv, char **env)
 			free(input);
 			continue;
 		}
+		if(invalid_characters(input))
+		{
+			//tanımsız karakterse tanımsız diyip devam etmeli işlem yapmamalı
+		}
+		
 		if (*input)
 			add_history(input);
 		char **args = ft_split(input, ' ');
@@ -109,3 +114,4 @@ int	main(int argc, char **argv, char **env)
 	//free_history
 	return (0);
 }
+//ls çalışmıyor çünkü execute builtinden sonra oyüzden görmüyor
