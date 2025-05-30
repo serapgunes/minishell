@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/18 20:55:49 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/05/30 14:27:47 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,21 @@ typedef struct s_export_data
     int status;
     int i;
 } t_export_data;
+
+typedef enum e_token_type
+{
+    WORD,
+    PIPE,
+    REDIR_OUT,
+    REDIR_IN
+} t_token_type;
+
+typedef struct s_token
+{
+	t_token_type type;
+	char *value;
+} t_token;
+
 
 void		execute_command(char *input);
 int			is_only_spaces(char *str);

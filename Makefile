@@ -11,7 +11,7 @@ SRCS			=	built_cd.c			\
 					history.c 			\
 					main.c				\
 					path_find.c 		\
-					quote_control.C		\
+					quote_control.c		\
 
 OBJS			=	$(SRCS:.c=.o)
 RM				=	rm -f

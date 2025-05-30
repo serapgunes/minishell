@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/29 18:32:41 by segunes          ###   ########.fr       */
+/*   Updated: 2025/05/30 13:43:34 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,10 +79,10 @@ int	main(int argc, char **argv, char **env)
 			free(input);
 			continue;
 		}
-		if(invalid_characters(input))
-		{
-			//tanımsız karakterse tanımsız diyip devam etmeli işlem yapmamalı
-		}
+		// if(invalid_characters(input))
+		// {
+		// 	//tanımsız karakterse tanımsız diyip devam etmeli işlem yapmamalı
+		// }
 		
 		if (*input)
 			add_history(input);
