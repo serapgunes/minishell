@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/30 14:27:47 by segunes          ###   ########.fr       */
+/*   Updated: 2025/05/30 16:28:33 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,6 +48,7 @@ typedef struct s_token
 {
 	t_token_type type;
 	char *value;
+    struct s_token *next;
 } t_token;
 
 
