@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/30 16:28:33 by segunes          ###   ########.fr       */
+/*   Updated: 2025/05/31 15:45:27 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,9 +39,12 @@ typedef struct s_export_data
 typedef enum e_token_type
 {
     WORD,
-    PIPE,
-    REDIR_OUT,
-    REDIR_IN
+    PIPE, // |
+    REDIR_OUT, // >
+    REDIR_IN, // <
+    APPEND, // >>
+    HEREDOC, // <<
+    INVALID
 } t_token_type;
 
 typedef struct s_token
@@ -70,4 +73,6 @@ int builtin_unset(int argc, char **argv);
 int is_valid_identifier(const char *name);
 int find_in_environ(const char *name);
 
+
+t_token *tokenize_input(char *input);
 #endif

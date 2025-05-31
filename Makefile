@@ -12,6 +12,7 @@ SRCS			=	built_cd.c			\
 					main.c				\
 					path_find.c 		\
 					quote_control.c		\
+					tokenizer.c 		\
 
 OBJS			=	$(SRCS:.c=.o)
 RM				=	rm -f
