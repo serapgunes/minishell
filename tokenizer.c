@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:32:24 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/31 16:01:44 by segunes          ###   ########.fr       */
+/*   Updated: 2025/05/31 18:04:27 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,51 +23,6 @@ void add_token_to_list(t_token **head, t_token *new)
             tmp = tmp->next;
         tmp->next = new;
     }
-}
-
-t_token *create_word_token(char *value)
-{
-	t_token *new_token;
-
-	new_token = malloc(sizeof(t_token));
-	if (!new_token)
-		return (NULL);
-	new_token->type = WORD;
-	new_token->value = value;
-	new_token->next = NULL;
-	return (new_token);
-}
-
-t_token *create_redir_token(char *value)
-{
-	t_token *new_token;
-
-	new_token = malloc(sizeof(t_token));
-	if (!new_token)
-		return (NULL);
-	if(value[0] == '<')
-		new_token->type = REDIR_IN;
-	else
-		new_token->type = REDIR_OUT;
-	new_token->value = value;
-	new_token->next = NULL;
-	return (new_token);
-}
-
-t_token *create_token(char *value)
-{
-	t_token *new_token;
-
-	new_token = malloc(sizeof(t_token));
-	if (!new_token)
-		return (NULL);
-	if (ft_strncmp(value, "<<", 2) == 0)
-		new_token->type = HEREDOC;
-	else
-		new_token->type = APPEND;
-	new_token->value = value;
-	new_token->next = NULL;
-	return (new_token);
 }
 
 t_token *tokenize_input(char *input)
@@ -111,6 +66,12 @@ t_token *tokenize_input(char *input)
 			word = ft_substr(input, i, 1);
 			t_token *token = create_redir_token(word);
 			add_token_to_list(&head, token);			
+		}
+		else if(input[i] == '|')
+		{
+			word = ft_substr(input, i, 1);
+			t_token *token = create_pipe_token(word);
+			add_token_to_list(&head, token);
 		}
 		i++;
 	}
