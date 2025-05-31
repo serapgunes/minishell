@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:32:24 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/30 17:05:12 by segunes          ###   ########.fr       */
+/*   Updated: 2025/05/31 15:34:49 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,8 +81,11 @@ t_token *tokenize_input(char *input)
 			add_token_to_list(&head, token);
 		}
 		else if(input[i] == '>' || input[i] == '<')
-			t_token *token = create_redir_token(word);
-
+		{
+			t_token *redir_token = create_redir_token(word);
+			add_token_to_list(&head, redir_token);
+			
+		}
 	}
 	return(head);
 }
