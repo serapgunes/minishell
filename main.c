@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/30 13:43:34 by segunes          ###   ########.fr       */
+/*   Updated: 2025/05/31 18:22:49 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,11 +79,6 @@ int	main(int argc, char **argv, char **env)
 			free(input);
 			continue;
 		}
-		// if(invalid_characters(input))
-		// {
-		// 	//tanımsız karakterse tanımsız diyip devam etmeli işlem yapmamalı
-		// }
-		
 		if (*input)
 			add_history(input);
 		char **args = ft_split(input, ' ');
@@ -92,6 +87,8 @@ int	main(int argc, char **argv, char **env)
 			free(input);
 			continue;
 		}
+		// t_token *tokens = tokenize_input(input);
+		// print_tokens(tokens); type yazdırmak için
 		arg_count = args_count(args);
 		int builtin_result = builtin(arg_count, args, env, history);
 		if (builtin_result == 0 || builtin_result == 1 || builtin_result == 2)

@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:32:24 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/31 18:04:27 by segunes          ###   ########.fr       */
+/*   Updated: 2025/05/31 18:23:17 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,17 @@ void add_token_to_list(t_token **head, t_token *new)
         tmp->next = new;
     }
 }
+
+// void print_tokens(t_token *head)
+// {
+// 	t_token *tmp = head;
+
+// 	while (tmp)
+// 	{
+// 		printf("TOKEN TYPE: %u\tVALUE: %s\n", tmp->type, tmp->value);
+// 		tmp = tmp->next;
+// 	}
+// } type yazdırmak için kontrol
 
 t_token *tokenize_input(char *input)
 {

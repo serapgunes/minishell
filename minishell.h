@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/31 17:55:16 by segunes          ###   ########.fr       */
+/*   Updated: 2025/05/31 18:22:35 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -72,7 +72,7 @@ int builtin_pwd(void);
 int builtin_unset(int argc, char **argv);
 int is_valid_identifier(const char *name);
 int find_in_environ(const char *name);
-
+//void print_tokens(t_token *head); type yazdırmak için
 
 t_token *tokenize_input(char *input);
 t_token *create_token(char *value);
