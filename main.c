@@ -3,14 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/31 18:22:49 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/01 18:20:56 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+int	g_last_status = 0;
 
 void execute_command(char *input)
 {
@@ -112,3 +114,31 @@ int	main(int argc, char **argv, char **env)
 	return (0);
 }
 //ls çalışmıyor çünkü execute builtinden sonra oyüzden görmüyor
+
+
+// denemek için
+// int	main(int argc, char **argv, char **envp)
+// {
+// 	char	*input;
+// 	t_token	*tokens;
+// 	(void)envp;
+
+// 	(void)argc;
+// 	(void)argv;
+// 	while (1)
+// 	{
+// 		input = readline("minishell$ ");
+// 		if (!input)
+// 			break ;
+// 		if (*input)
+// 			add_history(input);
+// 		tokens = tokenize_input(input);
+// 		if (tokens)
+// 		{
+// 			print_tokens(tokens);
+// 			free_tokens(tokens);
+// 		}
+// 		free(input);
+// 	}
+// 	return (0);
+// }
