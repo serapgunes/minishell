@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 12:27:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/01 19:11:13 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/06/01 19:14:05 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,6 @@ extern char **environ;
 
 //bubble sort : iki bitişik eleman karşılaştırılır ve gerekiyorsa yer değiştirilir.
 //her adımda en büyük değer sona atılır. Sona atılan değerler bir daha kontrol edilmeez.
-
 
 int is_valid_identifier(const char *name)
 {

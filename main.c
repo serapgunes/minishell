@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/01 19:11:53 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/06/01 19:13:50 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ int	main(int argc, char **argv, char **env)
 	return (0);
 }
 //ls çalışmıyor çünkü execute builtinden sonra oyüzden görmüyor
+
 
 // denemek için
 // int	main(int argc, char **argv, char **envp)
