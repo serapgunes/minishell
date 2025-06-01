@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:32:24 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/01 18:43:17 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/06/01 19:10:29 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,7 @@
 // 		tmp = tmp->next;
 // 	}
 // }// type yazdırmak için kontrol
+
 
 void	add_token_to_list(t_token **head, t_token *new)
 {

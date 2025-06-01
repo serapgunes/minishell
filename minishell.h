@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/01 19:00:28 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/06/01 19:11:31 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -74,14 +74,13 @@ int builtin_pwd(void);
 int builtin_unset(int argc, char **argv);
 int is_valid_identifier(const char *name);
 int find_in_environ(const char *name);
-void print_tokens(t_token *head);
+// void print_tokens(t_token *head);
 
 t_token *tokenize_input(char *input);
 t_token *create_token(char *value);
 t_token *create_redir_token(char *value);
 t_token *create_pipe_token(char *value);
 t_token *create_word_token(char *value);
-
 void	free_tokens(t_token *head);
 char	*expand_variable(char *str);
 

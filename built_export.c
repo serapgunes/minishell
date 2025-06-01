@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 12:27:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/01 13:54:03 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/06/01 19:11:13 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ extern char **environ;
 //declare -x HOME="/home/user"
 //declare -x PATH="/usr/bin:/bin"
 //declare -x PWD="/home/user"
+
 
 // declare : bir değişkenin özelliklerini tanımlamak veya değiştirmek için kullanılır.
 // -x : değişkeni ortam değişkeni olarak işaretler.Yani bu değişkeni child processes'e aktarılabilir hale getirir.

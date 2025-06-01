@@ -6,11 +6,12 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 17:51:21 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/01 18:46:21 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/06/01 19:10:52 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
 
 char	*ft_strjoin_free(char *res, char *val, int flag)
 {
