@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 12:27:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/18 21:15:46 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/06/01 13:49:13 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,7 +100,7 @@ int find_in_environ(const char *name)
 	while (environ[i])
 	{
 		env = environ[i];
-		if (strncmp(env, name, len) == 0 && env[len] == '=')
+		if (strncmp(env, name, len) == 0 && (env[len] == '=' || env[len] == '\0'))
 			return (i);
 		i++;
 	}
@@ -346,3 +346,14 @@ int builtin_export(int argc, char **argv)
 		return (print_sorted_environ());
 	return (builtin_export_process(argc, argv, status, i));
 }
+
+// hata durumu: export a = 5 gibi bir durumda yanlış hata mesajı basılıyor. En son kontrol edilecek.
+
+// minishell$ export a = 5
+// export: '': not a valid identifier
+// export: '5': not a valid identifier
+// export: '5': not a valid identifier
+// export: '': not a valid identifier
+// export: '5': not a valid identifier
+// export: '5': not a valid identifier
+// export: command not found
