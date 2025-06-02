@@ -100,11 +100,20 @@ static int	handle_redir_operator(char *s, t_token **head)
 	int		len;
 
 	if (s[0] == '>' && s[1] == '>')
-		op = ft_substr(s, 0, 2), len = 2;
+	{
+		op = ft_substr(s, 0, 2);
+		len = 2;
+	}
 	else if (s[0] == '<' && s[1] == '<')
-		op = ft_substr(s, 0, 2), len = 2;
+	{
+		op = ft_substr(s, 0, 2);
+		len = 2;
+	}
 	else
-		op = ft_substr(s, 0, 1), len = 1;
+	{
+		op = ft_substr(s, 0, 1);
+		len = 1;
+	}
 	if (len == 2)
 		add_token_to_list(head, create_token(op));
 	else
