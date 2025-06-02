@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 17:51:21 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/01 19:13:53 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/06/02 19:06:35 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,7 +32,10 @@ char	*ft_strjoin_char(char *res, char c)
 	len = ft_strlen(res);
 	tmp = malloc(len + 2);
 	if (!tmp)
+	{
+		free(res);
 		return (NULL);
+	}
 	ft_strlcpy(tmp, res, len + 1);
 	tmp[len] = c;
 	tmp[len + 1] = '\0';
@@ -49,7 +52,11 @@ static char	*handle_var(char *str, int *i, char *res)
 	if (str[*i + 1] == '?')
 	{
 		val = ft_itoa(g_last_status);
+		if (!val)
+			return (NULL);
 		res = ft_strjoin_free(res, val, 3);
+		if (!res)
+			return (NULL);
 		*i += 2;
 	}
 	else
@@ -58,10 +65,14 @@ static char	*handle_var(char *str, int *i, char *res)
 		while (str[*i + j] && (ft_isalnum(str[*i + j]) || str[*i + j] == '_'))
 			j++;
 		var = ft_substr(str, *i + 1, j - 1);
+		if (!var)
+			return (NULL);
 		val = getenv(var);
 		if (!val)
 			val = ft_strdup("");
 		res = ft_strjoin_free(res, ft_strdup(val), 3);
+		if (!res)
+			return (NULL);
 		free(var);
 		*i += j;
 	}
@@ -74,13 +85,23 @@ char	*expand_variable(char *str)
 	int		i;
 
 	res = ft_strdup("");
+	if (!res)
+		return (NULL);
 	i = 0;
 	while (str[i])
 	{
 		if (str[i] == '$' && str[i + 1])
+		{
 			res = handle_var(str, &i, res);
+			if (!res)
+				return (NULL);
+		}
 		else
+		{
 			res = ft_strjoin_char(res, str[i++]);
+			if (!res)
+				return (NULL);
+		}
 	}
 	return (res);
 }
