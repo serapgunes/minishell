@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/01 19:14:15 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/06/02 18:17:44 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,13 +77,13 @@ int find_in_environ(const char *name);
 // void print_tokens(t_token *head);
 
 
-t_token *tokenize_input(char *input);
+t_token	*tokenize_input(char *input);
 t_token *create_token(char *value);
 t_token *create_redir_token(char *value);
 t_token *create_pipe_token(char *value);
 t_token *create_word_token(char *value);
 void	free_tokens(t_token *head);
 char	*expand_variable(char *str);
-
+void print_tokens(t_token *head);
 
 #endif
