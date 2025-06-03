@@ -6,11 +6,56 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 12:31:48 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/03 15:11:23 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/03 18:28:36 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
+void ft_build_ast(t_token *tokens)
+{
+	while(tokens)
+	{
+		t_token *right_token;
+
+		right_token = tokens->next;
+		if(tokens->type == PIPE)
+		{
+			t_ast_tree *node = malloc(sizeof(t_ast_tree));
+			node->type = NODE_PIPE;
+			node->left = ft_build_ast(left_tokens);
+			node->right = ft_build_ast(right_tokens);
+		}
+		else	
+			tokens = tokens->next;
+	}
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 void ft_last(t_token *input)
 {

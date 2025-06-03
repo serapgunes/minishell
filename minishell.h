@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/03 15:22:52 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/03 17:43:19 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,24 @@ typedef struct s_export_data
     int status;
     int i;
 } t_export_data;
+
+typedef enum e_node_type 
+{	
+    NODE_COMMAND,
+	NODE_PIPE,
+	NODE_REDIR
+}t_node_type;
+
+typedef struct s_ast_tree
+{
+    t_node_type type;
+    char **args;
+    char *redir_target;
+    int redir_type;
+    struct s_ast_tree *left;//her nodun içinde alt nodelar var bu alt nodelar aynı yapıya yani structa eşit olduğu için böyle
+    struct s_ast_tree *right;
+    
+}t_ast_tree;
 
 typedef enum e_token_type
 {
