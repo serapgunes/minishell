@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/02 18:17:44 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/06/03 15:22:52 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ const char *pathname(char *command);
 int 		builtin(int argc, char **argv, char **env, t_list *history);
 void		add_to_history(t_list **history, char *input);
 void		print_history(t_list *history);
+void ft_parser(t_token *input);
 int builtin_echo(int argc, char **argv, char **env);
 int	builtin_cd(int argc, char **argv);
 int builtin_env(char **env);
@@ -75,7 +76,6 @@ int builtin_unset(int argc, char **argv);
 int is_valid_identifier(const char *name);
 int find_in_environ(const char *name);
 // void print_tokens(t_token *head);
-
 
 t_token	*tokenize_input(char *input);
 t_token *create_token(char *value);
