@@ -14,6 +14,7 @@ SRCS			=	built_cd.c			\
 					quote_control.c		\
 					tokenizer.c 		\
 					tokenizer_utils.c   \
+					parser.c    		\
 
 OBJS			=	$(SRCS:.c=.o)
 RM				=	rm -f
