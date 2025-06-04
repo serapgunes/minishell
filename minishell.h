@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/03 17:43:19 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/04 14:00:05 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -95,6 +95,7 @@ int is_valid_identifier(const char *name);
 int find_in_environ(const char *name);
 // void print_tokens(t_token *head);
 
+t_ast_tree *ft_build_ast(t_token *tokens);
 t_token	*tokenize_input(char *input);
 t_token *create_token(char *value);
 t_token *create_redir_token(char *value);
