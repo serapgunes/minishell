@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 12:31:48 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/04 16:21:46 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/16 18:08:17 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 		{
 			node->redir_type = current->type;
 			current = current->next;
-			if (current)
+			if (current && current->value)
 				node->redir_target = ft_strdup(current->value);
 				//bu yönlendirme operatöründen sonra gelen argümanı targetın içine koyuyoruz
 		}
@@ -74,33 +74,7 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 	
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-void ft_last(t_token *input)
+int ft_last(t_token *input)
 {
 	t_token *last;
 
@@ -112,36 +86,51 @@ void ft_last(t_token *input)
 		 || last->type == HEREDOC || last->type == PIPE)
 		 {
 		 	printf("syntax error near unexpected token");
-			return;
+			return (1);
 		 }
+	return (0);
 }
-void ft_parser(t_token *input)
+int	is_invalid_redir_target(t_token *token)
+{
+	if (!token || token->type != WORD)
+		return (1);
+	if (!token->value || token->value[0] == '\0')
+		return (1);
+	if (token->type == REDIR_IN || token->type == REDIR_OUT
+		|| token->type == APPEND || token->type == HEREDOC
+		|| token->type == PIPE)
+		return (1);
+	return (0);
+}
+int ft_parser(t_token *input)
 {	
 	t_token *start;
 
 	start = input;
 	if (!input)
-    	return;
+    	return (1);
 	if(input->type == PIPE)
 	{
 		printf("syntax error near unexpected token");
-		return;
+		return (1);
 	}
 	while(input)
 	{
 		if(input->type == PIPE && input->next->type == PIPE)
 		{
 			printf("syntax error near unexpected token");
-			return;
+			return (1);
 		}
 		if((input->type == APPEND || input->type == REDIR_IN || input->type == REDIR_OUT
-		 || input->type == HEREDOC) && (input->next == NULL || input->next->type != WORD))
+		 || input->type == HEREDOC) && is_invalid_redir_target(input->next))
 		 {
 		 	printf("syntax error near unexpected token");
-			return;
+			return (1);
 		 }
 		input = input->next;		
 	}
-	ft_last(start);
+	if (ft_last(start) == 1)
+		return (1);
+	return (0);
 }
 

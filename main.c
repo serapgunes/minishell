@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/16 16:58:42 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/16 18:52:09 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,8 @@ int	main(int argc, char **argv, char **env)
 	char	*input;
 	int		arg_count;
 	t_list *history;
+	t_token *tokens;
+	t_ast_tree *ast;
 	int history_seen = 0;
 	
 	(void)argv;
@@ -89,7 +91,24 @@ int	main(int argc, char **argv, char **env)
 			free(input);
 			continue;
 		}
-		// t_token *tokens = tokenize_input(input);
+		tokens = tokenize_input(input);
+		if (!tokens)
+		{
+			free(input);
+			continue;
+		}
+
+		if (ft_parser(tokens)) // Syntax kontrolü başarısızsa
+		{
+			free(input);
+			continue;
+		}
+		ast = ft_build_ast(tokens);
+		if (!ast)
+		{
+			free(input);
+			continue;
+		}
 		// print_tokens(tokens); type yazdırmak için
 		arg_count = args_count(args);
 		int builtin_result = builtin(arg_count, args, env, history);
