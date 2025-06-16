@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 12:31:48 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/04 13:59:17 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/04 16:21:46 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,8 +58,19 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 				node->redir_target = ft_strdup(current->value);
 				//bu yönlendirme operatöründen sonra gelen argümanı targetın içine koyuyoruz
 		}
+		else
+		{
+    		prev = tokens;
+    		tokens = tokens->next;
+		}
+
 		current = current->next;
-	}	
+	}
+	args[i] = NULL;
+	node->args = args;
+	node->left = NULL;
+	node->right = NULL;
+	return node;
 	
 }
 
