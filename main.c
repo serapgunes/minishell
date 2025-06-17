@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/17 14:28:33 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/17 17:33:21 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void execute_command(char *input)
     //free_args(args);
 }
 
-static int	args_count(char **args)
+int	args_count(char **args)
 {
 	int	i;
 
@@ -68,7 +68,7 @@ int	main(int argc, char **argv, char **env)
 	t_list *history;
 	t_token *tokens;
 	t_ast_tree *ast;
-	int history_seen = 0;
+	//int history_seen = 0;
 	
 	(void)argv;
 	(void)argc;
@@ -109,25 +109,26 @@ int	main(int argc, char **argv, char **env)
 			free(input);
 			continue;
 		}
-		print_ast(ast, 0);// ast yazdırmak için
+		//print_ast(ast, 0);// ast yazdırmak için
 		// print_tokens(tokens); type yazdırmak için
+		executor_structure(ast, env);
 		arg_count = args_count(args);
-		int builtin_result = builtin(arg_count, args, env, history);
-		if (builtin_result == 0 || builtin_result == 1 || builtin_result == 2)
-		{
-			if (ft_strcmp(args[0], "history") != 0)
-			{
-				if (history_seen == 1)
-					add_to_history(&history, input);
-				history_seen = 1;
-			}
-			else
-				add_to_history(&history, input);
-			//free_args
-			continue;
-		}
+		// int builtin_result = builtin(arg_count, args, env, history);
+		// if (builtin_result == 0 || builtin_result == 1 || builtin_result == 2)
+		// {
+		// 	if (ft_strcmp(args[0], "history") != 0)
+		// 	{
+		// 		if (history_seen == 1)
+		// 			add_to_history(&history, input);
+		// 		history_seen = 1;
+		// 	}
+		// 	else
+		// 		add_to_history(&history, input);
+		// 	//free_args
+		// 	continue;
+		// }
 		add_to_history(&history, input);
-		execute_command(input);
+		//execute_command(input);
 		free(input);
 	}
 	//free_history
