@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 12:31:48 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/17 14:27:19 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/17 14:39:11 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,6 +117,7 @@ int	is_invalid_redir_target(t_token *token)
 }
 
 //***************************************************************************************/
+//ast yapısı doğrumu diye kontrol ediliyor burada yazdırmak için//
 void print_ast(t_ast_tree *node, int depth)
 {
 	if (!node)
