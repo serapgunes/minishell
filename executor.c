@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/17 15:27:40 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/17 16:37:31 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,9 +14,28 @@
 
 void executor_structure(t_ast_tree *node, char **envp)
 {
+	pid_t pid;
+	char *cmd;
+
 	if(node->type == NODE_COMMAND)
 	{
-
+		pid = fork();
+		if(pid == 0)
+		{
+			cmd = find_path(node->args[0]);
+			if(cmd != NULL)
+			{
+				if(execve(cmd, node->args, envp) == -1)
+				{
+					perror("execve");
+					exit(1);
+				}
+			}
+			else
+				printf("command not found\n");
+		}
+		else if(pid > 0)
+			wait(NULL);
 	}
 	else if(node->type == PIPE)
 	{
@@ -31,3 +50,9 @@ void executor_structure(t_ast_tree *node, char **envp)
 		
 	}
 }
+
+/*
+| pid == 0 | Bu kod bloğu child process içindir |
+| pid > 0 | Bu kod bloğu parent process içindir |
+| pid < 0 | Hata: fork başarısız oldu |
+*/

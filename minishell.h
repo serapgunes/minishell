@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/17 14:29:20 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/17 16:29:09 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -103,8 +103,10 @@ t_token *create_pipe_token(char *value);
 t_token *create_word_token(char *value);
 void	free_tokens(t_token *head);
 char	*expand_variable(char *str);
+char *find_path(char *command);
+
+//bunlar kontrol amaçlı eklenenler
 void print_tokens(t_token *head);
-
 void print_ast(t_ast_tree *node, int depth);
-
+//*************************/
 #endif
