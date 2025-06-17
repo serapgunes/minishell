@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 12:31:48 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/16 18:08:17 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/17 14:27:19 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,11 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 	{
 		if(tokens->type == PIPE)            
 		{
+			if (!tokens->next) //Pipe'tan sonra hiçbir şey yoksa
+			{
+				printf("syntax error near unexpected token\n");
+				return NULL;
+			}
 			right_token = tokens->next;
 			if(prev)
 				prev->next =NULL;
@@ -32,10 +37,18 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 			node->type = NODE_PIPE;
 			node->left = ft_build_ast(left_token);
 			node->right = ft_build_ast(right_token);
+			if (!node->left || !node->right)
+			{
+				printf("syntax error near unexpected token\n");
+				//free(node);
+				return NULL;
+			}
 			return node;
 		}
-		else
-			tokens = tokens->next;		
+		// else
+		// 	tokens = tokens->next;
+		prev = tokens;
+		tokens = tokens->next;		
 	}
 	t_ast_tree *node = malloc(sizeof(t_ast_tree));
 	char **args = malloc(sizeof(char *));
@@ -85,7 +98,7 @@ int ft_last(t_token *input)
 	if(last->type == APPEND || last->type == REDIR_IN || last->type == REDIR_OUT
 		 || last->type == HEREDOC || last->type == PIPE)
 		 {
-		 	printf("syntax error near unexpected token");
+		 	printf("syntax error near unexpected token\n");
 			return (1);
 		 }
 	return (0);
@@ -102,6 +115,40 @@ int	is_invalid_redir_target(t_token *token)
 		return (1);
 	return (0);
 }
+
+//***************************************************************************************/
+void print_ast(t_ast_tree *node, int depth)
+{
+	if (!node)
+		return;
+
+	for (int i = 0; i < depth; i++)
+		printf("  "); // girinti
+
+	if (node->type == NODE_PIPE)
+		printf("PIPE\n");
+	else if (node->type == NODE_COMMAND)
+	{
+		printf("CMD: ");
+		for (int i = 0; node->args && node->args[i]; i++)
+			printf("%s ", node->args[i]);
+		printf("\n");
+
+		if (node->redir_type)
+		{
+			for (int i = 0; i < depth + 1; i++)
+				printf("  ");
+			printf("REDIR: %d -> %s\n", node->redir_type, node->redir_target);
+		}
+	}
+
+	if (node->left)
+		print_ast(node->left, depth + 1);
+	if (node->right)
+		print_ast(node->right, depth + 1);
+}
+//***************************************************************************************/
+
 int ft_parser(t_token *input)
 {	
 	t_token *start;
@@ -111,20 +158,25 @@ int ft_parser(t_token *input)
     	return (1);
 	if(input->type == PIPE)
 	{
-		printf("syntax error near unexpected token");
+		printf("syntax error near unexpected token\n");
 		return (1);
 	}
 	while(input)
 	{
+		if (input->type == PIPE && input->next == NULL)
+		{
+			printf("syntax error near unexpected token\n");
+			return (1);
+		}
 		if(input->type == PIPE && input->next->type == PIPE)
 		{
-			printf("syntax error near unexpected token");
+			printf("syntax error near unexpected token\n");
 			return (1);
 		}
 		if((input->type == APPEND || input->type == REDIR_IN || input->type == REDIR_OUT
 		 || input->type == HEREDOC) && is_invalid_redir_target(input->next))
 		 {
-		 	printf("syntax error near unexpected token");
+		 	printf("syntax error near unexpected token\n");
 			return (1);
 		 }
 		input = input->next;		
