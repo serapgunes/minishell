@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/17 17:46:25 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/17 17:49:42 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,33 +14,33 @@
 
 void executor_structure(t_ast_tree *node, char **envp)
 {
-	// pid_t pid;
-	// char *cmd;
+	pid_t pid;
+	char *cmd;
 
 	if(node->type == NODE_COMMAND)
 	{
-		if(builtin(args_count(&node->args[0]),node->args, envp, NULL))
+		if(builtin(args_count(&node->args[0]),node->args, envp, NULL) == 0)
 			return;
-		// pid = fork();
-		// if(pid == 0)
-		// {
-		// 	cmd = find_path(node->args[0]);
-		// 	if(cmd != NULL)
-		// 	{
-		// 		if(execve(cmd, node->args, envp) == -1)
-		// 		{
-		// 			perror("execve");
-		// 			exit(1);
-		// 		}
-		// 	}
-		// 	else
-		// 	{
-		// 		printf("command not found\n");
-		// 		exit(127);
-		// 	}
-		// }
-		// else if(pid > 0)
-		// 	wait(NULL);
+		pid = fork();
+		if(pid == 0)
+		{
+			cmd = find_path(node->args[0]);
+			if(cmd != NULL)
+			{
+				if(execve(cmd, node->args, envp) == -1)
+				{
+					perror("execve");
+					exit(1);
+				}
+			}
+			else
+			{
+				printf("command not found\n");
+				exit(127);
+			}
+		}
+		else if(pid > 0)
+			wait(NULL);
 	}
 	else if(node->type == PIPE)
 	{
