@@ -6,13 +6,20 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/20 16:32:45 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/20 18:48:43 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void executor_structure(t_ast_tree *node, char **envp)
+
+int extract_exit_code(int status)
+{
+	return ((status >> 8) & 0xFF);
+}
+
+
+void executor_structure(t_ast_tree *node, char **envp, int in_pipeline)
 {
 	pid_t pid;
 	char *cmd;
@@ -22,7 +29,7 @@ void executor_structure(t_ast_tree *node, char **envp)
 
 	if(node->type == NODE_COMMAND)
 	{
-		if(builtin(args_count(&node->args[0]),node->args, envp, NULL) == 0)
+		if(!in_pipeline && builtin(args_count(&node->args[0]),node->args, envp, NULL) == 0)
 			return;
 		pid = fork();
 		if(pid < 0)//ram , sistem kaynağı yetmezse hata döner
@@ -58,14 +65,16 @@ void executor_structure(t_ast_tree *node, char **envp)
 			perror("pipe");
 			return;
 		}
-		pid1 = fork();
-		if(pid1 == 0)
+		pid1 = fork();// her fork yeni bir çocuk oluşturuyor mesela ls | wc -l ilk çocuk ls ikincisi wc -l
+ 		if(pid1 == 0)
 		{
 			dup2(pipefd[1], STDOUT_FILENO);//file descriptor kopyalayan sistem çağrısı
 			//dup2 pipefd nin içeriğini tam olarak stdouta yönlendirir daha sonra pipefd deki stdouta kopyalanır
 			close(pipefd[0]);
+			//Her çocuk sadece kullandığı ucu açık bırakır.
+			//Kullanmıyorsa kapatır (close()), yoksa pipe boşu boşuna açık kalır, process’ler bekleyip durur.
 			close(pipefd[1]);
-			executor_structure(node->left,envp);
+			executor_structure(node->left,envp, 1);
 			exit(0);
 		} 
 		pid2 = fork();
@@ -74,7 +83,7 @@ void executor_structure(t_ast_tree *node, char **envp)
 			dup2(pipefd[0],STDIN_FILENO);
 			close(pipefd[1]);
 			close(pipefd[0]);
-			executor_structure(node->right,envp);
+			executor_structure(node->right,envp,1);
 			exit(0);
 		}
 		if(pid1 != 0 && pid2 != 0)
@@ -104,5 +113,22 @@ void executor_structure(t_ast_tree *node, char **envp)
 ********************************************************************
 
 dup() sistem çağrısı bir dosya tanımlayıcısının kopyasını oluşturur.
+
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+                                                             !!
+              [ PARENT PROCESS ]                             !!
+                     |                                       !!
+                pipe(pipefd)                                 !!
+                     |                                       !!
+              ┌──────┴──────┐                                !!
+              |             |                                !!
+        fork() →         fork()                              !!
+         |                 |                                 !!
+     [ CHILD 1 ]       [ CHILD 2 ]                           !!
+      echo serap        wc -c                                !!
+     stdout → pipe      stdin ← pipe                         !!
+         |                  ^                                !!
+         └──── pipefd[1]    └──── pipefd[0]                  !!
+!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 */

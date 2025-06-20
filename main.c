@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/17 17:51:18 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/20 18:45:16 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -111,7 +111,7 @@ int	main(int argc, char **argv, char **env)
 		}
 		//print_ast(ast, 0);// ast yazdırmak için
 		// print_tokens(tokens); type yazdırmak için
-		executor_structure(ast, env);
+		executor_structure(ast, env,0);
 		arg_count = args_count(args);
 		// int builtin_result = builtin(arg_count, args, env, history);
 		// if (builtin_result == 0 || builtin_result == 1 || builtin_result == 2)
