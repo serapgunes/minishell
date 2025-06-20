@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/17 17:33:21 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/17 17:51:18 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,9 +134,6 @@ int	main(int argc, char **argv, char **env)
 	//free_history
 	return (0);
 }
-//ls çalışmıyor çünkü execute builtinden sonra oyüzden görmüyor
-
-
 
 
 // int	main(void)
