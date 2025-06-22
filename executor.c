@@ -6,18 +6,11 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/20 18:48:43 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/22 14:40:27 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-
-int extract_exit_code(int status)
-{
-	return ((status >> 8) & 0xFF);
-}
-
 
 void executor_structure(t_ast_tree *node, char **envp, int in_pipeline)
 {
@@ -57,7 +50,7 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline)
 		else if(pid > 0)//parent process pid aslında çocuk sürecin PIDsi onu beklemek için
 			wait(NULL);
 	}
-	else if(node->type == PIPE)
+	else if(node->type == NODE_PIPE)
 	{//Neden 2 Fork Açıyoruz? Çünkü: ls -l komutunu çalıştıracak bir süreç (child)/wc -l komutunu çalıştıracak bir başka süreç (başka bir child)
 
 		if(pipe(pipefd)== -1)//aradaki pipe oluşturuluyor burada biri stdine diğeri stdouta bağlanıyor
@@ -95,14 +88,18 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline)
 		}
 
 	}
-	else if(node->type == REDIR_IN || node->type == REDIR_OUT)
+	else if(node->type == NODE_REDIR)
 	{
-
-	}
-	else if(node->type == APPEND || node->type == HEREDOC)
-	{
+		if(node->redir_type == REDIR_IN || node->redir_type == REDIR_OUT)
+		{
+			
+		}
+		else if(node->redir_type == APPEND || node->redir_type == HEREDOC)
+		{
 		
+		}
 	}
+	
 }
 
 /*
