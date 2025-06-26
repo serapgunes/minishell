@@ -6,13 +6,13 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/23 18:22:20 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/26 18:18:53 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exit_status)
+void executor_structure(t_ast_tree *node, char **envp, int in_pipeline,int *exit_status)
 {
 	int status;
 	int second_status;
@@ -25,10 +25,7 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exi
 	if(node->type == NODE_COMMAND)
 	{
 		if(!in_pipeline && builtin(args_count(&node->args[0]),node->args, envp, NULL) == 0)
-		{
-			*exit_status = 0;
 			return;
-		}
 		pid = fork();
 		if(pid < 0)//ram , sistem kaynağı yetmezse hata döner
 		{
@@ -37,11 +34,12 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exi
 		}
 		else if(pid == 0)//bu sürecin görevi komutu çalıştırmak //child process
 		{
-			if (builtin(args_count(&node->args[0]), node->args, envp, NULL) == 0)
+			if (in_pipeline && builtin(args_count(&node->args[0]), node->args, envp, NULL) == 0)
 				exit(0);
 			cmd = find_path(node->args[0]);
 			if(cmd != NULL)
 			{
+				printf("\a");
 				if(execve(cmd, node->args, envp) == -1)
 				{
 					perror("execve");
@@ -57,13 +55,13 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exi
 		else if(pid > 0)//parent process pid aslında çocuk sürecin PIDsi onu beklemek için
 		{
 			waitpid(pid, &status, 0);
-			*exit_status = WEXITSTATUS(status);
+			if (exit_status)
+				*exit_status = WEXITSTATUS(status);
 		}
 	}
 	else if(node->type == NODE_PIPE)
 	{//Neden 2 Fork Açıyoruz? Çünkü: ls -l komutunu çalıştıracak bir süreç (child)/wc -l komutunu çalıştıracak bir başka süreç (başka bir child)
-
-		int tmp_status = 0;
+		int child_exit_status = 0;
 		if(pipe(pipefd)== -1)//aradaki pipe oluşturuluyor burada biri stdine diğeri stdouta bağlanıyor
 		{//eğer oluşturulamazsa hata
 			perror("pipe");
@@ -78,53 +76,46 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exi
 			//Her çocuk sadece kullandığı ucu açık bırakır.
 			//Kullanmıyorsa kapatır (close()), yoksa pipe boşu boşuna açık kalır, process’ler bekleyip durur.
 			close(pipefd[1]);
-			executor_structure(node->left,envp, 1, &tmp_status);
-			exit(tmp_status);
-		} 
+			executor_structure(node->left,envp, 1, &child_exit_status);
+			exit(child_exit_status);
+		}
 		pid2 = fork();
 		if(pid2 == 0)
 		{
 			dup2(pipefd[0],STDIN_FILENO);
 			close(pipefd[1]);
 			close(pipefd[0]);
-			executor_structure(node->right,envp,1, &tmp_status);
-			exit(tmp_status);
+			executor_structure(node->right,envp,1, &child_exit_status);
+			exit(child_exit_status);
 		}
 		if(pid1 != 0 && pid2 != 0)
 		{
-		// 	close(pipefd[0]);
-		// 	close(pipefd[1]);
-		// 	waitpid(pid1, &status, 0);
-		// 	waitpid(pid2, &second_status, 0);
-		// 	*exit_status = WEXITSTATUS(second_status);			
-
-		close(pipefd[0]);
-		close(pipefd[1]);
-		waitpid(pid1, &status, 0);
-		waitpid(pid2, &second_status, 0);
-
-		int exit1 = WEXITSTATUS(status);
-		int exit2 = WEXITSTATUS(second_status);
-
-		if (exit1 == 0 || exit2 == 0)
-			*exit_status = 0;
-		else
-			*exit_status = exit2;
+			close(pipefd[0]);
+			close(pipefd[1]);
+			waitpid(pid1, &status, 0);
+			waitpid(pid2, &second_status, 0);
+			if (exit_status)
+			{
+				*exit_status = WEXITSTATUS(second_status);
+			}
 		}
 	}
+
 	else if(node->type == NODE_REDIR)
 	{
 		if(node->redir_type == REDIR_IN || node->redir_type == REDIR_OUT)
 		{
-			
+
 		}
 		else if(node->redir_type == APPEND || node->redir_type == HEREDOC)
 		{
-		
+
 		}
 	}
-	
+
 }
+
+
 
 /*
 | pid == 0 | Bu kod bloğu child process içindir |
@@ -136,20 +127,20 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exi
 dup() sistem çağrısı bir dosya tanımlayıcısının kopyasını oluşturur.
 
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-                                                             !!
-              [ PARENT PROCESS ]                             !!
-                     |                                       !!
-                pipe(pipefd)                                 !!
-                     |                                       !!
-              ┌──────┴──────┐                                !!
-              |             |                                !!
-        fork() →         fork()                              !!
-         |                 |                                 !!
-     [ CHILD 1 ]       [ CHILD 2 ]                           !!
-      echo serap        wc -c                                !!
-     stdout → pipe      stdin ← pipe                         !!
-         |                  ^                                !!
-         └──── pipefd[1]    └──── pipefd[0]                  !!
+															 !!
+			  [ PARENT PROCESS ]                             !!
+					 |                                       !!
+				pipe(pipefd)                                 !!
+					 |                                       !!
+			  ┌──────┴──────┐                                !!
+			  |             |                                !!
+		fork() →         fork()                              !!
+		 |                 |                                 !!
+	 [ CHILD 1 ]       [ CHILD 2 ]                           !!
+	  echo serap        wc -c                                !!
+	 stdout → pipe      stdin ← pipe                         !!
+		 |                  ^                                !!
+		 └──── pipefd[1]    └──── pipefd[0]                  !!
 !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 */

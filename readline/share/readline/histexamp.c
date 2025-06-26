@@ -112,7 +112,7 @@ main (argc, argv)
 	    {
 	      HIST_ENTRY *entry = remove_history (which);
 	      if (!entry)
-		fprintf (stderr, "No such entry %d\n", which);
+		fprintf (stderr, " entry %d\n", which);
 	      else
 		{
 		  free (entry->line);

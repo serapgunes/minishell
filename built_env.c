@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   built_env.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:10:19 by sakdil            #+#    #+#             */
-/*   Updated: 2025/05/18 21:18:19 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/06/26 16:56:29 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-extern char **environ;
+// extern char **environ;
 
 int control_env(int argc)
 {
@@ -29,12 +29,12 @@ int builtin_env(char **env)
     int i;
 
 	i = 0;
-    (void)env;
+    // (void)env;
 
-    while (environ[i])
+    while (env[i])
     {
-        if (ft_strchr(environ[i], '='))
-            printf("%s\n", environ[i]);
+        if (ft_strchr(env[i], '='))
+            printf("%s\n", env[i]);
         i++;
     }
     return (0);

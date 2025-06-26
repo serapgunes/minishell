@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/06/23 17:48:36 by segunes          ###   ########.fr       */
+/*   Updated: 2025/06/26 18:21:57 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,11 +64,11 @@ int	args_count(char **args)
 int	main(int argc, char **argv, char **env)
 {
 	char	*input;
+	int exit_status = 0;
 	//int		arg_count;
 	t_list *history;
 	t_token *tokens;
 	t_ast_tree *ast;
-	int exit_status = 0;
 	//int history_seen = 0;
 	
 	(void)argv;
@@ -98,7 +98,6 @@ int	main(int argc, char **argv, char **env)
 			free(input);
 			continue;
 		}
-
 		if (ft_parser(tokens)) // Syntax kontrolü başarısızsa
 		{
 			free(input);
@@ -112,8 +111,8 @@ int	main(int argc, char **argv, char **env)
 		}
 		//print_ast(ast, 0);// ast yazdırmak için
 		// print_tokens(tokens); type yazdırmak için
-		executor_structure(ast, env,0, &exit_status);
-		printf("minishell exit_status = %d\n", exit_status); 
+		executor_structure(ast, env, 0, &exit_status);
+		// printf("minishell exit_status = %d\n", exit_status); 
 		//arg_count = args_count(args);
 		// int builtin_result = builtin(arg_count, args, env, history);
 		// if (builtin_result == 0 || builtin_result == 1 || builtin_result == 2)
@@ -129,12 +128,12 @@ int	main(int argc, char **argv, char **env)
 		// 	//free_args
 		// 	continue;
 		// }
+		return(exit_status);
 		add_to_history(&history, input);
 		//execute_command(input);
 		free(input);
 	}
 	//free_history
-	return (0);
 }
 
 
