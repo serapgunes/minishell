@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/26 18:18:53 by segunes          ###   ########.fr       */
+/*   Updated: 2025/07/01 14:32:54 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,6 +36,14 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline,int *exit
 		{
 			if (in_pipeline && builtin(args_count(&node->args[0]), node->args, envp, NULL) == 0)
 				exit(0);
+			// if (in_pipeline)
+   			// {  		
+			// 	int b_status = builtin(args_count(&node->args[0]), node->args, envp, NULL);
+        	// 	if (b_status >= 0)
+			// 	{  // builtin çalıştıysa
+            // 		exit(b_status);
+			// 	}
+    		// }			
 			cmd = find_path(node->args[0]);
 			if(cmd != NULL)
 			{
@@ -95,9 +103,7 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline,int *exit
 			waitpid(pid1, &status, 0);
 			waitpid(pid2, &second_status, 0);
 			if (exit_status)
-			{
 				*exit_status = WEXITSTATUS(second_status);
-			}
 		}
 	}
 
