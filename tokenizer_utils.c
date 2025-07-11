@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 17:51:21 by segunes           #+#    #+#             */
-/*   Updated: 2025/06/26 16:09:57 by segunes          ###   ########.fr       */
+/*   Updated: 2025/07/11 11:01:47 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*ft_strjoin_free(char *res, char *val, int flag)
+char	*ft_charjoin_free(char *res, char *val, int flag)
 {
 	char	*tmp;
 
@@ -24,7 +24,7 @@ char	*ft_strjoin_free(char *res, char *val, int flag)
 	return (tmp);
 }
 
-char	*ft_strjoin_char(char *res, char c)
+char	*ft_charjoin(char *res, char c)
 {
 	char	*tmp;
 	int		len;
@@ -41,127 +41,6 @@ char	*ft_strjoin_char(char *res, char c)
 	tmp[len + 1] = '\0';
 	free(res);
 	return (tmp);
-}
-
-static char	*handle_var(char *str, int *i, char *res)
-{
-	char	*val;
-	char	*var;
-	int		j;
-
-	if (str[*i + 1] == '?')
-	{
-		val = ft_itoa(g_last_status);
-		if (!val)
-			return (NULL);
-		res = ft_strjoin_free(res, val, 3);
-		if (!res)
-			return (NULL);
-		*i += 2;
-	}
-	else
-	{
-		j = 1;
-		while (str[*i + j] && (ft_isalnum(str[*i + j]) || str[*i + j] == '_'))
-			j++;
-		var = ft_substr(str, *i + 1, j - 1);
-		if (!var)
-			return (NULL);
-		val = getenv(var);
-		if (!val)
-			val = ft_strdup("");
-		res = ft_strjoin_free(res, ft_strdup(val), 3);
-		if (!res)
-			return (NULL);
-		free(var);
-		*i += j;
-	}
-	return (res);
-}
-
-char	*expand_variable(char *str)
-{
-	char	*res;
-	int		i;
-
-	res = ft_strdup("");
-	if (!res)
-		return (NULL);
-	i = 0;
-	while (str[i])
-	{
-		if (str[i] == '$' && str[i + 1])
-		{
-			res = handle_var(str, &i, res);
-			if (!res)
-				return (NULL);
-		}
-		else
-		{
-			res = ft_strjoin_char(res, str[i++]);
-			if (!res)
-				return (NULL);
-		}
-	}
-	return (res);
-}
-
-t_token	*create_word_token(char *value)
-{
-	t_token	*new_token;
-
-	new_token = malloc(sizeof(t_token));
-	if (!new_token)
-		return (NULL);
-	new_token->type = WORD;
-	new_token->value = value;
-	new_token->next = NULL;
-	return (new_token);
-}
-
-t_token	*create_pipe_token(char *value)
-{
-	t_token	*new_token;
-
-	new_token = malloc(sizeof(t_token));
-	if (!new_token)
-		return (NULL);
-	new_token->type = PIPE;
-	new_token->value = value;
-	new_token->next = NULL;
-	return (new_token);
-}
-
-t_token	*create_redir_token(char *value)
-{
-	t_token	*new_token;
-
-	new_token = malloc(sizeof(t_token));
-	if (!new_token)
-		return (NULL);
-	if (value[0] == '<')
-		new_token->type = REDIR_IN;
-	else
-		new_token->type = REDIR_OUT;
-	new_token->value = value;
-	new_token->next = NULL;
-	return (new_token);
-}
-
-t_token	*create_token(char *value)
-{
-	t_token	*new_token;
-
-	new_token = malloc(sizeof(t_token));
-	if (!new_token)
-		return (NULL);
-	if (ft_strncmp(value, "<<", 2) == 0)
-		new_token->type = HEREDOC;
-	else
-		new_token->type = APPEND;
-	new_token->value = value;
-	new_token->next = NULL;
-	return (new_token);
 }
 
 void	free_tokens(t_token *head)

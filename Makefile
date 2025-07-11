@@ -11,11 +11,15 @@ SRCS			=	built_cd.c			\
 					history.c 			\
 					main.c				\
 					path_find.c 		\
-					quote_control.c		\
 					tokenizer.c 		\
+					tokenizer2.c		\
+					tokenizer3.c		\
 					tokenizer_utils.c   \
+					tokenizer_utils2.c	\
+					tokenizer_utils3.c	\
 					parser.c    		\
 					executor.c 			\
+
 
 OBJS			=	$(SRCS:.c=.o)
 RM				=	rm -f
