@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/12 01:12:43 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/07/12 23:04:37 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <stdlib.h>
+#include <fcntl.h>
 #include "libft/libft.h"
 
 extern int	g_last_status;
@@ -45,12 +46,18 @@ typedef enum e_node_type
 	NODE_REDIR
 }t_node_type;
 
+typedef struct s_redir
+{
+	int type;              // REDIR_IN, etc.
+	char *target;          // e.g. "input.txt"
+	struct s_redir *next;
+} t_redir;
+
 typedef struct s_ast_tree
 {
     t_node_type type;
     char **args;
-    char *redir_target;
-    int redir_type;
+    t_redir *redir_list;
     struct s_ast_tree *left;//her nodun içinde alt nodelar var bu alt nodelar aynı yapıya yani structa eşit olduğu için böyle
     struct s_ast_tree *right;
     
@@ -111,6 +118,7 @@ char *find_path(char *command);
 const char *pathname(char *command);
 //////////////////////////////////////
 
+int	args_count(char **args);
 char	*ft_charjoin_free(char *res, char *val, int flag);
 char	*ft_charjoin(char *res, char c);
 void	free_tokens(t_token *head); //şu anki mainde yok

@@ -4,6 +4,8 @@ SRCS			=	built_cd.c			\
 					built_env.c			\
 					built_exit.c 		\
 					built_export.c		\
+					built_export2.c		\
+					built_export3.c		\
 					built_pwd.c 		\
 					built_unset.c		\
 					builtin.c 			\
