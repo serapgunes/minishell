@@ -21,6 +21,7 @@ SRCS			=	built_cd.c			\
 					tokenizer_utils3.c	\
 					parser.c    		\
 					executor.c 			\
+					signal.c			\
 
 
 OBJS			=	$(SRCS:.c=.o)

@@ -6,54 +6,54 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/01 14:25:43 by segunes          ###   ########.fr       */
+/*   Updated: 2025/07/28 15:51:09 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	g_last_status = 0;
+int g_last_status = 0;
 
 void execute_command(char *input)
 {
-    pid_t pid;
-    char **args;
-    const char *path;
+	pid_t pid;
+	char **args;
+	const char *path;
 
-    args = ft_split(input, ' ');
-    if (!args || !args[0])
-    {
-        //free_args(args);
-        return;
-    }
-    path = pathname(args[0]);
-    if (!path)
-    {
-        printf("%s: command not found\n", args[0]);
-       // free_args(args);
-        return;
-    }
-    pid = fork();
-    if (pid < 0)
-    {
-        perror("fork hatasi");
-        //free_args(args);
-        return;
-    }
-    else if (pid == 0)
-    {
-        execve(path, args, NULL);
-        perror("execve hatasi");
-        exit(1);
-    }
-    else
-        wait(NULL);
-    //free_args(args);
+	args = ft_split(input, ' ');
+	if (!args || !args[0])
+	{
+		// free_args(args);
+		return;
+	}
+	path = pathname(args[0]);
+	if (!path)
+	{
+		printf("%s: command not found\n", args[0]);
+		// free_args(args);
+		return;
+	}
+	pid = fork();
+	if (pid < 0)
+	{
+		perror("fork hatasi");
+		// free_args(args);
+		return;
+	}
+	else if (pid == 0)
+	{
+		execve(path, args, NULL);
+		perror("execve hatasi");
+		exit(1);
+	}
+	else
+		wait(NULL);
+	// free_args(args);
 }
 
-int	args_count(char **args)
+int args_count(char **args)
 {
-	int	i;
+	int i;
 
 	i = 0;
 	while (args[i])
@@ -61,19 +61,21 @@ int	args_count(char **args)
 	return (i);
 }
 
-int	main(int argc, char **argv, char **env)
+int main(int argc, char **argv, char **env)
 {
-	char	*input;
+	char *input;
 	int exit_status = 0;
-	//int		arg_count;
+	// int		arg_count;
 	t_list *history;
 	t_token *tokens;
 	t_ast_tree *ast;
-	//int history_seen = 0;
-	
+	// int history_seen = 0;
+
 	(void)argv;
 	(void)argc;
 	history = NULL;
+
+	signal(SIGINT, signal_catch);
 	while (1)
 	{
 		input = readline("minishell$ ");
@@ -109,11 +111,11 @@ int	main(int argc, char **argv, char **env)
 			free(input);
 			continue;
 		}
-		//print_ast(ast, 0);// ast yazdırmak için
-		// print_tokens(tokens); type yazdırmak için
+		// print_ast(ast, 0);// ast yazdırmak için
+		//  print_tokens(tokens); type yazdırmak için
 		executor_structure(ast, env, 0, &exit_status);
-		// printf("minishell exit_status = %d\n", exit_status); 
-		//arg_count = args_count(args);
+		// printf("minishell exit_status = %d\n", exit_status);
+		// arg_count = args_count(args);
 		// int builtin_result = builtin(arg_count, args, env, history);
 		// if (builtin_result == 0 || builtin_result == 1 || builtin_result == 2)
 		// {
@@ -128,14 +130,14 @@ int	main(int argc, char **argv, char **env)
 		// 	//free_args
 		// 	continue;
 		// }
-		return(exit_status);
+		// return (exit_status);
 		add_to_history(&history, input);
-		//execute_command(input);
+		// execute_command(input);
 		free(input);
 	}
-	//free_history
+	return (exit_status);
+	// free_history
 }
-
 
 // int	main(void)
 // {

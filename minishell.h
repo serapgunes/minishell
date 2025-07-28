@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/12 23:04:37 by segunes          ###   ########.fr       */
+/*   Updated: 2025/07/28 15:46:16 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,6 +22,7 @@
 #include <stdlib.h>
 #include <fcntl.h>
 #include "libft/libft.h"
+#include <signal.h>
 
 extern int	g_last_status;
 
@@ -117,6 +118,11 @@ void free_string_array(char **array);
 char *find_path(char *command);
 const char *pathname(char *command);
 //////////////////////////////////////
+
+//signal/////////////////////////
+void signal_catch(int signum);
+/////////////////////////////////
+
 
 int	args_count(char **args);
 char	*ft_charjoin_free(char *res, char *val, int flag);
