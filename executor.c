@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/07/15 14:35:56 by segunes          ###   ########.fr       */
+/*   Updated: 2025/07/29 18:56:11 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,10 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exi
 	if (node->type == NODE_COMMAND)
 	{
 		if (!in_pipeline && builtin(args_count(&node->args[0]), node->args, envp, NULL) == 0)
+		{
+			*exit_status = 0;
 			return;
+		}
 		pid = fork();
 		if (pid < 0) // ram sistem kaynağı yetmezse hata döner
 		{
@@ -63,6 +66,8 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exi
 			t_redir *redir = node->redir_list;
 			int fd;
 
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
 			while (redir)
 			{
 				if (redir->type == REDIR_IN)
@@ -159,8 +164,23 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exi
 		else if (pid > 0) // parent process pid aslında çocuk sürecin PIDsi onu beklemek için
 		{
 			waitpid(pid, &status, 0);
-			if (exit_status)
+			signal(SIGINT, signal_catch);
+
+			if (WIFSIGNALED(status))
+			{
+				int sig = WTERMSIG(status);
+				if (sig == SIGINT)
+					*exit_status = 130;
+				else if (sig == SIGQUIT)
+				{
+					write(2, "Quit: 3\n", 8);
+					*exit_status = 131;
+				}
+			}
+			else
+			{
 				*exit_status = WEXITSTATUS(status);
+			}
 		}
 	}
 	else if (node->type == NODE_PIPE)
@@ -174,6 +194,8 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exi
 		pid1 = fork(); // her fork yeni bir çocuk oluşturuyor mesela ls | wc -l ilk çocuk ls ikincisi wc -l
 		if (pid1 == 0)
 		{
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
 			dup2(pipefd[1], STDOUT_FILENO); // file descriptor kopyalayan sistem çağrısı
 			// dup2 pipefd nin içeriğini tam olarak stdouta yönlendirir daha sonra pipefd deki stdouta kopyalanır
 			close(pipefd[0]);
@@ -186,6 +208,8 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exi
 		pid2 = fork();
 		if (pid2 == 0)
 		{
+			signal(SIGINT, SIG_DFL);
+			signal(SIGQUIT, SIG_DFL);
 			dup2(pipefd[0], STDIN_FILENO);
 			close(pipefd[1]);
 			close(pipefd[0]);
@@ -196,10 +220,38 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exi
 		{
 			close(pipefd[0]);
 			close(pipefd[1]);
+			signal(SIGINT, SIG_IGN);
 			waitpid(pid1, &status, 0);
 			waitpid(pid2, &second_status, 0);
-			if (exit_status)
+			signal(SIGINT, signal_catch);
+			// if (exit_status)
+			// 	*exit_status = WEXITSTATUS(second_status);
+			if (WIFSIGNALED(second_status))
+			{
+				int sig = WTERMSIG(second_status);
+				if (sig == SIGINT)
+					*exit_status = 130;
+				else if (sig == SIGQUIT)
+				{
+					write(2, "Quit: 3\n", 8);
+					*exit_status = 131;
+				}
+			}
+			else if (WIFSIGNALED(status))
+			{
+				int sig = WTERMSIG(status);
+				if (sig == SIGINT)
+					*exit_status = 130;
+				else if (sig == SIGQUIT)
+				{
+					write(2, "Quit: 3\n", 8);
+					*exit_status = 131;
+				}
+			}
+			else
+			{
 				*exit_status = WEXITSTATUS(second_status);
+			}
 		}
 	}
 

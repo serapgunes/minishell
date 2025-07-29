@@ -6,50 +6,13 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/28 15:51:09 by segunes          ###   ########.fr       */
+/*   Updated: 2025/07/29 19:00:38 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
 int g_last_status = 0;
-
-void execute_command(char *input)
-{
-	pid_t pid;
-	char **args;
-	const char *path;
-
-	args = ft_split(input, ' ');
-	if (!args || !args[0])
-	{
-		// free_args(args);
-		return;
-	}
-	path = pathname(args[0]);
-	if (!path)
-	{
-		printf("%s: command not found\n", args[0]);
-		// free_args(args);
-		return;
-	}
-	pid = fork();
-	if (pid < 0)
-	{
-		perror("fork hatasi");
-		// free_args(args);
-		return;
-	}
-	else if (pid == 0)
-	{
-		execve(path, args, NULL);
-		perror("execve hatasi");
-		exit(1);
-	}
-	else
-		wait(NULL);
-	// free_args(args);
-}
 
 int args_count(char **args)
 {
@@ -79,6 +42,11 @@ int main(int argc, char **argv, char **env)
 	while (1)
 	{
 		input = readline("minishell$ ");
+		if (check_sigint_flag())
+		{
+			exit_status = 130;
+			continue;
+		}
 		if (!input)
 			break;
 		if (is_only_spaces(input))
@@ -115,46 +83,26 @@ int main(int argc, char **argv, char **env)
 		//  print_tokens(tokens); type yazdırmak için
 		executor_structure(ast, env, 0, &exit_status);
 		// printf("minishell exit_status = %d\n", exit_status);
-		// arg_count = args_count(args);
-		// int builtin_result = builtin(arg_count, args, env, history);
-		// if (builtin_result == 0 || builtin_result == 1 || builtin_result == 2)
-		// {
-		// 	if (ft_strcmp(args[0], "history") != 0)
-		// 	{
-		// 		if (history_seen == 1)
-		// 			add_to_history(&history, input);
-		// 		history_seen = 1;
-		// 	}
-		// 	else
-		// 		add_to_history(&history, input);
-		// 	//free_args
-		// 	continue;
-		// }
-		// return (exit_status);
+		//  arg_count = args_count(args);
+		//  int builtin_result = builtin(arg_count, args, env, history);
+		//  if (builtin_result == 0 || builtin_result == 1 || builtin_result == 2)
+		//  {
+		//  	if (ft_strcmp(args[0], "history") != 0)
+		//  	{
+		//  		if (history_seen == 1)
+		//  			add_to_history(&history, input);
+		//  		history_seen = 1;
+		//  	}
+		//  	else
+		//  		add_to_history(&history, input);
+		//  	//free_args
+		//  	continue;
+		//  }
+		//  return (exit_status);
 		add_to_history(&history, input);
 		// execute_command(input);
 		free(input);
 	}
 	return (exit_status);
-	// free_history
+	//  free_history
 }
-
-// int	main(void)
-// {
-// 	char	*line;
-// 	t_token *tokens;
-
-// 	while (1)
-// 	{
-// 		line = readline("minishell$ ");
-// 		if (!line)
-// 			break;
-// 		if (*line)
-// 			add_history(line);
-// 		tokens = tokenize_input(line);
-// 		print_tokens(tokens);
-// 		free_tokens(tokens);
-// 		free(line);
-// 	}
-// 	return (0);
-// }
