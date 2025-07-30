@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/29 19:00:38 by segunes          ###   ########.fr       */
+/*   Updated: 2025/07/30 15:28:52 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,22 +83,22 @@ int main(int argc, char **argv, char **env)
 		//  print_tokens(tokens); type yazdırmak için
 		executor_structure(ast, env, 0, &exit_status);
 		// printf("minishell exit_status = %d\n", exit_status);
-		//  arg_count = args_count(args);
-		//  int builtin_result = builtin(arg_count, args, env, history);
-		//  if (builtin_result == 0 || builtin_result == 1 || builtin_result == 2)
-		//  {
-		//  	if (ft_strcmp(args[0], "history") != 0)
-		//  	{
-		//  		if (history_seen == 1)
-		//  			add_to_history(&history, input);
-		//  		history_seen = 1;
-		//  	}
-		//  	else
-		//  		add_to_history(&history, input);
-		//  	//free_args
-		//  	continue;
-		//  }
-		//  return (exit_status);
+		//   arg_count = args_count(args);
+		//   int builtin_result = builtin(arg_count, args, env, history);
+		//   if (builtin_result == 0 || builtin_result == 1 || builtin_result == 2)
+		//   {
+		//   	if (ft_strcmp(args[0], "history") != 0)
+		//   	{
+		//   		if (history_seen == 1)
+		//   			add_to_history(&history, input);
+		//   		history_seen = 1;
+		//   	}
+		//   	else
+		//   		add_to_history(&history, input);
+		//   	//free_args
+		//   	continue;
+		//   }
+		//   return (exit_status);
 		add_to_history(&history, input);
 		// execute_command(input);
 		free(input);

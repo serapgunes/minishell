@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/29 16:58:52 by segunes          ###   ########.fr       */
+/*   Updated: 2025/07/30 17:12:28 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -139,5 +139,7 @@ char *collect_argument(char *input, int *i);
 void add_token_to_list(t_token **head, t_token *new);
 int handle_redir_operator(char *s, t_token **head);
 int handle_redir_file(char *s, int *i, t_token **head);
+
+char *normalize_filename(char *str);
 
 #endif

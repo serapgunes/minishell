@@ -6,15 +6,15 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 12:31:48 by segunes           #+#    #+#             */
-/*   Updated: 2025/07/13 01:01:46 by segunes          ###   ########.fr       */
+/*   Updated: 2025/07/30 16:43:14 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*strip_quotes(char *str)
+char *strip_quotes(char *str)
 {
-	size_t	len;
+	size_t len;
 
 	if (!str)
 		return (NULL);
@@ -83,12 +83,21 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 
 			new_redir->type = current->type;
 			current = current->next;
-			if (current && current->value)
-				//new_redir->target = ft_strdup(current->value);
-				new_redir->target = strip_quotes(current->value);
+			// if (current && current->value)
+			// 	//new_redir->target = ft_strdup(current->value);
+			// 	new_redir->target = strip_quotes(current->value);
 
+			// else
+			// 	new_redir->target = NULL;
+			if (current && current->value)
+			{
+				char *filename = strip_quotes(current->value);
+				filename = normalize_filename(filename);
+				new_redir->target = filename;
+			}
 			else
 				new_redir->target = NULL;
+
 			new_redir->next = NULL;
 
 			// Listeye ekle (redir_list'e)
