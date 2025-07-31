@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/07/31 17:48:18 by segunes          ###   ########.fr       */
+/*   Updated: 2025/07/31 18:00:02 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -220,9 +220,13 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exi
 		if (WIFSIGNALED(second_status))
 		{
 			int sig = WTERMSIG(second_status);
-			*exit_status = (sig == SIGINT) ? 130 : (sig == SIGQUIT ? 131 : 1);
+			if (sig == SIGINT)
+				*exit_status = 130;
 			if (sig == SIGQUIT)
+			{
 				write(2, "Quit: 3\n", 8);
+				*exit_status = 131;
+			}
 		}
 		else
 			*exit_status = WEXITSTATUS(second_status);
