@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/30 15:28:52 by segunes          ###   ########.fr       */
+/*   Updated: 2025/07/31 17:11:01 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,11 +98,11 @@ int main(int argc, char **argv, char **env)
 		//   	//free_args
 		//   	continue;
 		//   }
-		//   return (exit_status);
+		return (exit_status);
 		add_to_history(&history, input);
 		// execute_command(input);
 		free(input);
 	}
-	return (exit_status);
-	//  free_history
+	// return (exit_status);
+	//   free_history
 }
