@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 12:31:48 by segunes           #+#    #+#             */
-/*   Updated: 2025/07/30 16:43:14 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/01 16:32:20 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,136 @@ char *strip_quotes(char *str)
 	return (ft_strdup(str));
 }
 
+t_ast_tree *ft_build_ast(t_token *tokens)
+{
+	t_token *prev = NULL;
+	t_token *right_token;
+	t_token *left_token;
+	t_token *current;
+
+	current = tokens;
+	left_token = tokens;
+	if (!tokens)
+		return NULL;
+	while (tokens)
+	{
+		if (tokens->type == PIPE)
+		{
+			if (!tokens->next) // Pipe'tan sonra hiçbir şey yoksa
+			{
+				printf("syntax error near unexpected token\n");
+				return NULL;
+			}
+			right_token = tokens->next;
+			if (prev)
+				prev->next = NULL;
+			t_ast_tree *node = malloc(sizeof(t_ast_tree));
+			if (!node)
+				return NULL;
+			node->type = NODE_PIPE;
+			node->redir_list = NULL;
+			node->args = NULL;
+			node->left = ft_build_ast(left_token);
+			node->right = ft_build_ast(right_token);
+			if (!node->left || !node->right)
+			{
+				printf("syntax error near unexpected token\n");
+				// free(node);
+				return NULL;
+			}
+			return node;
+		}
+		// else
+		// 	tokens = tokens->next;
+		prev = tokens;
+		tokens = tokens->next;
+	}
+	// t_ast_tree *node = malloc(sizeof(t_ast_tree));
+	// char **args = malloc(sizeof(char *));
+	// if (!node)
+	// 	return NULL;
+	t_ast_tree *node = malloc(sizeof(t_ast_tree));
+	if (!node)
+		return NULL;
+
+	// Node'u initialize et
+	node->type = NODE_COMMAND;
+	node->redir_list = NULL;
+	node->left = NULL;
+	node->right = NULL;
+
+	// Args için bellek ayır
+	char **args = malloc(sizeof(char *) * 2); // En az 2 slot
+	if (!args)
+	{
+		free(node);
+		return NULL;
+	}
+	int i;
+
+	i = 0;
+	while (current)
+	{
+		if (current->type == WORD)
+		{
+			node->type = NODE_COMMAND;
+			args[i++] = ft_strdup(current->value);
+		}
+		else if (current->type == APPEND || current->type == HEREDOC ||
+				 current->type == REDIR_IN || current->type == REDIR_OUT)
+		{
+			t_redir *new_redir = malloc(sizeof(t_redir));
+			if (!new_redir)
+				return NULL; // veya exit(1)
+
+			new_redir->type = current->type;
+			current = current->next;
+			// if (current && current->value)
+			// 	//new_redir->target = ft_strdup(current->value);
+			// 	new_redir->target = strip_quotes(current->value);
+
+			// else
+			// 	new_redir->target = NULL;
+			if (current && current->value)
+			{
+				char *filename = strip_quotes(current->value);
+				filename = normalize_filename(filename);
+				new_redir->target = filename;
+			}
+			else
+				new_redir->target = NULL;
+
+			new_redir->next = NULL;
+
+			// Listeye ekle (redir_list'e)
+			if (!node->redir_list)
+				node->redir_list = new_redir;
+			else
+			{
+				t_redir *tmp = node->redir_list;
+				while (tmp && tmp->next)
+					tmp = tmp->next;
+				if (tmp)
+					tmp->next = new_redir;
+			}
+		}
+
+		else
+		{
+			prev = tokens;
+			tokens = tokens->next;
+		}
+
+		current = current->next;
+	}
+	args[i] = NULL;
+	node->args = args;
+	node->left = NULL;
+	node->right = NULL;
+	return node;
+}
+
+/*önceki kod
 t_ast_tree *ft_build_ast(t_token *tokens)
 {
 	t_token *prev = NULL;
@@ -125,7 +255,7 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 	node->left = NULL;
 	node->right = NULL;
 	return node;
-}
+}*/
 
 int ft_last(t_token *input)
 {

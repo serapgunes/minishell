@@ -26,7 +26,7 @@ SRCS			=	built_cd.c			\
 
 OBJS			=	$(SRCS:.c=.o)
 RM				=	rm -f
-CFLAGS			=	-Wall -Wextra -Werror
+CFLAGS			=	-Wall -Wextra -Werror -g 
 CC 				= 	cc
 LIBFT_DIR		= 	./libft
 LIBFT 			= 	$(LIBFT_DIR)/libft.a

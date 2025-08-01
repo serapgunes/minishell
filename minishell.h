@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/30 17:12:28 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/01 13:43:58 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,7 +98,7 @@ int builtin_pwd(void);
 int builtin_unset(int argc, char **argv, char ***env);
 int builtin(int argc, char **argv, char **env, t_list *history);
 int is_only_spaces(char *str);
-void executor_structure(t_ast_tree *node, char **envp, int in_pipeline, int *exit_status);
+void executor_structure(t_ast_tree *node, char **envp, int in_pipeline);
 
 // history//////////////////
 void add_to_history(t_list **history, char *input);
@@ -141,5 +141,8 @@ int handle_redir_operator(char *s, t_token **head);
 int handle_redir_file(char *s, int *i, t_token **head);
 
 char *normalize_filename(char *str);
+
+// exit code
+int ft_exit_code(int temp);
 
 #endif

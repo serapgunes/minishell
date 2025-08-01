@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   built_cd.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:09:08 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/11 10:28:51 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/01 14:29:14 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	builtin_cd_home(void)
+static int builtin_cd_home(void)
 {
-	char	*home;
+	char *home;
 
 	home = getenv("HOME");
 	if (!home)
@@ -30,7 +30,7 @@ static int	builtin_cd_home(void)
 	return (0);
 }
 
-static int	builtin_cd_path(char *path)
+static int builtin_cd_path(char *path)
 {
 	if (chdir(path) != 0)
 	{
@@ -42,7 +42,7 @@ static int	builtin_cd_path(char *path)
 	return (0);
 }
 
-int	builtin_cd(int argc, char **argv)
+int builtin_cd(int argc, char **argv)
 {
 	if (argc > 2)
 	{

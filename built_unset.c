@@ -3,22 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   built_unset.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 18:03:45 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/11 10:08:52 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/01 18:05:15 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static	int remove_from_environ(int idx, char ***env)
+static int remove_from_environ(int idx, char ***env)
 {
-	char	**e;
-	int		i;
+	char **e;
+	int i;
 
 	i = idx;
 	e = *env;
+	free(e[i]);
 	while (e[i + 1] != NULL)
 	{
 		e[i] = e[i + 1];
@@ -28,10 +29,9 @@ static	int remove_from_environ(int idx, char ***env)
 	return (0);
 }
 
-
-static	int unset_one_var(char *var, int *status, char ***env)
+static int unset_one_var(char *var, int *status, char ***env)
 {
-	int	idx;
+	int idx;
 
 	if (!is_valid_identifier(var))
 	{
@@ -48,10 +48,10 @@ static	int unset_one_var(char *var, int *status, char ***env)
 	return (0);
 }
 
-int	builtin_unset(int argc, char **argv, char ***env)
+int builtin_unset(int argc, char **argv, char ***env)
 {
-	int	i;
-	int	status;
+	int i;
+	int status;
 
 	status = 0;
 	i = 1;
@@ -59,7 +59,8 @@ int	builtin_unset(int argc, char **argv, char ***env)
 		return (0);
 	while (i < argc)
 	{
-		unset_one_var(argv[i], &status, env);
+		if (argv[i])
+			unset_one_var(argv[i], &status, env);
 		i++;
 	}
 	return (status);

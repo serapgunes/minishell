@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:58:23 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/11 10:59:18 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/01 13:53:45 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char	*handle_var_utils(char *res, char *str, int *i, int j)
+static char *handle_var_utils(char *res, char *str, int *i, int j)
 {
-	char	*var;
-	char	*val;
-	char	*fallback;
+	char *var;
+	char *val;
+	char *fallback;
 
 	var = ft_substr(str, *i + 1, j - 1);
 	if (!var)
@@ -36,15 +36,16 @@ static char	*handle_var_utils(char *res, char *str, int *i, int j)
 	return (res);
 }
 
-static char	*handle_var(char *str, int *i, char *res)
+static char *handle_var(char *str, int *i, char *res)
 {
-	char	*val;
-	int		j;
+	char *val;
+	int j;
 
 	j = 1;
 	if (str[*i + 1] == '?')
 	{
-		val = ft_itoa(g_last_status);
+		// val = ft_itoa(g_last_status);
+		val = ft_itoa(ft_exit_code(-1));
 		if (!val)
 			return (NULL);
 		res = ft_charjoin_free(res, val, 3);
@@ -62,10 +63,10 @@ static char	*handle_var(char *str, int *i, char *res)
 	return (handle_var_utils(res, str, i, j));
 }
 
-static char	*expand_variable_loop(char *str, char *res)
+static char *expand_variable_loop(char *str, char *res)
 {
-	int		i;
-	char	*tmp;
+	int i;
+	char *tmp;
 
 	i = 0;
 	while (str[i])
@@ -88,10 +89,10 @@ static char	*expand_variable_loop(char *str, char *res)
 	return (res);
 }
 
-char	*expand_variable(char *str)
+char *expand_variable(char *str)
 {
-	char	*res;
-	char	*tmp;
+	char *res;
+	char *tmp;
 
 	res = ft_strdup("");
 	if (!res)

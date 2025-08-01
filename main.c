@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/31 17:11:01 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/01 16:24:37 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,10 +24,21 @@ int args_count(char **args)
 	return (i);
 }
 
+int ft_exit_code(int temp)
+{
+	static int exit_code;
+
+	if (temp == -1)
+	{
+		return (exit_code);
+	}
+	exit_code = temp;
+	return (exit_code);
+}
+
 int main(int argc, char **argv, char **env)
 {
 	char *input;
-	int exit_status = 0;
 	// int		arg_count;
 	t_list *history;
 	t_token *tokens;
@@ -37,14 +48,14 @@ int main(int argc, char **argv, char **env)
 	(void)argv;
 	(void)argc;
 	history = NULL;
-
+	ft_exit_code(0);
 	signal(SIGINT, signal_catch);
 	while (1)
 	{
 		input = readline("minishell$ ");
 		if (check_sigint_flag())
 		{
-			exit_status = 130;
+			ft_exit_code(130);
 			continue;
 		}
 		if (!input)
@@ -73,6 +84,11 @@ int main(int argc, char **argv, char **env)
 			free(input);
 			continue;
 		}
+		if (!tokens) // Ekstra kontrol: yine NULL olabilir!
+		{
+			free(input);
+			continue;
+		}
 		ast = ft_build_ast(tokens);
 		if (!ast)
 		{
@@ -81,7 +97,7 @@ int main(int argc, char **argv, char **env)
 		}
 		// print_ast(ast, 0);// ast yazdırmak için
 		//  print_tokens(tokens); type yazdırmak için
-		executor_structure(ast, env, 0, &exit_status);
+		executor_structure(ast, env, 0);
 		// printf("minishell exit_status = %d\n", exit_status);
 		//   arg_count = args_count(args);
 		//   int builtin_result = builtin(arg_count, args, env, history);
@@ -98,11 +114,11 @@ int main(int argc, char **argv, char **env)
 		//   	//free_args
 		//   	continue;
 		//   }
-		return (exit_status);
 		add_to_history(&history, input);
 		// execute_command(input);
 		free(input);
 	}
+	return (ft_exit_code(-1));
 	// return (exit_status);
-	//   free_history
+	//    free_history
 }
