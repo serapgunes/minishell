@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:06:23 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/12 00:51:24 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/01 23:33:59 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,10 +14,11 @@
 
 static char	**copy_env(char **env)
 {
-	int		n = 0;
+	int		n;
 	int		i;
 	char	**copy;
 
+	n = 0;
 	while (env[n])
 		n++;
 	copy = malloc(sizeof(char *) * (n + 1));
