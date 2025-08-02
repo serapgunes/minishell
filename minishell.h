@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/02 06:44:05 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/02 12:57:04 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,8 +23,9 @@
 #include <fcntl.h>
 #include "libft/libft.h"
 #include <signal.h>
+#include <sys/stat.h>
 
-extern int g_last_status;
+extern int g_last_status; // yasakkk
 
 typedef struct s_list
 {

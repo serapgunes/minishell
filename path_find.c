@@ -3,14 +3,12 @@
 /*                                                        :::      ::::::::   */
 /*   path_find.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:25:32 by segunes           #+#    #+#             */
-/*   Updated: 2025/07/12 01:00:17 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/02 13:00:22 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
-
-
 
 #include "minishell.h"
 
@@ -21,13 +19,13 @@
 // 	const char *join;
 // 	const char *temp;
 // 	int i;
-	
+
 // 	i = 0;
 // 	path = getenv("PATH");//getenv ile ortam değişkenlerine erişiyoruz
 // 	if(!path)
 // 		return (NULL);//erişemezsek null döndürüyoruz
-// 	path_env = ft_split(path, ':');//bu değişkenlerde her konuma bakıyoruz 
-// 	//"/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" örneğin bu şekilde bir ortam değişkeni aldıysak 
+// 	path_env = ft_split(path, ':');//bu değişkenlerde her konuma bakıyoruz
+// 	//"/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" örneğin bu şekilde bir ortam değişkeni aldıysak
 // 	// /usr/local/sbin ilk başta buraya kadar ayırıyoruz
 // 	// /usr/local/bin
 // 	// /usr/bin
@@ -46,11 +44,11 @@
 // 		//sonra bu birleştirdiğimiz komutun erişilebilir olup olmadığını kontrol ediyoruz
 // 		//eğer erişilebilir ise return ediyoruz
 // 		//access İlk parametre: kontrol etmek istediğin dosya yolu
-// 		//		 İkinci parametre: hangi izinleri kontrol etmek istiyoruz 
+// 		//		 İkinci parametre: hangi izinleri kontrol etmek istiyoruz
 // 		// X_OK => dosyanın çalıştırılabilir olup olmadığını kontrol eder (executable ok demek açılımı çalıştırılabilir mi)
 // 		if (access(join, X_OK) == 0)
 // 			return (join);
-// 		else 
+// 		else
 // 		{
 // 			free((char *)join);
 // 			free((char *)temp);
@@ -67,7 +65,6 @@
 //         return NULL;
 //     return ft_strdup(temp); // Böylece belleği dışarıdan yönetebilirsin
 // }
-
 
 void free_string_array(char **array)
 {
@@ -119,10 +116,10 @@ char *find_path(char *command)
             i++;
             continue;
         }
-        
+
         join = ft_strjoin(temp, command);
         free(temp); // temp'i hemen serbest bırak
-        
+
         if (!join)
         {
             i++;
@@ -134,14 +131,14 @@ char *find_path(char *command)
         {
             result = ft_strdup(join); // Kopya oluştur
         }
-        
+
         free(join); // join'i her durumda serbest bırak
         i++;
     }
 
     // path_env dizisini tamamen temizle
     free_string_array(path_env);
-    
+
     return result;
 }
 
@@ -158,14 +155,17 @@ const char *pathname(char *command)
     if (command[0] == '/' || command[0] == '.')
     {
         if (access(command, X_OK) == 0)
+        {
+            printf("a");
             return ft_strdup(command);
+        }
         return NULL;
     }
 
     path = getenv("PATH");
     if (!path)
         return NULL;
-        
+
     path_env = ft_split(path, ':');
     if (!path_env)
         return NULL;
@@ -179,7 +179,7 @@ const char *pathname(char *command)
             i++;
             continue;
         }
-        
+
         join = ft_strjoin(temp, command);
         if (!join)
         {
@@ -202,7 +202,7 @@ const char *pathname(char *command)
         }
         i++;
     }
-    
+
     // Başarısız durumda: tüm belleği temizle
     free_string_array(path_env);
     return NULL;

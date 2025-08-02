@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 12:31:48 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/01 16:32:20 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/02 18:54:17 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -83,7 +83,8 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 	node->right = NULL;
 
 	// Args için bellek ayır
-	char **args = malloc(sizeof(char *) * 2); // En az 2 slot
+	char **args = malloc(sizeof(char *) * 4);
+	// value yi saydırıp ona göre yer aç
 	if (!args)
 	{
 		free(node);
@@ -97,6 +98,7 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 		if (current->type == WORD)
 		{
 			node->type = NODE_COMMAND;
+			printf("%s\n", current->value);
 			args[i++] = ft_strdup(current->value);
 		}
 		else if (current->type == APPEND || current->type == HEREDOC ||

@@ -3,14 +3,15 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/02 06:43:50 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/02 18:25:53 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
+
 // int handle_heredoc(const char *delimiter)
 // {
 // 	int pipefd[2];
@@ -446,31 +447,36 @@ static void execute_pipe(t_ast_tree *node, char **envp)
 	waitpid(pid1, &status1, 0);
 	waitpid(pid2, &status2, 0);
 	signal(SIGINT, signal_catch);
-
 	handle_pipe_status(status2);
 }
 
 void executor_structure(t_ast_tree *node, char **envp, int in_pipeline)
 {
 	// Temel kontroller
-	if (!node || !node->args || !node->args[0])
-		return;
+	int std_in;
+	int std_out;
+
+	std_in = dup(STDIN_FILENO);
+	std_out = dup(STDOUT_FILENO);
 
 	if (node->type == NODE_COMMAND)
 	{
 		// Pipe dışındaki builtin komutları direkt çalıştır
 		if (!in_pipeline)
 		{
+			if (handle_redirections(node) != 0)
+				exit(1);
 			int argc = args_count(node->args);
 			// Builtin komutları kontrol et
 			int status = builtin(argc, node->args, envp, NULL);
+			dup2(std_in, STDIN_FILENO);
+			dup2(std_out, STDOUT_FILENO);
 			if (status != -1) // Builtin komut çalıştıysa
 			{
 				ft_exit_code(status);
 				return;
 			}
 		}
-
 		// Harici komutlar için fork
 		pid_t pid = fork();
 		if (pid < 0)
@@ -515,17 +521,17 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline)
 	{
 		execute_pipe(node, envp);
 
-		// Pipe node'larını temizle
-		if (node->left)
-		{
-			// Sol tarafı temizle
-			executor_structure(node->left, envp, 1);
-		}
-		if (node->right)
-		{
-			// Sağ tarafı temizle
-			executor_structure(node->right, envp, 1);
-		}
+		// // Pipe node'larını temizle
+		// if (node->left)
+		// {
+		// 	// Sol tarafı temizle
+		// 	executor_structure(node->left, envp, 1);
+		// }
+		// if (node->right)
+		// {
+		// 	// Sağ tarafı temizle
+		// 	executor_structure(node->right, envp, 1);
+		// }
 	}
 }
 
