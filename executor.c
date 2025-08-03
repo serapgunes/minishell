@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/02 18:25:53 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/03 17:04:41 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -387,7 +387,6 @@ static void execute_command(t_ast_tree *node, char **envp, int in_pipeline)
 
 	if (handle_redirections(node) != 0)
 		exit(1);
-
 	if (in_pipeline && node->args[0] && builtin(args_count(node->args), node->args, envp, NULL) == 0)
 		exit(0);
 
@@ -465,13 +464,20 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline)
 		if (!in_pipeline)
 		{
 			if (handle_redirections(node) != 0)
-				exit(1);
+			{
+				ft_exit_code(1);
+				dup2(std_in, STDIN_FILENO);	  // input'u geri al
+				dup2(std_out, STDOUT_FILENO); // output'u geri al
+				return;
+			}
+
 			int argc = args_count(node->args);
-			// Builtin komutları kontrol et
 			int status = builtin(argc, node->args, envp, NULL);
+
 			dup2(std_in, STDIN_FILENO);
 			dup2(std_out, STDOUT_FILENO);
-			if (status != -1) // Builtin komut çalıştıysa
+
+			if (status != -1)
 			{
 				ft_exit_code(status);
 				return;

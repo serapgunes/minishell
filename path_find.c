@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:25:32 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/02 13:00:22 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/03 14:43:33 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -156,7 +156,6 @@ const char *pathname(char *command)
     {
         if (access(command, X_OK) == 0)
         {
-            printf("a");
             return ft_strdup(command);
         }
         return NULL;
