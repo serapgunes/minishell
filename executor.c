@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/03 17:04:41 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/04 00:04:35 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -250,17 +250,24 @@ static void handle_command_status(int status)
 		ft_exit_code(WEXITSTATUS(status));
 }
 
-static void handle_pipe_status(int status)
+static void	handle_pipe_status(int status)
 {
+	int	sig;
+
 	if (WIFSIGNALED(status))
 	{
-		int sig = WTERMSIG(status);
+		sig = WTERMSIG(status);
 		if (sig == SIGINT)
 			ft_exit_code(130);
 		else if (sig == SIGQUIT)
 		{
 			write(2, "Quit: 3\n", 8);
 			ft_exit_code(131);
+		}
+		else if (sig == SIGPIPE)
+		{
+			write(2, "Broken pipe\n", 12);
+			ft_exit_code(141);
 		}
 	}
 	else
@@ -269,8 +276,8 @@ static void handle_pipe_status(int status)
 
 int handle_heredoc(const char *delimiter)
 {
-	int pipefd[2];
-	char *line;
+	int		pipefd[2];
+	char	*line;
 
 	if (pipe(pipefd) == -1)
 	{
@@ -294,18 +301,21 @@ int handle_heredoc(const char *delimiter)
 	close(pipefd[1]);
 	return pipefd[0];
 }
-static int handle_redirections(t_ast_tree *node)
+static int	handle_redirections(t_ast_tree *node)
 {
-	t_redir *redir = node->redir_list;
-	int fd_in = -1;
-	int fd_out = -1;
+	t_redir *redir;
+	int fd_in;
+	int fd_out;
 
+	redir = node->redir_list;
+	fd_in = -1;
+	fd_out = -1;
 	while (redir)
 	{
 		if (!redir->target || redir->target[0] == '\0')
 		{
-			fprintf(stderr, "minishell: ambiguous redirect\n");
-			return 1;
+			fprintf(stderr, "ambiguous redirect\n");
+			return (1);
 		}
 
 		if (redir->type == REDIR_IN)
@@ -316,7 +326,7 @@ static int handle_redirections(t_ast_tree *node)
 			if (fd_in < 0)
 			{
 				perror(redir->target);
-				return 1;
+				return (1);
 			}
 		}
 		else if (redir->type == REDIR_OUT)
@@ -327,7 +337,7 @@ static int handle_redirections(t_ast_tree *node)
 			if (fd_out < 0)
 			{
 				perror(redir->target);
-				return 1;
+				return (1);
 			}
 		}
 		else if (redir->type == APPEND)
@@ -338,7 +348,7 @@ static int handle_redirections(t_ast_tree *node)
 			if (fd_out < 0)
 			{
 				perror(redir->target);
-				return 1;
+				return (1);
 			}
 		}
 		else if (redir->type == HEREDOC)
@@ -347,65 +357,108 @@ static int handle_redirections(t_ast_tree *node)
 				close(fd_in);
 			fd_in = handle_heredoc(redir->target);
 			if (fd_in < 0)
-				return 1;
+				return (1);
 		}
 		redir = redir->next;
 	}
-
 	if (fd_in != -1)
 	{
 		if (dup2(fd_in, STDIN_FILENO) == -1)
 		{
 			perror("dup2");
 			close(fd_in);
-			return 1;
+			return (1);
 		}
 		close(fd_in);
 	}
-
 	if (fd_out != -1)
 	{
 		if (dup2(fd_out, STDOUT_FILENO) == -1)
 		{
 			perror("dup2");
 			close(fd_out);
-			return 1;
+			return (1);
 		}
 		close(fd_out);
 	}
-	return 0;
+	return (0);
 }
 
 static void execute_command(t_ast_tree *node, char **envp, int in_pipeline)
 {
-	if (!node || !node->args)
-	{
-		exit(1);
-	}
-	signal(SIGINT, SIG_DFL);
-	signal(SIGQUIT, SIG_DFL);
+	int cmd_idx;
+	char *cmd;
+	char *path;
 
-	if (handle_redirections(node) != 0)
-		exit(1);
-	if (in_pipeline && node->args[0] && builtin(args_count(node->args), node->args, envp, NULL) == 0)
-		exit(0);
-
-	char *cmd = find_path(node->args[0]);
-	if (cmd)
-	{
-		execve(cmd, node->args, envp);
-		free(cmd);
-		perror("execve");
-		exit(1);
-	}
-	fprintf(stderr, "%s: command not found\n", node->args[0]);
-	exit(127);
+	cmd_idx = 0;
+    if (!node || !node->args)
+        exit(1);
+    signal(SIGINT, SIG_DFL);
+    signal(SIGQUIT, SIG_DFL);
+    while (node->args[cmd_idx] && node->args[cmd_idx][0] == '\0')
+        cmd_idx++;
+    if (!node->args[cmd_idx])
+    {
+        if (cmd_idx == 0)
+            exit(1);
+        exit(0);
+    }
+    cmd = node->args[cmd_idx];
+    if (handle_redirections(node) != 0)
+        exit(1);
+    if (!in_pipeline && builtin(args_count(node->args + cmd_idx), node->args + cmd_idx, envp, NULL) == 0)
+    {
+        signal(SIGPIPE, SIG_IGN);
+        exit(0);
+    }
+    signal(SIGPIPE, SIG_DFL);
+    if (cmd[0] == '/' || cmd[0] == '.')
+    {
+        struct stat sb;
+        if (stat(cmd, &sb) == -1)
+        {
+            if (errno == ENOENT)
+                fprintf(stderr, "%s: No such file or directory\n", cmd);
+            else
+                perror(cmd);
+            exit(127);
+        }
+        if (S_ISDIR(sb.st_mode))
+        {
+            fprintf(stderr, "%s: Is a directory\n", cmd);
+            exit(126);
+        }
+        if (access(cmd, X_OK) != 0)
+        {
+            fprintf(stderr, "%s: Permission denied\n", cmd);
+            exit(126);
+        }
+        execve(cmd, node->args + cmd_idx, envp);
+        perror("execve");
+        exit(1);
+    }
+    else
+    {
+        path = find_path(cmd);
+        if (path)
+        {
+            execve(path, node->args + cmd_idx, envp);
+            free(path);
+            perror("execve");
+            exit(1);
+        }
+        fprintf(stderr, "%s: command not found\n", cmd);
+        exit(127);
+    }
 }
 
-static void execute_pipe(t_ast_tree *node, char **envp)
+static void	execute_pipe(t_ast_tree *node, char **envp)
 {
-	int pipefd[2];
-	pid_t pid1, pid2;
+	int		pipefd[2];
+	pid_t	pid1;
+	pid_t	pid2;
+	int		status1;
+	int		status2;
 
 	if (pipe(pipefd) == -1)
 	{
@@ -413,7 +466,6 @@ static void execute_pipe(t_ast_tree *node, char **envp)
 		ft_exit_code(1);
 		return;
 	}
-
 	pid1 = fork();
 	if (pid1 == 0)
 	{
@@ -425,7 +477,6 @@ static void execute_pipe(t_ast_tree *node, char **envp)
 		executor_structure(node->left, envp, 1);
 		exit(ft_exit_code(-1));
 	}
-
 	pid2 = fork();
 	if (pid2 == 0)
 	{
@@ -437,12 +488,9 @@ static void execute_pipe(t_ast_tree *node, char **envp)
 		executor_structure(node->right, envp, 1);
 		exit(ft_exit_code(-1));
 	}
-
 	close(pipefd[0]);
 	close(pipefd[1]);
 	signal(SIGINT, SIG_IGN);
-
-	int status1, status2;
 	waitpid(pid1, &status1, 0);
 	waitpid(pid2, &status2, 0);
 	signal(SIGINT, signal_catch);

@@ -6,37 +6,29 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:58:23 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/02 06:43:57 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/03 23:50:45 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char *handle_var_utils(char *res, char *str, int *i, int j)
+static char	*handle_var_utils(char *res, char *str, int *i, int j)
 {
-	char *var;
-	char *val;
-	char *fallback;
+	char	*var;
+	char	*val;
 
 	var = ft_substr(str, *i + 1, j - 1);
 	if (!var)
 		return (NULL);
 	val = getenv(var);
 	free(var);
-	if (!val)
-	{
-		fallback = ft_substr(str, *i, j);
-		if (!fallback)
-			return (NULL);
-		res = ft_charjoin_free(res, fallback, 3);
-	}
-	else
+	if (val)
 		res = ft_charjoin_free(res, ft_strdup(val), 3);
 	*i += j;
 	return (res);
 }
 
-static char *handle_var(char *str, int *i, char *res)
+static char	*handle_var(char *str, int *i, char *res)
 {
 	char *val;
 	int j;
@@ -44,7 +36,6 @@ static char *handle_var(char *str, int *i, char *res)
 	j = 1;
 	if (str[*i + 1] == '?')
 	{
-		// val = ft_itoa(g_last_status);
 		val = ft_itoa(ft_exit_code(-1));
 		if (!val)
 			return (NULL);
@@ -63,10 +54,10 @@ static char *handle_var(char *str, int *i, char *res)
 	return (handle_var_utils(res, str, i, j));
 }
 
-static char *expand_variable_loop(char *str, char *res)
+static char	*expand_variable_loop(char *str, char *res)
 {
-	int i;
-	char *tmp;
+	int		i;
+	char	*tmp;
 
 	i = 0;
 	while (str[i])
@@ -89,10 +80,10 @@ static char *expand_variable_loop(char *str, char *res)
 	return (res);
 }
 
-char *expand_variable(char *str)
+char	*expand_variable(char *str)
 {
-	char *res;
-	char *tmp;
+	char	*res;
+	char	*tmp;
 
 	res = ft_strdup("");
 	if (!res)

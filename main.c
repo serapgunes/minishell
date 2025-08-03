@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/01 16:24:37 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/04 00:05:42 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,13 +36,14 @@ int ft_exit_code(int temp)
 	return (exit_code);
 }
 
-int main(int argc, char **argv, char **env)
+int	main(int argc, char **argv, char **env)
 {
-	char *input;
+	char		*input;
 	// int		arg_count;
-	t_list *history;
-	t_token *tokens;
-	t_ast_tree *ast;
+	t_list		*history;
+	t_token		*tokens;
+	t_ast_tree	*ast;
+	char		**args;
 	// int history_seen = 0;
 
 	(void)argv;
@@ -56,44 +57,45 @@ int main(int argc, char **argv, char **env)
 		if (check_sigint_flag())
 		{
 			ft_exit_code(130);
-			continue;
+			continue ;
 		}
 		if (!input)
-			break;
+			break ;
 		if (is_only_spaces(input))
 		{
 			free(input);
-			continue;
+			continue ;
 		}
 		if (*input)
 			add_history(input);
-		char **args = ft_split(input, ' ');
+		args = ft_split(input, ' ');
 		if (!args)
 		{
 			free(input);
-			continue;
+			continue ;
 		}
 		tokens = tokenize_input(input);
 		if (!tokens)
 		{
-			free(input);
-			continue;
+    		ft_exit_code(0);
+    		free(input);
+    		continue ;
 		}
 		if (ft_parser(tokens)) // Syntax kontrolü başarısızsa
 		{
 			free(input);
-			continue;
+			continue ;
 		}
 		if (!tokens) // Ekstra kontrol: yine NULL olabilir!
 		{
 			free(input);
-			continue;
+			continue ;
 		}
 		ast = ft_build_ast(tokens);
 		if (!ast)
 		{
 			free(input);
-			continue;
+			continue ;
 		}
 		// print_ast(ast, 0);// ast yazdırmak için
 		//  print_tokens(tokens); type yazdırmak için

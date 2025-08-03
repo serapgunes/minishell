@@ -6,13 +6,13 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:55:20 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/01 23:36:54 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/04 00:06:59 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void add_token_to_list(t_token **head, t_token *new)
+void	add_token_to_list(t_token **head, t_token *new)
 {
 	t_token *tmp;
 
@@ -27,10 +27,10 @@ void add_token_to_list(t_token **head, t_token *new)
 	}
 }
 
-int handle_redir_operator(char *s, t_token **head)
+int	handle_redir_operator(char *s, t_token **head)
 {
-	char *op;
-	int len;
+	char	*op;
+	int		len;
 
 	if (s[0] == '>' && s[1] == '>')
 	{
@@ -54,27 +54,24 @@ int handle_redir_operator(char *s, t_token **head)
 	return (len);
 }
 
-static char *process_quoted(char *s, int *j, char q)
+char	*process_quoted(char *s, int *i, char quote_char)
 {
-	int start;
-	char *raw;
-	char *expanded;
+	int	start;
+	int	len;
 
-	start = *j;
-	while (s[*j] && s[*j] != q)
-		(*j)++;
-	raw = ft_substr(s, start, *j - start);
-	if (q == '"')
-		expanded = expand_variable(raw);
-	else
-		expanded = ft_strdup(raw);
-	free(raw);
-	if (s[*j] == q)
-		(*j)++;
-	return (expanded);
+	start = *i;
+	len = 0;
+	while (s[*i] && s[*i] != quote_char)
+	{
+		(*i)++;
+		len++;
+	}
+	if (s[*i] == quote_char)
+		(*i)++;
+	return (ft_substr(s, start, len));
 }
 
-static char *process_unquoted(char *s, int *j)
+static char	*process_unquoted(char *s, int *j)
 {
 	int start;
 	char *raw;
@@ -101,12 +98,15 @@ char *normalize_filename(char *str)
 	return (str);
 }
 
-int handle_redir_file(char *s, int *i, t_token **head)
+int	handle_redir_file(char *s, int *i, t_token **head)
 {
-	int j;
-	char *expanded;
+	int		j;
+	char	*arg;
+	char	*piece;
+	char	quote;
 
 	j = 0;
+	arg = ft_strdup("");
 	while (s[j] == ' ' || s[j] == '\t')
 		j++;
 	if (!s[j])
@@ -114,22 +114,32 @@ int handle_redir_file(char *s, int *i, t_token **head)
 		*i += j;
 		return (j);
 	}
-	if (s[j] == '\'' || s[j] == '"')
+	while (s[j] && s[j] != ' ' && s[j] != '\t' &&
+			s[j] != '|' && s[j] != '<' && s[j] != '>')
 	{
-		j++;
-		expanded = process_quoted(s, &j, s[j - 1]);
+		if (s[j] == '\'' || s[j] == '"')
+		{
+			quote = s[j];
+			j++;
+			piece = process_quoted(s, &j, quote);
+		}
+		else
+			piece = process_unquoted(s, &j);
+		if (!piece)
+		{
+			free(arg);
+			fprintf(stderr, "redirect syntax error\n");
+			return (-1);
+		}
+		arg = ft_charjoin_free(arg, piece, 3);
 	}
-	else
-		expanded = process_unquoted(s, &j);
-
-	expanded = normalize_filename(expanded);
-	if (!expanded) // boş dosya adı varsa
+	arg = normalize_filename(arg);
+	if (!arg)
 	{
-		fprintf(stderr, "minishell: ambiguous redirect\n");
-		// bu ksım da kaldım exit_status = 1;
-		return (-1); // işlemi durdur
+		fprintf(stderr, "ambiguous redirect\n");
+		return (-1);
 	}
-	add_token_to_list(head, create_word_token(expanded));
+	add_token_to_list(head, create_word_token(arg));
 	*i += j;
 	return (j);
 }
