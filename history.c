@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   history.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:46:38 by segunes           #+#    #+#             */
-/*   Updated: 2025/05/02 15:59:55 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/04 20:18:59 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ void	add_to_history(t_list **history, char *input)
 	ft_lstadd_back(history, new_node);
 }
 
-void print_history(t_list *history)
+void	print_history(t_list *history)
 {
 	t_list	*current;
 	int		i;

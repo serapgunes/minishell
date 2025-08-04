@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:06:23 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/04 20:05:32 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/04 20:14:21 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,6 @@ void	print_sorted_env(char **env)
 	int		i;
 	char	*tmp;
 
-	i = 0;
 	copy = copy_env(env);
 	if (!copy)
 		return ;
