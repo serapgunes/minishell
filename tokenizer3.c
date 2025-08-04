@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:55:20 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/04 00:06:59 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/04 20:09:35 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 
 void	add_token_to_list(t_token **head, t_token *new)
 {
-	t_token *tmp;
+	t_token	*tmp;
 
 	if (!*head)
 		*head = new;
@@ -73,9 +73,9 @@ char	*process_quoted(char *s, int *i, char quote_char)
 
 static char	*process_unquoted(char *s, int *j)
 {
-	int start;
-	char *raw;
-	char *expanded;
+	int		start;
+	char	*raw;
+	char	*expanded;
 
 	start = *j;
 	while (s[*j] && is_word_char(s[*j]))
@@ -86,7 +86,7 @@ static char	*process_unquoted(char *s, int *j)
 	return (expanded);
 }
 
-char *normalize_filename(char *str)
+char	*normalize_filename(char *str)
 {
 	if (!str)
 		return (NULL);

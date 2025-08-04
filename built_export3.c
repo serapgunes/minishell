@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:06:23 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/01 23:33:59 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/04 20:05:32 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,12 +19,12 @@ static char	**copy_env(char **env)
 	char	**copy;
 
 	n = 0;
+	i = 0;
 	while (env[n])
 		n++;
 	copy = malloc(sizeof(char *) * (n + 1));
 	if (!copy)
 		return (NULL);
-	i = 0;
 	while (i < n)
 	{
 		copy[i] = env[i];
@@ -62,9 +62,9 @@ static void	sort_env(char **copy)
 	char	*tmp;
 
 	n = 0;
+	i = 0;
 	while (copy[n])
 		n++;
-	i = 0;
 	while (i < n - 1)
 	{
 		j = 0;
@@ -88,11 +88,11 @@ void	print_sorted_env(char **env)
 	int		i;
 	char	*tmp;
 
+	i = 0;
 	copy = copy_env(env);
 	if (!copy)
 		return ;
 	sort_env(copy);
-	i = 0;
 	while (copy[i])
 	{
 		tmp = ft_strchr(copy[i], '=');

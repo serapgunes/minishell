@@ -6,16 +6,16 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 18:03:45 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/01 23:48:59 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/04 20:06:14 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int remove_from_environ(int idx, char ***env)
+static int	remove_from_environ(int idx, char ***env)
 {
-	char **e;
-	int i;
+	char	**e;
+	int		i;
 
 	i = idx;
 	e = *env;
@@ -28,9 +28,9 @@ static int remove_from_environ(int idx, char ***env)
 	return (0);
 }
 
-static int unset_one_var(char *var, int *status, char ***env)
+static int	unset_one_var(char *var, int *status, char ***env)
 {
-	int idx;
+	int	idx;
 
 	if (!is_valid_identifier(var))
 	{
@@ -47,10 +47,10 @@ static int unset_one_var(char *var, int *status, char ***env)
 	return (0);
 }
 
-int builtin_unset(int argc, char **argv, char ***env)
+int	builtin_unset(int argc, char **argv, char ***env)
 {
-	int i;
-	int status;
+	int	i;
+	int	status;
 
 	status = 0;
 	i = 1;

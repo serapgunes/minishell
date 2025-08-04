@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:32:24 by segunes           #+#    #+#             */
-/*   Updated: 2025/07/12 01:06:23 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/04 20:08:49 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static void	handle_special_char(char *input, int *i, t_token **head)
 		(*i)++;
 }
 
-t_token *tokenize_input(char *input)
+t_token	*tokenize_input(char *input)
 {
 	int		i;
 	t_token	*head;

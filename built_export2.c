@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:06:14 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/12 00:49:17 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/04 20:04:36 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,12 +37,12 @@ int	extend_env(char ***envp, char *new_entry)
 
 	old = *envp;
 	cnt = 0;
+	j = 0;
 	while (old[cnt])
 		cnt++;
 	new = malloc(sizeof(char *) * (cnt + 2));
 	if (!new)
 		return (1);
-	j = 0;
 	while (j < cnt)
 	{
 		new[j] = old[j];

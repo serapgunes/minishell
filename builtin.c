@@ -6,13 +6,13 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/02 06:44:12 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/04 20:06:27 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int builtin(int argc, char **argv, char **env, t_list *history)
+int	builtin(int argc, char **argv, char **env, t_list *history)
 {
 	if (argc >= 1 && argv[0] && ft_strcmp(argv[0], "exit") == 0)
 		return (builtin_exit(argc, argv));

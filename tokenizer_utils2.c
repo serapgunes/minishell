@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:58:23 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/03 23:50:45 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/04 20:08:22 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,8 +30,8 @@ static char	*handle_var_utils(char *res, char *str, int *i, int j)
 
 static char	*handle_var(char *str, int *i, char *res)
 {
-	char *val;
-	int j;
+	char	*val;
+	int		j;
 
 	j = 1;
 	if (str[*i + 1] == '?')

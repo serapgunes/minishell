@@ -3,24 +3,24 @@
 /*                                                        :::      ::::::::   */
 /*   built_export.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 12:27:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/01 18:02:11 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/04 20:03:58 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int is_valid_identifier(const char *name)
+int	is_valid_identifier(const char *name)
 {
-	int i;
+	int	i;
 
+	i = 0;
 	if (!name || !name[0])
 		return (0);
 	if (name[0] >= '0' && name[0] <= '9')
 		return (0);
-	i = 0;
 	while (name[i])
 	{
 		if (!(ft_isalnum(name[i]) || name[i] == '_'))
@@ -30,13 +30,13 @@ int is_valid_identifier(const char *name)
 	return (1);
 }
 
-static int is_valid_identifier_len(const char *name, size_t len)
+static int	is_valid_identifier_len(const char *name, size_t len)
 {
-	size_t i;
+	size_t	i;
 
+	i = 0;
 	if (len == 0 || (name[0] >= '0' && name[0] <= '9'))
 		return (0);
-	i = 0;
 	while (i < len)
 	{
 		if (!(ft_isalnum(name[i]) || name[i] == '_'))
@@ -46,11 +46,11 @@ static int is_valid_identifier_len(const char *name, size_t len)
 	return (1);
 }
 
-static int process_export_assignment(char *arg, char ***envp)
+static int	process_export_assignment(char *arg, char ***envp)
 {
-	char *name;
-	int len;
-	int status;
+	char	*name;
+	int		len;
+	int		status;
 
 	status = 0;
 	len = ft_strchr(arg, '=') - arg;
@@ -69,10 +69,10 @@ static int process_export_assignment(char *arg, char ***envp)
 	return (status);
 }
 
-static int process_export_name(char *arg, char ***envp)
+static int	process_export_name(char *arg, char ***envp)
 {
-	int status;
-	char *entry;
+	int		status;
+	char	*entry;
 
 	status = 0;
 	if (!is_valid_identifier(arg))
@@ -90,10 +90,10 @@ static int process_export_name(char *arg, char ***envp)
 	return (status);
 }
 
-int builtin_export(int argc, char **argv, char ***envp)
+int	builtin_export(int argc, char **argv, char ***envp)
 {
-	int i;
-	int status;
+	int	i;
+	int	status;
 
 	status = 0;
 	i = 1;

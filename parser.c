@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 12:31:48 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/03 19:19:42 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/04 19:52:55 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,18 +37,20 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 	left_token = tokens;
 	if (!tokens)
 		return NULL;
+
+	// PIPE kontrolü, varsa bölüp rekürsif çağrı
 	while (tokens)
 	{
 		if (tokens->type == PIPE)
 		{
-			if (!tokens->next) // Pipe'tan sonra hiçbir şey yoksa
+			if (!tokens->next)
 			{
 				printf("syntax error near unexpected token\n");
 				return NULL;
 			}
 			right_token = tokens->next;
 			if (prev)
-				prev->next = NULL;
+				prev->next = NULL; // Listeyi böl
 			t_ast_tree *node = malloc(sizeof(t_ast_tree));
 			if (!node)
 				return NULL;
@@ -65,56 +67,65 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 			}
 			return node;
 		}
-		// else
-		// 	tokens = tokens->next;
 		prev = tokens;
 		tokens = tokens->next;
 	}
+
+	// PIPE yok, komut düğümü oluştur
 	t_ast_tree *node = malloc(sizeof(t_ast_tree));
 	if (!node)
 		return NULL;
-
-	// Node'u initialize et
 	node->type = NODE_COMMAND;
 	node->redir_list = NULL;
 	node->left = NULL;
 	node->right = NULL;
 
-	// Args için bellek ayır
+	// Args sayısı için önce redir operatör ve hedef tokenları atla
 	current = left_token;
-	while (current != NULL)
+	while (current)
 	{
+		if (current->type == APPEND || current->type == HEREDOC ||
+			current->type == REDIR_IN || current->type == REDIR_OUT)
+		{
+			// Atla operatör ve target token
+			current = current->next;
+			if (current)
+				current = current->next;
+			continue;
+		}
 		if (current->type == WORD)
 			count++;
-		current = current->next;
+		else
+			current = current->next;
 	}
+
+	// Args için yer ayır
 	char **args = malloc(sizeof(char *) * (count + 1));
-	// value yi saydırıp ona göre yer aç
 	if (!args)
 	{
 		free(node);
 		return NULL;
 	}
-	int i;
 
+	// Redir listesine ekle, args dizisine sadece gerçek argümanları ekle
 	current = left_token;
-	i = 0;
+	int i = 0;
 	while (current)
 	{
-		if (current->type == WORD)
-		{
-			node->type = NODE_COMMAND;
-			args[i++] = ft_strdup(current->value);
-		}
-		else if (current->type == APPEND || current->type == HEREDOC ||
-				 current->type == REDIR_IN || current->type == REDIR_OUT)
+		if (current->type == APPEND || current->type == HEREDOC ||
+			current->type == REDIR_IN || current->type == REDIR_OUT)
 		{
 			t_redir *new_redir = malloc(sizeof(t_redir));
 			if (!new_redir)
-				return NULL; // veya exit(1)
-
+			{
+				for (int j = 0; j < i; j++)
+					free(args[j]);
+				free(args);
+				free(node);
+				return NULL;
+			}
 			new_redir->type = current->type;
-			current = current->next;
+			current = current->next; // hedef token
 			if (current && current->value)
 			{
 				char *filename = strip_quotes(current->value);
@@ -123,35 +134,32 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 			}
 			else
 				new_redir->target = NULL;
-
 			new_redir->next = NULL;
 
-			// Listeye ekle (redir_list'e)
 			if (!node->redir_list)
 				node->redir_list = new_redir;
 			else
 			{
 				t_redir *tmp = node->redir_list;
-				while (tmp && tmp->next)
+				while (tmp->next)
 					tmp = tmp->next;
-				if (tmp)
-					tmp->next = new_redir;
+				tmp->next = new_redir;
 			}
-			if (current) // buraya ekledik
+			if (current)
 				current = current->next;
 			continue;
 		}
-		else
+
+		if (current->type == WORD)
 		{
-			prev = tokens;
-			tokens = tokens->next;
+			args[i++] = ft_strdup(current->value);
 		}
 		current = current->next;
 	}
+
 	args[i] = NULL;
 	node->args = args;
-	node->left = NULL;
-	node->right = NULL;
+
 	return node;
 }
 
