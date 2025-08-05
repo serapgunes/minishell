@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/05 14:29:34 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/05 15:48:27 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -160,7 +160,10 @@ int main(int argc, char **argv, char **env)
 
 		// buraya koy heredocccc
 		if (prepare_all_heredocs(ast) != 0)
+		{
+			printf("sıkıntı heredoc döngüsünde\n");
 			continue;
+		}
 		executor_structure(ast, env, 0);
 		// printf("minishell exit_status = %d\n", exit_status);
 		//   arg_count = args_count(args);

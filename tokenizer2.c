@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:51:36 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/05 15:35:29 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/05 15:48:29 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,22 +61,7 @@ static char	*collect_argument_word(char *input, int *i, char *arg)
 
 	start = *i;
 	while (input[*i] && is_word_char(input[*i]))
-	{
-		if (input[*i] == '$' && input[*i + 1] &&
-			!(ft_isalpha(input[*i + 1]) || input[*i + 1] == '_' || input[*i + 1] == '?'))
-		{
-			if (*i > start)
-				break;
-			(*i)++;
-			if (input[*i] && is_word_char(input[*i]))
-				(*i)++;
-			start = *i;
-			continue;
-		}
 		(*i)++;
-	}
-	if (*i == start)
-		return (arg);
 	raw = ft_substr(input, start, (*i) - start);
 	if (!raw)
 		return (free(arg), NULL);
