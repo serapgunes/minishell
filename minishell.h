@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/05 16:17:21 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/05 18:47:38 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -114,6 +114,7 @@ const char *pathname(char *command);
 // signal/////////////////////////
 void signal_catch(int signum);
 int check_sigint_flag(void);
+void signal_child(int signum);
 /////////////////////////////////
 
 int args_count(char **args);

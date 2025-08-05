@@ -10,7 +10,6 @@ SRCS			=	built_cd.c			\
 					built_unset.c		\
 					builtin.c 			\
 					check.c				\
-					history.c 			\
 					main.c				\
 					path_find.c 		\
 					tokenizer.c 		\

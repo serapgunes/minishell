@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/05 16:18:48 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/05 19:00:42 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,13 @@ int ft_exit_code(int temp)
 	return (exit_code);
 }
 
+void signal_heredoc(int sig)
+{
+	(void)sig;
+	write(1, "\n", 1);
+	exit(130);
+}
+
 int handle_heredoc(const char *delimiter)
 {
 	int pipefd[2];
@@ -46,9 +53,9 @@ int handle_heredoc(const char *delimiter)
 	pid = fork();
 	if (pid < 0)
 		return (perror("fork"), -1);
-
 	if (pid == 0)
 	{
+		signal(SIGINT, signal_heredoc);
 		close(pipefd[0]);
 		while (1)
 		{
@@ -70,9 +77,12 @@ int handle_heredoc(const char *delimiter)
 		// PARENT: okuyucu
 		int status;
 
-		close(pipefd[1]);		  // yazma ucunu kapat
+		close(pipefd[1]); // yazma ucunu kapat
+		signal(SIGINT, SIG_IGN);
 		waitpid(pid, &status, 0); // çocuk bitsin
-
+		signal(SIGINT, signal_catch);
+		if (WEXITSTATUS(status) == 130)
+			return -1;
 		// OKUMA ucu döndürülür, stdin'e bağlanmak için kullanılacak
 		return (pipefd[0]);
 	}
@@ -109,15 +119,11 @@ int main(int argc, char **argv, char **env)
 	(void)argv;
 	(void)argc;
 	ft_exit_code(0);
-	signal(SIGINT, signal_catch);
 	while (1)
 	{
+		signal(SIGINT, signal_catch);
 		input = readline("minishell$ ");
-		// if (check_sigint_flag())
-		// {
-		// 	ft_exit_code(130);
-		// 	continue;
-		// }
+
 		if (input == NULL)
 		{
 			write(1, "exit\n", 5);
@@ -159,10 +165,7 @@ int main(int argc, char **argv, char **env)
 		// print_ast(ast, 0);// ast yazdırmak için
 		//  print_tokens(tokens); type yazdırmak için
 		if (prepare_all_heredocs(ast) != 0)
-		{
-			printf("sıkıntı heredoc döngüsünde\n");
 			continue;
-		}
 		executor_structure(ast, env, 0);
 		free(input);
 	}

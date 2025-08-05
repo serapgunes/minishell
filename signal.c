@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 15:19:50 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/05 15:54:56 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/05 18:46:55 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,4 +32,13 @@ int check_sigint_flag(void)
 		return (1);
 	}
 	return (0);
+}
+
+void signal_child(int signum)
+{
+	(void)signum;
+	sigint_flag = 1;
+	write(1, "\n", 1);		// ctrl c olduğunda yeni satıra geç
+	rl_replace_line("", 0); // satırı temizle
+	rl_on_new_line();		// yeni satır komutunu bildiriyor
 }

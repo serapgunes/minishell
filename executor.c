@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/05 16:24:13 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/05 18:48:07 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -518,7 +518,7 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline)
 	if (node->type == NODE_COMMAND)
 	{
 		// Pipe dışındaki builtin komutları direkt çalıştır
-		if (!in_pipeline && is_builtin(node->args[0]))
+		if (!in_pipeline && (is_builtin(node->args[0])))
 		{
 			if (handle_redirections(node) != 0)
 			{
@@ -559,9 +559,11 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline)
 		{
 			int status;
 			// Child process'i bekle
+			signal(SIGINT, signal_child);
 			waitpid(pid, &status, 0);
 			// Exit status'u işle
 			handle_command_status(status);
+			signal(SIGINT, signal_catch);
 
 			// Yönlendirmeleri temizle
 			if (node->redir_list)
