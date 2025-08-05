@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/03 23:13:20 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/04 18:42:07 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ typedef struct s_redir
 {
     int type;     // REDIR_IN, etc.
     char *target; // e.g. "input.txt"
+    int fd;       // HEREDOC için ekeldik
     struct s_redir *next;
 } t_redir;
 

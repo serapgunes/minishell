@@ -7,7 +7,7 @@
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/03 12:31:48 by segunes           #+#    #+#             */
 /*   Updated: 2025/08/04 20:14:47 by sakdil           ###   ########.fr       */
-/*                                                                            */
+/*       																	  */
 /* ************************************************************************** */
 
 #include "minishell.h"
@@ -112,7 +112,6 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 			t_redir *new_redir = malloc(sizeof(t_redir));
 			if (!new_redir)
 				return NULL; // veya exit(1)
-
 			new_redir->type = current->type;
 			current = current->next;
 			if (current && current->value)

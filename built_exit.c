@@ -3,23 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   built_exit.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:06:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/04 20:02:48 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/05 12:29:28 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int	is_digit(int c)
+static int is_digit(int c)
 {
 	return (c >= '0' && c <= '9');
 }
 
-static int	is_numeric(const char *str)
+static int is_numeric(const char *str)
 {
-	int	i;
+	int i;
 
 	i = 0;
 	if (str[0] == '-' || str[0] == '+')
@@ -33,9 +33,9 @@ static int	is_numeric(const char *str)
 	return (1);
 }
 
-static int	is_too_large(char *str)
+static int is_too_large(char *str)
 {
-	int	len;
+	int len;
 
 	len = ft_strlen(str);
 	if (len > 19)
@@ -44,9 +44,9 @@ static int	is_too_large(char *str)
 		return (1);
 	return (0);
 }
-int	builtin_exit(int argc, char **argv)
+int builtin_exit(int argc, char **argv)
 {
-	int	exit_code;
+	int exit_code;
 
 	exit_code = 0;
 	ft_putendl_fd("exit", 1);
@@ -67,6 +67,7 @@ int	builtin_exit(int argc, char **argv)
 		}
 		exit_code = ft_atoi(argv[1]) % 256;
 	}
+	ft_exit_code(exit_code);
 	exit(exit_code);
 	return (0);
 }

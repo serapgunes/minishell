@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/05 11:09:19 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/05 12:32:39 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
 // int handle_heredoc(const char *delimiter)
 // {
 // 	int pipefd[2];
@@ -250,9 +249,9 @@ static void handle_command_status(int status)
 		ft_exit_code(WEXITSTATUS(status));
 }
 
-static void	handle_pipe_status(int status)
+static void handle_pipe_status(int status)
 {
-	int	sig;
+	int sig;
 
 	if (WIFSIGNALED(status))
 	{
@@ -274,34 +273,34 @@ static void	handle_pipe_status(int status)
 		ft_exit_code(WEXITSTATUS(status));
 }
 
-int handle_heredoc(const char *delimiter)
-{
-	int		pipefd[2];
-	char	*line;
+// int handle_heredoc(const char *delimiter)
+// {
+// 	int pipefd[2];
+// 	char *line;
+// 	// pipefd[0]=okuma ucu
+// 	// pipefed[1]=yazma ucu
+// 	if (pipe(pipefd) == -1)
+// 	{
+// 		perror("pipe");
+// 		return -1;
+// 	}
+// 	while (1)
+// 	{
+// 		line = readline("> ");
+// 		if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
+// 		{
+// 			free(line);
+// 			break;
+// 		}
+// 		write(pipefd[1], line, ft_strlen(line));
+// 		write(pipefd[1], "\n", 1);
+// 		free(line);
+// 	}
+// 	close(pipefd[1]);
+// 	return pipefd[0];
+// }
 
-	if (pipe(pipefd) == -1)
-	{
-		perror("pipe");
-		return -1;
-	}
-
-	while (1)
-	{
-		line = readline("> ");
-		if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
-		{
-			free(line);
-			break;
-		}
-		write(pipefd[1], line, ft_strlen(line));
-		write(pipefd[1], "\n", 1);
-		free(line);
-	}
-
-	close(pipefd[1]);
-	return pipefd[0];
-}
-static int	handle_redirections(t_ast_tree *node)
+static int handle_redirections(t_ast_tree *node)
 {
 	t_redir *redir;
 	int fd_in;
@@ -353,11 +352,15 @@ static int	handle_redirections(t_ast_tree *node)
 		}
 		else if (redir->type == HEREDOC)
 		{
+			if (redir->fd < 0)
+			{
+				fprintf(stderr, "Heredoc fd geçersiz\n");
+				return (1);
+			}
 			if (fd_in != -1)
 				close(fd_in);
-			fd_in = handle_heredoc(redir->target);
-			if (fd_in < 0)
-				return (1);
+			fd_in = redir->fd; // 🔄 önce fd'yi al
+							   // redir->fd'yi burada kapatma!
 		}
 		redir = redir->next;
 	}
@@ -365,7 +368,7 @@ static int	handle_redirections(t_ast_tree *node)
 	{
 		if (dup2(fd_in, STDIN_FILENO) == -1)
 		{
-			perror("dup2");
+			perror("dup21");
 			close(fd_in);
 			return (1);
 		}
@@ -375,7 +378,7 @@ static int	handle_redirections(t_ast_tree *node)
 	{
 		if (dup2(fd_out, STDOUT_FILENO) == -1)
 		{
-			perror("dup2");
+			perror("dup22");
 			close(fd_out);
 			return (1);
 		}
@@ -394,74 +397,74 @@ static void execute_command(t_ast_tree *node, char **envp, int in_pipeline)
 
 	(void)in_pipeline;
 	cmd_idx = 0;
-    if (!node || !node->args)
-        exit(1);
-    signal(SIGINT, SIG_DFL);
-    signal(SIGQUIT, SIG_DFL);
-    while (node->args[cmd_idx] && node->args[cmd_idx][0] == '\0')
-        cmd_idx++;
-    if (!node->args[cmd_idx])
-    {
-        if (cmd_idx == 0)
-            exit(1);
-        exit(0);
-    }
-    cmd = node->args[cmd_idx];
-    if (handle_redirections(node) != 0)
-        exit(1);
-   ret = builtin(args_count(node->args + cmd_idx), node->args + cmd_idx, envp, NULL);
+	if (!node || !node->args)
+		exit(1);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	while (node->args[cmd_idx] && node->args[cmd_idx][0] == '\0')
+		cmd_idx++;
+	if (!node->args[cmd_idx])
+	{
+		if (cmd_idx == 0)
+			exit(1);
+		exit(0);
+	}
+	cmd = node->args[cmd_idx];
+	if (handle_redirections(node) != 0)
+		exit(1);
+	ret = builtin(args_count(node->args + cmd_idx), node->args + cmd_idx, envp, NULL);
 	if (ret != -1)
 	{
 		signal(SIGPIPE, SIG_IGN);
 		exit(ret);
 	}
-    signal(SIGPIPE, SIG_DFL);
-    if (cmd[0] == '/' || cmd[0] == '.')
-    {
-        if (stat(cmd, &sb) == -1)
-        {
-            if (errno == ENOENT)
-                fprintf(stderr, "%s: No such file or directory\n", cmd);
-            else
-                perror(cmd);
-            exit(127);
-        }
-        if (S_ISDIR(sb.st_mode))
-        {
-            fprintf(stderr, "%s: Is a directory\n", cmd);
-            exit(126);
-        }
-        if (access(cmd, X_OK) != 0)
-        {
-            fprintf(stderr, "%s: Permission denied\n", cmd);
-            exit(126);
-        }
-        execve(cmd, node->args + cmd_idx, envp);
-        perror("execve");
-        exit(1);
-    }
-    else
-    {
-        path = find_path(cmd);
-        if (path)
-        {
-            execve(path, node->args + cmd_idx, envp);
-            free(path);
-            perror("execve");
-            exit(1);
-        }
-        fprintf(stderr, "%s: command not found\n", cmd);
-        exit(127);
-    }
+	signal(SIGPIPE, SIG_DFL);
+	if (cmd[0] == '/' || cmd[0] == '.')
+	{
+		if (stat(cmd, &sb) == -1)
+		{
+			if (errno == ENOENT)
+				fprintf(stderr, "%s: No such file or directory\n", cmd);
+			else
+				perror(cmd);
+			exit(127);
+		}
+		if (S_ISDIR(sb.st_mode))
+		{
+			fprintf(stderr, "%s: Is a directory\n", cmd);
+			exit(126);
+		}
+		if (access(cmd, X_OK) != 0)
+		{
+			fprintf(stderr, "%s: Permission denied\n", cmd);
+			exit(126);
+		}
+		execve(cmd, node->args + cmd_idx, envp);
+		perror("execve");
+		exit(1);
+	}
+	else
+	{
+		path = find_path(cmd);
+		if (path)
+		{
+			execve(path, node->args + cmd_idx, envp);
+			free(path);
+			perror("execve");
+			exit(1);
+		}
+		fprintf(stderr, "%s: command not found\n", cmd);
+		exit(127);
+	}
 }
 
-static void	execute_pipe(t_ast_tree *node, char **envp)
+static void execute_pipe(t_ast_tree *node, char **envp)
 {
-	int		pipefd[2];
-	pid_t	pid1;
-	pid_t	pid2;
-	int		status1;
-	int		status2;
+	int pipefd[2];
+	pid_t pid1;
+	pid_t pid2;
+	int status1;
+	int status2;
 
 	if (pipe(pipefd) == -1)
 	{
