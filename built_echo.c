@@ -6,13 +6,32 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:20:45 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/05 10:32:31 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/05 14:15:44 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	continue_echo(int i, int argc, char **argv)
+static int	n_flag(int argc, char **argv, int *i)
+{
+	int	nflag;
+	int	j;
+
+	nflag = 0;
+	while (*i < argc && argv[*i][0] == '-' && argv[*i][1] == 'n')
+	{
+		j = 1;
+		while (argv[*i][j] == 'n')
+			j++;
+		if (argv[*i][j] != '\0')
+			break;
+		nflag = 1;
+		(*i)++;
+	}
+	return (nflag);
+}
+
+static int	continue_echo(int i, int argc, char **argv)
 {
 	size_t	len;
 
@@ -40,20 +59,25 @@ int	continue_echo(int i, int argc, char **argv)
 int	builtin_echo(int argc, char **argv)
 {
 	int	i;
+	int	nflag;
 
 	i = 1;
+	nflag = n_flag(argc, argv, &i);
 	while (i < argc)
 	{
 		if (continue_echo(i, argc, argv) != 0)
 			return (1);
 		i++;
 	}
-	if (write(1, "\n", 1) < 0)
+	if (!nflag)
 	{
-		if (errno == EPIPE)
+		if (write(1, "\n", 1) < 0)
+		{
+			if (errno == EPIPE)
+				return (1);
+			perror("echo");
 			return (1);
-		perror("echo");
-		return (1);
+		}
 	}
 	return (0);
 }
