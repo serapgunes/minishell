@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer3.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:55:20 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/04 20:09:35 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/05 16:03:22 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void	add_token_to_list(t_token **head, t_token *new)
+void add_token_to_list(t_token **head, t_token *new)
 {
-	t_token	*tmp;
+	t_token *tmp;
 
 	if (!*head)
 		*head = new;
@@ -27,10 +27,10 @@ void	add_token_to_list(t_token **head, t_token *new)
 	}
 }
 
-int	handle_redir_operator(char *s, t_token **head)
+int handle_redir_operator(char *s, t_token **head)
 {
-	char	*op;
-	int		len;
+	char *op;
+	int len;
 
 	if (s[0] == '>' && s[1] == '>')
 	{
@@ -54,10 +54,10 @@ int	handle_redir_operator(char *s, t_token **head)
 	return (len);
 }
 
-char	*process_quoted(char *s, int *i, char quote_char)
+char *process_quoted(char *s, int *i, char quote_char)
 {
-	int	start;
-	int	len;
+	int start;
+	int len;
 
 	start = *i;
 	len = 0;
@@ -71,11 +71,11 @@ char	*process_quoted(char *s, int *i, char quote_char)
 	return (ft_substr(s, start, len));
 }
 
-static char	*process_unquoted(char *s, int *j)
+static char *process_unquoted(char *s, int *j)
 {
-	int		start;
-	char	*raw;
-	char	*expanded;
+	int start;
+	char *raw;
+	char *expanded;
 
 	start = *j;
 	while (s[*j] && is_word_char(s[*j]))
@@ -86,7 +86,7 @@ static char	*process_unquoted(char *s, int *j)
 	return (expanded);
 }
 
-char	*normalize_filename(char *str)
+char *normalize_filename(char *str)
 {
 	if (!str)
 		return (NULL);
@@ -98,12 +98,12 @@ char	*normalize_filename(char *str)
 	return (str);
 }
 
-int	handle_redir_file(char *s, int *i, t_token **head)
+int handle_redir_file(char *s, int *i, t_token **head)
 {
-	int		j;
-	char	*arg;
-	char	*piece;
-	char	quote;
+	int j;
+	char *arg;
+	char *piece;
+	char quote;
 
 	j = 0;
 	arg = ft_strdup("");
@@ -115,7 +115,7 @@ int	handle_redir_file(char *s, int *i, t_token **head)
 		return (j);
 	}
 	while (s[j] && s[j] != ' ' && s[j] != '\t' &&
-			s[j] != '|' && s[j] != '<' && s[j] != '>')
+		   s[j] != '|' && s[j] != '<' && s[j] != '>')
 	{
 		if (s[j] == '\'' || s[j] == '"')
 		{

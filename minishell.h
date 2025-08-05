@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/05 15:48:28 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/05 16:17:21 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,6 @@
 #include <signal.h>
 #include <errno.h>
 #include <sys/stat.h>
-
-typedef struct s_list
-{
-    void *content;
-    struct s_list *next;
-} t_list;
 
 typedef struct s_export_data
 {
@@ -97,16 +91,11 @@ void print_sorted_env(char **env);
 void print_invalid_identifier(char *arg);
 int builtin_pwd(void);
 int builtin_unset(int argc, char **argv, char ***env);
-int builtin(int argc, char **argv, char **env, t_list *history);
+int builtin(int argc, char **argv, char **env);
 int is_builtin(char *cmd);
 
 int is_only_spaces(char *str);
 void executor_structure(t_ast_tree *node, char **envp, int in_pipeline);
-
-// history//////////////////
-void add_to_history(t_list **history, char *input);
-void print_history(t_list *history);
-////////////////////////////
 
 // parser///////////////////////
 t_ast_tree *ft_build_ast(t_token *tokens);

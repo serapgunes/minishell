@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/05 15:48:27 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/05 16:18:48 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -52,7 +52,7 @@ int handle_heredoc(const char *delimiter)
 		close(pipefd[0]);
 		while (1)
 		{
-			line = readline("heredoc> ");
+			line = readline("> ");
 			if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
 			{
 				free(line);
@@ -103,24 +103,25 @@ int prepare_all_heredocs(t_ast_tree *node)
 int main(int argc, char **argv, char **env)
 {
 	char *input;
-	// int		arg_count;
-	t_list *history;
 	t_token *tokens;
 	t_ast_tree *ast;
-	//  int history_seen = 0;
 
 	(void)argv;
 	(void)argc;
-	history = NULL;
 	ft_exit_code(0);
 	signal(SIGINT, signal_catch);
 	while (1)
 	{
 		input = readline("minishell$ ");
-		if (check_sigint_flag())
+		// if (check_sigint_flag())
+		// {
+		// 	ft_exit_code(130);
+		// 	continue;
+		// }
+		if (input == NULL)
 		{
-			ft_exit_code(130);
-			continue;
+			write(1, "exit\n", 5);
+			exit(0);
 		}
 		if (!input)
 			break;
@@ -157,58 +158,19 @@ int main(int argc, char **argv, char **env)
 		}
 		// print_ast(ast, 0);// ast yazdırmak için
 		//  print_tokens(tokens); type yazdırmak için
-
-		// buraya koy heredocccc
 		if (prepare_all_heredocs(ast) != 0)
 		{
 			printf("sıkıntı heredoc döngüsünde\n");
 			continue;
 		}
 		executor_structure(ast, env, 0);
-		// printf("minishell exit_status = %d\n", exit_status);
-		//   arg_count = args_count(args);
-		//   int builtin_result = builtin(arg_count, args, env, history);
-		//   if (builtin_result == 0 || builtin_result == 1 || builtin_result == 2)
-		//   {
-		//   	if (ft_strcmp(args[0], "history") != 0)
-		//   	{
-		//   		if (history_seen == 1)
-		//   			add_to_history(&history, input);
-		//   		history_seen = 1;
-		//   	}
-		//   	else
-		//   		add_to_history(&history, input);
-		//   	//free_args
-		//   	continue;
-		//   }
-		add_to_history(&history, input);
-		// execute_command(input);
 		free(input);
 	}
 	return (ft_exit_code(-1));
-	// return (exit_status);
-	//    free_history
 }
-
-// minishell$ echo -n hello
-// -n hello
-// minishell$ echo -n -n hello
-// -n -n hello
-// minishell$
-// bu kısım yanlış çalışıyor
 
 // export yanlış çalışıyor
 // minishell$ export VAR=42
 // minishell$ env | grep VAR
 // minishell$ export VAR2
 // minishell$ export
-
-// bu yönlendirme yanlış
-// minishell$ cat << EOF
-// > serap
-// > EOF
-// > cat
-// > file
-// > EOF
-// cat
-// file
