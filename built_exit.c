@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   built_exit.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:06:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/05 12:29:28 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/05 23:22:56 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int is_digit(int c)
+int is_digit(int c)
 {
 	return (c >= '0' && c <= '9');
 }

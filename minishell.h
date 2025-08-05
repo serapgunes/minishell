@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/05 18:47:38 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/05 23:23:29 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -93,6 +93,7 @@ int builtin_pwd(void);
 int builtin_unset(int argc, char **argv, char ***env);
 int builtin(int argc, char **argv, char **env);
 int is_builtin(char *cmd);
+int is_digit(int c);
 
 int is_only_spaces(char *str);
 void executor_structure(t_ast_tree *node, char **envp, int in_pipeline);
