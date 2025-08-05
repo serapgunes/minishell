@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/04 00:04:35 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/05 11:09:19 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -389,7 +389,10 @@ static void execute_command(t_ast_tree *node, char **envp, int in_pipeline)
 	int cmd_idx;
 	char *cmd;
 	char *path;
+	int ret;
+	struct stat sb;
 
+	(void)in_pipeline;
 	cmd_idx = 0;
     if (!node || !node->args)
         exit(1);
@@ -406,15 +409,15 @@ static void execute_command(t_ast_tree *node, char **envp, int in_pipeline)
     cmd = node->args[cmd_idx];
     if (handle_redirections(node) != 0)
         exit(1);
-    if (!in_pipeline && builtin(args_count(node->args + cmd_idx), node->args + cmd_idx, envp, NULL) == 0)
-    {
-        signal(SIGPIPE, SIG_IGN);
-        exit(0);
-    }
+   ret = builtin(args_count(node->args + cmd_idx), node->args + cmd_idx, envp, NULL);
+	if (ret != -1)
+	{
+		signal(SIGPIPE, SIG_IGN);
+		exit(ret);
+	}
     signal(SIGPIPE, SIG_DFL);
     if (cmd[0] == '/' || cmd[0] == '.')
     {
-        struct stat sb;
         if (stat(cmd, &sb) == -1)
         {
             if (errno == ENOENT)
