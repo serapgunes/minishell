@@ -6,7 +6,7 @@
 /*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:20:45 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/05 14:15:44 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/05 15:40:39 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -81,3 +81,21 @@ int	builtin_echo(int argc, char **argv)
 	}
 	return (0);
 }
+/*
+mini: 
+minishell$ echo $A AAAA
+ AAAA
+
+minishell$ echo $A1 AAAA
+1 AAAA
+
+minishell$ echo $A/AAA AAAA
+ AAAA
+
+minishell$ echo $1/AAA AAAA (DOĞRU)
+/AAA AAAA 
+
+minishell$ echo $/AAA AAAA
+AAA AAAA
+
+*/

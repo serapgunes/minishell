@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:58:23 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/04 20:08:22 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/05 15:35:12 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,18 +43,23 @@ static char	*handle_var(char *str, int *i, char *res)
 		*i += 2;
 		return (res);
 	}
-	while (str[*i + j] && (ft_isalnum(str[*i + j]) || str[*i + j] == '_'))
-		j++;
-	if (j == 1)
+	if (!str[*i + j])
 	{
 		res = ft_charjoin(res, '$');
 		(*i)++;
 		return (res);
 	}
+	if (!(ft_isalpha(str[*i + j]) || str[*i + j] == '_'))
+	{
+		(*i)++;
+		return (res);
+	}
+	while (str[*i + j] && (ft_isalpha(str[*i + j]) || str[*i + j] == '_' || ft_isdigit(&str[*i + j])))
+		j++;
 	return (handle_var_utils(res, str, i, j));
 }
 
-static char	*expand_variable_loop(char *str, char *res)
+static char *expand_variable_loop(char *str, char *res)
 {
 	int		i;
 	char	*tmp;
@@ -71,10 +76,11 @@ static char	*expand_variable_loop(char *str, char *res)
 		}
 		else
 		{
-			tmp = ft_charjoin(res, str[i++]);
+			tmp = ft_charjoin(res, str[i]);
 			if (!tmp)
 				return (NULL);
 			res = tmp;
+			i++;
 		}
 	}
 	return (res);
