@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/05 14:09:13 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/05 14:51:10 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -313,7 +313,7 @@ static int handle_redirections(t_ast_tree *node)
 	{
 		if (!redir->target || redir->target[0] == '\0')
 		{
-			fprintf(stderr, "ambiguous redirect\n");
+			write(2, "ambiguous redirect\n", 19);
 			return (1);
 		}
 
@@ -354,7 +354,7 @@ static int handle_redirections(t_ast_tree *node)
 		{
 			if (redir->fd < 0)
 			{
-				fprintf(stderr, "Heredoc fd geçersiz\n");
+				write(2, "invalid heredoc\n", 17);
 				return (1);
 			}
 			if (fd_in != -1)
@@ -427,19 +427,24 @@ static void execute_command(t_ast_tree *node, char **envp, int in_pipeline)
 		if (stat(cmd, &sb) == -1)
 		{
 			if (errno == ENOENT)
-				fprintf(stderr, "%s: No such file or directory\n", cmd);
+			{
+				write(2, cmd, ft_strlen(cmd));
+				write(2, ": No such file or directory\n", 29);
+			}
 			else
 				perror(cmd);
 			exit(127);
 		}
 		if (S_ISDIR(sb.st_mode))
 		{
-			fprintf(stderr, "%s: Is a directory\n", cmd);
+			write(2, cmd, ft_strlen(cmd));
+			write(2, ": Is a directory\n", 18);
 			exit(126);
 		}
 		if (access(cmd, X_OK) != 0)
 		{
-			fprintf(stderr, "%s: Permission denied\n", cmd);
+			write(2, cmd, ft_strlen(cmd));
+			write(2, ": Permission denied\n", 21);
 			exit(126);
 		}
 		execve(cmd, node->args + cmd_idx, envp);
@@ -456,7 +461,8 @@ static void execute_command(t_ast_tree *node, char **envp, int in_pipeline)
 			perror("execve");
 			exit(1);
 		}
-		fprintf(stderr, "%s: command not found\n", cmd);
+		write(2, cmd, ft_strlen(cmd));
+		write(2, ": command not found\n", 21);
 		exit(127);
 	}
 }
