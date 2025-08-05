@@ -3,21 +3,21 @@
 /*                                                        :::      ::::::::   */
 /*   built_echo.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:20:45 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/04 20:15:52 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/05 10:32:31 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	coutinue_echo(int i, int argc, char **argv)
+int	continue_echo(int i, int argc, char **argv)
 {
 	size_t	len;
 
 	len = strlen(argv[i]);
-	if (write(STDOUT_FILENO, argv[i], len) < 0)
+	if (write(1, argv[i], len) < 0)
 	{
 		if (errno == EPIPE)
 			return (1);
@@ -26,7 +26,7 @@ int	coutinue_echo(int i, int argc, char **argv)
 	}
 	if (i + 1 < argc)
 	{
-		if (write(STDOUT_FILENO, " ", 1) < 0)
+		if (write(1, " ", 1) < 0)
 		{
 			if (errno == EPIPE)
 				return (1);
@@ -44,11 +44,11 @@ int	builtin_echo(int argc, char **argv)
 	i = 1;
 	while (i < argc)
 	{
-		if (coutinue_echo(i, argc, argv) != 0)
+		if (continue_echo(i, argc, argv) != 0)
 			return (1);
 		i++;
 	}
-	if (write(STDOUT_FILENO, "\n", 1) < 0)
+	if (write(1, "\n", 1) < 0)
 	{
 		if (errno == EPIPE)
 			return (1);
