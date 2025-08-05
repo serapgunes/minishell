@@ -26,17 +26,16 @@ SRCS			=	built_cd.c			\
 
 OBJS			=	$(SRCS:.c=.o)
 RM				=	rm -f
-CFLAGS			=	-Wall -Wextra -Werror
+CFLAGS			=	-Wall -Wextra -Werror -g
 CC 				= 	cc
 LIBFT_DIR		= 	./libft
 LIBFT 			= 	$(LIBFT_DIR)/libft.a
-READLINE_FLAGS 	= 	$(shell pkg-config --cflags --libs readline)
 
 
 all: $(LIBFT) $(NAME)
 
 $(NAME): $(OBJS) $(LIBFT)
-	$(CC) $(OBJS) $(LIBFT) $(READLINE_FLAGS) -o $(NAME)
+	$(CC) $(OBJS) $(LIBFT) -o $(NAME) -lreadline
 
 $(LIBFT):
 		$(MAKE) -C $(LIBFT_DIR)

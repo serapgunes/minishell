@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/05 12:32:39 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/05 14:09:13 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -358,7 +358,10 @@ static int handle_redirections(t_ast_tree *node)
 				return (1);
 			}
 			if (fd_in != -1)
+			{
+
 				close(fd_in);
+			}
 			fd_in = redir->fd; // 🔄 önce fd'yi al
 							   // redir->fd'yi burada kapatma!
 		}
@@ -515,7 +518,7 @@ void executor_structure(t_ast_tree *node, char **envp, int in_pipeline)
 	if (node->type == NODE_COMMAND)
 	{
 		// Pipe dışındaki builtin komutları direkt çalıştır
-		if (!in_pipeline)
+		if (!in_pipeline && is_builtin(node->args[0]))
 		{
 			if (handle_redirections(node) != 0)
 			{

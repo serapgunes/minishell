@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/04 18:42:07 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/05 13:30:08 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,6 +98,8 @@ void print_invalid_identifier(char *arg);
 int builtin_pwd(void);
 int builtin_unset(int argc, char **argv, char ***env);
 int builtin(int argc, char **argv, char **env, t_list *history);
+int is_builtin(char *cmd);
+
 int is_only_spaces(char *str);
 void executor_structure(t_ast_tree *node, char **envp, int in_pipeline);
 

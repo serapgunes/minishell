@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/04 20:03:18 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/05 13:36:09 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -126,6 +126,7 @@ int main(int argc, char **argv, char **env)
 			break;
 		if (is_only_spaces(input))
 		{
+			add_history(input);
 			free(input);
 			continue;
 		}
