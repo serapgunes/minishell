@@ -14,8 +14,8 @@ int	ft_isdigit(char *c)
 {
 	int i;
 
-	i=0;
-	while(c[i])
+	i = 0;
+	while (c[i])
 	{
 		if (c[i] >= '0' && c[i] <= '9')
 			i++;
@@ -24,3 +24,4 @@ int	ft_isdigit(char *c)
 	}
 	return (0);
 }
+
