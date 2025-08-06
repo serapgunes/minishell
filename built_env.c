@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   built_env.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:10:19 by sakdil            #+#    #+#             */
-/*   Updated: 2025/07/12 00:42:36 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/06 14:15:25 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ int	control_env(int argc)
 	return (1);	
 }
 
-int	builtin_env(char **env)
+int	builtin_env(char ***env)
 {
 	int	i;
 
@@ -32,10 +32,10 @@ int	builtin_env(char **env)
 		printf("env: environment is NULL\n");
 		return (1);
 	}
-	while (env[i])
+	while ((*env)[i])
 	{
-		if (ft_strchr(env[i], '='))
-			printf("%s\n", env[i]);
+		if (ft_strchr((*env)[i], '='))
+			printf("%s\n", (*env)[i]);
 		i++;
 	}
 	return (0);

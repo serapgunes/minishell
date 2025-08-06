@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/05 19:00:42 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/06 14:08:40 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -115,6 +115,7 @@ int main(int argc, char **argv, char **env)
 	char *input;
 	t_token *tokens;
 	t_ast_tree *ast;
+	char **envp = copy_env(env);
 
 	(void)argv;
 	(void)argc;
@@ -166,7 +167,7 @@ int main(int argc, char **argv, char **env)
 		//  print_tokens(tokens); type yazdırmak için
 		if (prepare_all_heredocs(ast) != 0)
 			continue;
-		executor_structure(ast, env, 0);
+		executor_structure(ast, &envp, 0);
 		free(input);
 	}
 	return (ft_exit_code(-1));

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/05 18:48:07 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/06 14:06:18 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -390,7 +390,7 @@ static int handle_redirections(t_ast_tree *node)
 	return (0);
 }
 
-static void execute_command(t_ast_tree *node, char **envp, int in_pipeline)
+static void execute_command(t_ast_tree *node, char ***envp, int in_pipeline)
 {
 	int cmd_idx;
 	char *cmd;
@@ -442,7 +442,7 @@ static void execute_command(t_ast_tree *node, char **envp, int in_pipeline)
 			fprintf(stderr, "%s: Permission denied\n", cmd);
 			exit(126);
 		}
-		execve(cmd, node->args + cmd_idx, envp);
+		execve(cmd, node->args + cmd_idx, *envp);
 		perror("execve");
 		exit(1);
 	}
@@ -451,7 +451,7 @@ static void execute_command(t_ast_tree *node, char **envp, int in_pipeline)
 		path = find_path(cmd);
 		if (path)
 		{
-			execve(path, node->args + cmd_idx, envp);
+			execve(path, node->args + cmd_idx, *envp);
 			free(path);
 			perror("execve");
 			exit(1);
@@ -461,7 +461,7 @@ static void execute_command(t_ast_tree *node, char **envp, int in_pipeline)
 	}
 }
 
-static void execute_pipe(t_ast_tree *node, char **envp)
+static void execute_pipe(t_ast_tree *node, char ***envp)
 {
 	int pipefd[2];
 	pid_t pid1;
@@ -506,7 +506,7 @@ static void execute_pipe(t_ast_tree *node, char **envp)
 	handle_pipe_status(status2);
 }
 
-void executor_structure(t_ast_tree *node, char **envp, int in_pipeline)
+void executor_structure(t_ast_tree *node, char ***envp, int in_pipeline)
 {
 	// Temel kontroller
 	int std_in;

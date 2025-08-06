@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   built_export.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 12:27:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/04 20:17:16 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/06 15:03:05 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,6 +75,16 @@ static int	process_export_name(char *arg, char ***envp)
 	char	*entry;
 
 	status = 0;
+	if (!arg || arg[0] == '\0')
+	{
+		print_invalid_identifier(arg);
+		return (1);
+	}
+	if (arg[0] == '=' || ft_strchr(arg, '=') == arg)
+	{
+		print_invalid_identifier(arg);
+		return (1);
+	}
 	if (!is_valid_identifier(arg))
 	{
 		print_invalid_identifier(arg);
@@ -82,10 +92,9 @@ static int	process_export_name(char *arg, char ***envp)
 	}
 	else if (find_in_environ(arg, *envp) < 0)
 	{
-		entry = ft_strjoin(arg, "=");
+		entry = ft_strdup(arg);
 		if (!entry || extend_env(envp, entry))
 			status = 1;
-		free(entry);
 	}
 	return (status);
 }

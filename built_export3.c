@@ -3,42 +3,42 @@
 /*                                                        :::      ::::::::   */
 /*   built_export3.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:06:23 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/05 12:29:59 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/06 15:02:39 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char **copy_env(char **env)
+char	**copy_env(char **env)
 {
-	int n;
-	int i;
-	char **copy;
+	int		i;
+	int		count;
+	char	**copy;
 
-	n = 0;
 	i = 0;
-	while (env[n])
-		n++;
-	copy = malloc(sizeof(char *) * (n + 1));
+	count = 0;
+	while (env[count])
+		count++;
+	copy = malloc(sizeof(char *) * (count + 1));
 	if (!copy)
 		return (NULL);
-	while (i < n)
+	while (i < count)
 	{
-		copy[i] = env[i];
+		copy[i] = ft_strdup(env[i]);
 		i++;
 	}
-	copy[n] = NULL;
+	copy[count] = NULL;
 	return (copy);
 }
 
-static int compare_keys(char *s1, char *s2)
+static int	compare_keys(char *s1, char *s2)
 {
-	char *k1;
-	char *k2;
-	int res;
+	char	*k1;
+	char	*k2;
+	int		res;
 
 	k1 = ft_substr(s1, 0, ft_strchr(s1, '=') - s1);
 	k2 = ft_substr(s2, 0, ft_strchr(s2, '=') - s2);
@@ -54,12 +54,12 @@ static int compare_keys(char *s1, char *s2)
 	return (res);
 }
 
-static void sort_env(char **copy)
+static void	sort_env(char **copy)
 {
-	int n;
-	int i;
-	int j;
-	char *tmp;
+	int		n;
+	int		i;
+	int		j;
+	char	*tmp;
 
 	n = 0;
 	i = 0;
@@ -82,11 +82,11 @@ static void sort_env(char **copy)
 	}
 }
 
-void print_sorted_env(char **env)
+void	print_sorted_env(char **env)
 {
-	char **copy;
-	int i;
-	char *tmp;
+	char	**copy;
+	int		i;
+	char	*tmp;
 
 	i = 0;
 	copy = copy_env(env);
@@ -95,18 +95,25 @@ void print_sorted_env(char **env)
 	sort_env(copy);
 	while (copy[i])
 	{
+		if (copy[i][0] == '\0')
+		{
+			i++;
+			continue;
+		}
 		tmp = ft_strchr(copy[i], '=');
-		printf("declare -x %.*s=\"%s\"\n",
-			   (int)(tmp - copy[i]), copy[i], tmp + 1);
+		if (tmp)
+			printf("declare -x %.*s=\"%s\"\n", (int)(tmp - copy[i]), copy[i], tmp + 1);
+		else
+			printf("declare -x %s\n", copy[i]);
 		i++;
 	}
 	free(copy);
 }
 
-void print_invalid_identifier(char *arg)
+void	print_invalid_identifier(char *arg)
 {
-	char *msg;
-	char *temp;
+	char	*msg;
+	char	*temp;
 
 	msg = ft_strjoin("export: '", arg);
 	if (!msg)
