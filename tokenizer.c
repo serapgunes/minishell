@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:32:24 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/05 15:48:27 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/06 13:54:27 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,26 +23,23 @@
 // 	}
 // }// type yazdırmak için kontrol
 
-
-int	is_word_char(char c)
+int is_word_char(char c)
 {
-	if (c == ' ' || c == '\t' || c == '\n'
-		|| c == '|' || c == '<' || c == '>'
-		|| c == '\'' || c == '"')
+	if (c == ' ' || c == '\t' || c == '\n' || c == '|' || c == '<' || c == '>' || c == '\'' || c == '"')
 		return (0);
 	return (1);
 }
 
-static int	tokenize_redirection(char *input, t_token **head)
+static int tokenize_redirection(char *input, t_token **head)
 {
-	int	op_len;
+	int op_len;
 
 	op_len = handle_redir_operator(input, head);
 	handle_redir_file(input + op_len, &op_len, head);
 	return (op_len);
 }
 
-static void	handle_special_char(char *input, int *i, t_token **head)
+static void handle_special_char(char *input, int *i, t_token **head)
 {
 	if (input[*i] == '>' || input[*i] == '<')
 		*i += tokenize_redirection(input + *i, head);
@@ -55,10 +52,10 @@ static void	handle_special_char(char *input, int *i, t_token **head)
 		(*i)++;
 }
 
-t_token	*tokenize_input(char *input)
+t_token *tokenize_input(char *input)
 {
-	int		i;
-	t_token	*head;
+	int i;
+	t_token *head;
 
 	i = 0;
 	head = NULL;
@@ -74,6 +71,7 @@ t_token	*tokenize_input(char *input)
 			if (!arg)
 				return (NULL);
 			add_token_to_list(&head, create_word_token(arg));
+			free(arg);
 		}
 	}
 	return (head);

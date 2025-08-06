@@ -116,8 +116,10 @@ t_ast_tree *ft_build_ast(t_token *tokens)
 			current = current->next;
 			if (current && current->value)
 			{
-				char *filename = strip_quotes(current->value);
-				filename = normalize_filename(filename);
+				char *filename_raw = strip_quotes(current->value);
+				char *filename = normalize_filename(filename_raw);
+				if (filename != filename_raw)
+					free(filename_raw);
 				new_redir->target = filename;
 			}
 			else

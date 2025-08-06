@@ -21,6 +21,8 @@ SRCS			=	built_cd.c			\
 					parser.c    		\
 					executor.c 			\
 					signal.c			\
+					free_ast.c 			\
+					clean.c             \
 
 
 OBJS			=	$(SRCS:.c=.o)

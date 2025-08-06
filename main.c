@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/06 14:08:40 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/06 16:28:56 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ int main(int argc, char **argv, char **env)
 		if (input == NULL)
 		{
 			write(1, "exit\n", 5);
-			exit(0);
+			cleanup_and_exit(input, tokens, ast);
 		}
 		if (!input)
 			break;
@@ -149,25 +149,29 @@ int main(int argc, char **argv, char **env)
 		}
 		if (ft_parser(tokens)) // Syntax kontrolü başarısızsa
 		{
-			free(input);
-			continue;
-		}
-		if (!tokens) // Ekstra kontrol: yine NULL olabilir!
-		{
+			free_tokens(tokens);
 			free(input);
 			continue;
 		}
 		ast = ft_build_ast(tokens);
 		if (!ast)
 		{
+			free_tokens(tokens);
 			free(input);
 			continue;
 		}
 		// print_ast(ast, 0);// ast yazdırmak için
 		//  print_tokens(tokens); type yazdırmak için
 		if (prepare_all_heredocs(ast) != 0)
+		{
+			free_ast(ast);
+			free_tokens(tokens); // Tokenları serbest bırak
+			free(input);
 			continue;
+		}
 		executor_structure(ast, &envp, 0);
+		free_ast(ast);
+		free_tokens(tokens);
 		free(input);
 	}
 	return (ft_exit_code(-1));

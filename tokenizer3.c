@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:55:20 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/05 16:03:22 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/06 16:33:50 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,6 +51,7 @@ int handle_redir_operator(char *s, t_token **head)
 		add_token_to_list(head, create_token(op));
 	else
 		add_token_to_list(head, create_redir_token(op));
+	free(op);
 	return (len);
 }
 
@@ -88,12 +89,10 @@ static char *process_unquoted(char *s, int *j)
 
 char *normalize_filename(char *str)
 {
-	if (!str)
-		return (NULL);
-	if (str[0] == '\0')
+	if (!str || str[0] == '\0')
 	{
 		free(str);
-		return (NULL);
+		return NULL;
 	}
 	return (str);
 }
@@ -140,6 +139,7 @@ int handle_redir_file(char *s, int *i, t_token **head)
 		return (-1);
 	}
 	add_token_to_list(head, create_word_token(arg));
+	free(arg);
 	*i += j;
 	return (j);
 }
