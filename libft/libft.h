@@ -35,7 +35,7 @@ char	*ft_strdup(const char *s1);
 char	*ft_strjoin(char const *s1, char const *s2);
 char	*ft_strrchr(const char *s, int c);
 char	*ft_strmapi(const char *s, char (*f)(unsigned int, char));
-char *ft_strncpy(char *dest, const char *src, size_t n);
+char	*ft_strncpy(char *dest, const char *src, size_t n);
 char	*ft_strnstr(const char *haystack, const char *needle, size_t len);
 void	ft_putchar_fd(char c, int fd);
 void	*ft_memmove(void *dst, const void *src, size_t n);
