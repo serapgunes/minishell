@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path_find.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:25:32 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/06 15:10:27 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/07 09:49:15 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,17 +66,19 @@
 //     return ft_strdup(temp); // Böylece belleği dışarıdan yönetebilirsin
 // }
 
-void free_string_array(char **array)
+void	free_string_array(char **array)
 {
-    int i = 0;
-    if (!array)
-        return;
-    while (array[i])
-    {
-        free(array[i]);
-        i++;
-    }
-    free(array);
+	int	i;
+
+	if (!array)
+		return;
+	i = 0;
+	while (array[i])
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
 }
 
 char *find_path(char *command)

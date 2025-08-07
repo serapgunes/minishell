@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/06 17:14:03 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/07 10:15:25 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -415,7 +415,7 @@ static void execute_command(t_ast_tree *node, char ***envp, int in_pipeline)
 	cmd = node->args[cmd_idx];
 	if (handle_redirections(node) != 0)
 		exit(1);
-	ret = builtin(args_count(node->args + cmd_idx), node->args + cmd_idx, envp, NULL);
+	ret = builtin(args_count(node->args + cmd_idx), node->args + cmd_idx, envp);
 	if (ret != -1)
 	{
 		signal(SIGPIPE, SIG_IGN);
@@ -529,7 +529,7 @@ void executor_structure(t_ast_tree *node, char ***envp, int in_pipeline)
 			}
 
 			int argc = args_count(node->args);
-			int status = builtin(argc, node->args, envp, NULL);
+			int status = builtin(argc, node->args, envp);
 
 			dup2(std_in, STDIN_FILENO);
 			dup2(std_out, STDOUT_FILENO);

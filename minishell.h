@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/06 17:59:52 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/07 10:13:03 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ int builtin_cd(int argc, char **argv);
 int builtin_echo(int argc, char **argv);
 int control_env(int argc);
 int builtin_env(char ***env);
-int builtin_exit(int argc, char **argv, char *input, t_token *tokens, t_ast_tree *ast);
+int	builtin_exit(int argc, char **argv);
 int is_valid_identifier(const char *name);
 int builtin_export(int argc, char **argv, char ***envp);
 int find_in_environ(const char *name, char **env);
@@ -83,7 +83,7 @@ void print_sorted_env(char **env);
 void print_invalid_identifier(char *arg);
 int builtin_pwd(void);
 int builtin_unset(int argc, char **argv, char ***env);
-int builtin(int argc, char **argv, char ***env, char *input, t_token *tokens, t_ast_tree *ast);
+int	builtin(int argc, char **argv, char ***env);
 int is_builtin(char *cmd);
 int is_digit(int c);
 
@@ -127,14 +127,6 @@ int handle_redir_operator(char *s, t_token **head);
 int handle_redir_file(char *s, int *i, t_token **head);
 
 char *normalize_filename(char *str);
-
-/////ast///////
-void free_ast(t_ast_tree *node);
-////////////////
-
-////clean//////
-void cleanup_and_exit(char *input, t_token *tokens, t_ast_tree *ast, int exit_code);
-////////////////
 
 // exit code
 int ft_exit_code(int temp);

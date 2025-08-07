@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   built_exit.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:06:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/06 18:02:11 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/07 10:13:32 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ static int is_too_large(char *str)
 		return (1);
 	return (0);
 }
-int builtin_exit(int argc, char **argv, char *input, t_token *tokens, t_ast_tree *ast)
+int builtin_exit(int argc, char **argv)
 {
 	int exit_code;
 
@@ -63,14 +63,11 @@ int builtin_exit(int argc, char **argv, char *input, t_token *tokens, t_ast_tree
 			ft_putstr_fd("exit: ", 2);
 			ft_putstr_fd(argv[1], 2);
 			ft_putendl_fd(": numeric argument required", 2);
-			ft_exit_code(2);
-			cleanup_and_exit(input, tokens, ast, 2);
+			exit(2);
 		}
 		exit_code = ft_atoi(argv[1]) % 256;
-		ft_exit_code(exit_code);
-		cleanup_and_exit(input, tokens, ast, exit_code);
 	}
-	ft_exit_code(0);
-	cleanup_and_exit(input, tokens, ast, 0);
+	ft_exit_code(exit_code);
+	exit(exit_code);
 	return (0);
 }

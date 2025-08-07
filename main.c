@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/06 16:28:56 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/07 10:15:50 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -128,7 +128,7 @@ int main(int argc, char **argv, char **env)
 		if (input == NULL)
 		{
 			write(1, "exit\n", 5);
-			cleanup_and_exit(input, tokens, ast);
+			exit(0);
 		}
 		if (!input)
 			break;
@@ -164,13 +164,11 @@ int main(int argc, char **argv, char **env)
 		//  print_tokens(tokens); type yazdırmak için
 		if (prepare_all_heredocs(ast) != 0)
 		{
-			free_ast(ast);
 			free_tokens(tokens); // Tokenları serbest bırak
 			free(input);
 			continue;
 		}
 		executor_structure(ast, &envp, 0);
-		free_ast(ast);
 		free_tokens(tokens);
 		free(input);
 	}
