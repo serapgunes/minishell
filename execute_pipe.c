@@ -26,7 +26,7 @@ static void handle_pipe_status(int status)
 		ft_exit_code(WEXITSTATUS(status));
 }
 
-static pid_t	spawn_pipe_child(t_ast_tree *node, char ***envp, int pipefd[2], char* side)
+static pid_t	create_child_with_pipe(t_ast_tree *node, char ***envp, int pipefd[2], char* side)
 {
 	pid_t	pid;
 
@@ -51,7 +51,7 @@ static pid_t	spawn_pipe_child(t_ast_tree *node, char ***envp, int pipefd[2], cha
 		}
 		exit(ft_exit_code(-1));
 	}
-	return pid;
+	return (pid);
 }
 
 void	execute_pipe(t_ast_tree *node, char ***envp)
@@ -68,8 +68,8 @@ void	execute_pipe(t_ast_tree *node, char ***envp)
 		ft_exit_code(1);
 		return;
 	}
-	pid1 = spawn_pipe_child(node, envp, pipefd, "left");
-	pid2 = spawn_pipe_child(node, envp, pipefd, "right");
+	pid1 = create_child_with_pipe(node, envp, pipefd, "left");
+	pid2 = create_child_with_pipe(node, envp, pipefd, "right");
 	close(pipefd[0]);
 	close(pipefd[1]);
 	signal(SIGINT, SIG_IGN);
