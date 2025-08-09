@@ -132,4 +132,7 @@ char *normalize_filename(char *str);
 int ft_exit_code(int temp);
 char **copy_env(char **env);
 
+int	handle_redirections(t_ast_tree *node);
+void	execute_command(t_ast_tree *node, char ***envp, int in_pipeline);
+
 #endif

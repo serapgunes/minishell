@@ -1,26 +1,28 @@
 NAME			=	minishell
-SRCS			=	built_cd.c			\
-					built_echo.c 		\
-					built_env.c			\
-					built_exit.c 		\
-					built_export.c		\
-					built_export2.c		\
-					built_export3.c		\
-					built_pwd.c 		\
-					built_unset.c		\
-					builtin.c 			\
-					check.c				\
-					main.c				\
-					path_find.c 		\
-					tokenizer.c 		\
-					tokenizer2.c		\
-					tokenizer3.c		\
-					tokenizer_utils.c   \
-					tokenizer_utils2.c	\
-					tokenizer_utils3.c	\
-					parser.c    		\
-					executor.c 			\
-					signal.c			\
+SRCS			=	built_cd.c				\
+					built_echo.c 			\
+					built_env.c				\
+					built_exit.c 			\
+					built_export.c			\
+					built_export2.c			\
+					built_export3.c			\
+					built_pwd.c 			\
+					built_unset.c			\
+					builtin.c 				\
+					check.c					\
+					main.c					\
+					path_find.c 			\
+					tokenizer.c 			\
+					tokenizer2.c			\
+					tokenizer3.c			\
+					tokenizer_utils.c   	\
+					tokenizer_utils2.c		\
+					tokenizer_utils3.c		\
+					parser.c    			\
+					executor.c 				\
+					signal.c				\
+					handle_redirection.c	\
+ 					execute_command.c		\
 
 
 OBJS			=	$(SRCS:.c=.o)
