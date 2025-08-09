@@ -244,6 +244,8 @@ static void handle_command_status(int status)
 			write(2, "Quit: 3\n", 8);
 			ft_exit_code(131);
 		}
+		else if (sig == SIGPIPE)
+            ft_exit_code(141);
 	}
 	else
 		ft_exit_code(WEXITSTATUS(status));
@@ -418,7 +420,10 @@ static void execute_command(t_ast_tree *node, char ***envp, int in_pipeline)
 	ret = builtin(args_count(node->args + cmd_idx), node->args + cmd_idx, envp);
 	if (ret != -1)
 	{
-		signal(SIGPIPE, SIG_IGN);
+		if (in_pipeline)
+			signal(SIGPIPE, SIG_DFL);
+		else
+			signal(SIGPIPE, SIG_IGN);
 		exit(ret);
 	}
 	signal(SIGPIPE, SIG_DFL);
@@ -503,7 +508,13 @@ static void execute_pipe(t_ast_tree *node, char ***envp)
 	waitpid(pid1, &status1, 0);
 	waitpid(pid2, &status2, 0);
 	signal(SIGINT, signal_catch);
-	handle_pipe_status(status2);
+
+	 if ( (WIFSIGNALED(status1) && WTERMSIG(status1) == SIGPIPE) ||
+         (WIFEXITED(status1)  && WEXITSTATUS(status1) == 141) )
+        write(2, " Broken pipe\n", 12);
+	else
+
+		handle_pipe_status(status2);
 }
 
 void executor_structure(t_ast_tree *node, char ***envp, int in_pipeline)
