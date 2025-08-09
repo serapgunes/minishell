@@ -64,7 +64,6 @@ int builtin_exit(int argc, char **argv)
 			ft_putstr_fd("exit: ", 2);
 			ft_putstr_fd(argv[1], 2);
 			ft_putendl_fd(": numeric argument required", 2);
-			ft_free
 			exit(2);
 		}
 		exit_code = ft_atoi(argv[1]) % 256;
