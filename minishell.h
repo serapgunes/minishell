@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/09 22:16:29 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:24:52 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,7 +73,7 @@ int builtin_cd(int argc, char **argv);
 int builtin_echo(int argc, char **argv);
 int control_env(int argc);
 int builtin_env(char ***env);
-int	builtin_exit(int argc, char **argv);
+int builtin_exit(int argc, char **argv);
 int is_valid_identifier(const char *name);
 int builtin_export(int argc, char **argv, char ***envp);
 int find_in_environ(const char *name, char **env);
@@ -83,7 +83,7 @@ void print_sorted_env(char **env);
 void print_invalid_identifier(char *arg);
 int builtin_pwd(void);
 int builtin_unset(int argc, char **argv, char ***env);
-int	builtin(int argc, char **argv, char ***env);
+int builtin(int argc, char **argv, char ***env);
 int is_builtin(char *cmd);
 int is_digit(int c);
 
@@ -127,15 +127,15 @@ char *normalize_filename(char *str);
 // exit code
 int ft_exit_code(int temp);
 char **copy_env(char **env);
-
-int	handle_redirections(t_ast_tree *node);
-void	execute_command(t_ast_tree *node, char ***envp, int in_pipeline);
-void	execute_pipe(t_ast_tree *node, char ***envp);
-t_ast_tree	*create_cmd_node_with_args(int count, char ***args_out);
-int	fill_cmd_from_tokens(t_ast_tree *node, t_token *current, char **args);
+int handle_redirections(t_ast_tree *node);
+void execute_command(t_ast_tree *node, char ***envp, int in_pipeline);
+void execute_pipe(t_ast_tree *node, char ***envp);
+t_ast_tree *create_cmd_node_with_args(int count, char ***args_out);
+int fill_cmd_from_tokens(t_ast_tree *node, t_token *current, char **args);
 char *process_quoted(char *s, int *i, char quote_char);
 char *process_unquoted(char *s, int *j);
 int prepare_all_heredocs(t_ast_tree *node);
+
 
 
 

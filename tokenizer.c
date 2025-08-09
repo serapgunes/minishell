@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:32:24 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/09 21:59:24 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:27:02 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,11 +41,15 @@ static int tokenize_redirection(char *input, t_token **head)
 
 static void handle_special_char(char *input, int *i, t_token **head)
 {
+	t_token *token;
+
 	if (input[*i] == '>' || input[*i] == '<')
 		*i += tokenize_redirection(input + *i, head);
 	else if (input[*i] == '|')
 	{
-		add_token_to_list(head, create_pipe_token(ft_strdup("|")));
+		token = create_pipe_token("|");
+		if (token) // token NULL değilse
+			add_token_to_list(head, token);
 		(*i)++;
 	}
 	else
@@ -70,7 +74,9 @@ t_token *tokenize_input(char *input)
 			char *arg = collect_argument(input, &i);
 			if (!arg)
 				return (NULL);
-			add_token_to_list(&head, create_word_token(arg));
+			char *tmp = ft_strdup(arg);
+			add_token_to_list(&head, create_word_token(tmp));
+			free(tmp);
 			free(arg);
 		}
 	}

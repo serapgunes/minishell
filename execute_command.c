@@ -1,3 +1,4 @@
+
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
@@ -12,7 +13,7 @@
 
 #include "minishell.h"
 
-static int	cmd_skip_empty(char **args, int *cmd_idx)
+static int cmd_skip_empty(char **args, int *cmd_idx)
 {
 	while (args[*cmd_idx] && args[*cmd_idx][0] == '\0')
 		(*cmd_idx)++;
@@ -25,12 +26,12 @@ static int	cmd_skip_empty(char **args, int *cmd_idx)
 	return (0);
 }
 
-static void	run_builtin_or_exit(t_ast_tree *node, int cmd_idx, char ***envp, int in_pipeline)
+static void run_builtin_or_exit(t_ast_tree *node, int cmd_idx, char ***envp, int in_pipeline)
 {
-	int	ret;
+	int ret;
 
 	ret = builtin(args_count(node->args + cmd_idx),
-			node->args + cmd_idx, envp);
+				  node->args + cmd_idx, envp);
 	if (ret != -1)
 	{
 		if (in_pipeline)
@@ -42,16 +43,16 @@ static void	run_builtin_or_exit(t_ast_tree *node, int cmd_idx, char ***envp, int
 	signal(SIGPIPE, SIG_DFL);
 }
 
-static void	exit_with_cmd_error(char *cmd, char *msg, int code)
+static void exit_with_cmd_error(char *cmd, char *msg, int code)
 {
 	ft_putstr_fd(cmd, 2);
 	ft_putendl_fd(msg, 2);
 	exit(code);
 }
 
-static void	exec_path(char *cmd, t_ast_tree *node, char ***envp, int cmd_idx)
+static void exec_path(char *cmd, t_ast_tree *node, char ***envp, int cmd_idx)
 {
-	struct stat	sb;
+	struct stat sb;
 
 	if (stat(cmd, &sb) == -1)
 	{
@@ -86,12 +87,12 @@ static void lookup_path(char *cmd, t_ast_tree *node, char ***envp, int cmd_idx)
 	exit(127);
 }
 
-void	execute_command(t_ast_tree *node, char ***envp, int in_pipeline)
+void execute_command(t_ast_tree *node, char ***envp, int in_pipeline)
 {
-	int		cmd_idx;
-	char	*cmd;
+	int cmd_idx;
+	char *cmd;
 
-    cmd_idx = 0;
+	cmd_idx = 0;
 	if (!node || !node->args)
 		exit(1);
 	signal(SIGINT, SIG_DFL);

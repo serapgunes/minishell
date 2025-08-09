@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/09 22:11:12 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:41:39 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,13 +34,72 @@ int ft_exit_code(int temp)
 	return (exit_code);
 }
 
+void ft_free(char **envp)
+{
+	int i = 0;
+
+	while (envp[i])
+	{
+		free(envp[i]);
+		i++;
+	}
+	free(envp);
+}
+
+void free_redir_list(t_redir *redir)
+{
+	t_redir *tmp;
+
+	while (redir)
+	{
+		tmp = redir;
+		redir = redir->next;
+
+		// Eğer target varsa, onu serbest bırak
+		if (tmp->target)
+			free(tmp->target);
+
+		free(tmp); // Redir node'unu serbest bırak
+	}
+}
+
+void free_ast_tree(t_ast_tree *node)
+{
+	if (!node)
+		return;
+
+	// args dizisini serbest bırak
+	if (node->args)
+	{
+		int i = 0;
+		while (node->args[i]) // args dizisindeki her stringi free et
+		{
+			free(node->args[i]);
+			i++;
+		}
+		free(node->args); // args dizisini free et
+	}
+
+	// Redirection listesindeki her elemanı serbest bırak
+	if (node->redir_list)
+		free_redir_list(node->redir_list);
+
+	// Sol ve sağ alt ağaçları serbest bırak (recursive)
+	if (node->left)
+		free_ast_tree(node->left);
+	if (node->right)
+		free_ast_tree(node->right);
+
+	// Node'un kendisini serbest bırak
+	free(node);
+}
+
 int main(int argc, char **argv, char **env)
 {
 	char *input;
 	t_token *tokens;
 	t_ast_tree *ast;
 	char **envp = copy_env(env);
-
 	(void)argv;
 	(void)argc;
 	ft_exit_code(0);
@@ -84,18 +143,27 @@ int main(int argc, char **argv, char **env)
 			free(input);
 			continue;
 		}
-		// print_ast(ast, 0);// ast yazdırmak için
-		//  print_tokens(tokens); type yazdırmak için
+		// exit(123);
+		//  print_ast(ast, 0);// ast yazdırmak için
+		//   print_tokens(tokens); type yazdırmak için
 		if (prepare_all_heredocs(ast) != 0)
 		{
 			free_tokens(tokens); // Tokenları serbest bırak
+			free_ast_tree(ast);
 			free(input);
 			continue;
 		}
 		executor_structure(ast, &envp, 0);
-		free_tokens(tokens);
+		// ft_free(envp);
+		if (ast)
+			free_ast_tree(ast);
+		if (tokens)
+			free_tokens(tokens);
 		free(input);
 	}
+	if (envp)
+		ft_free(envp);
+
 	return (ft_exit_code(-1));
 }
 
@@ -104,3 +172,4 @@ int main(int argc, char **argv, char **env)
 // minishell$ env | grep VAR
 // minishell$ export VAR2
 // minishell$ export
+// valgrind --leak-check=full --show-leak-kinds=all  --suppressions=./readline.supp ./minishell

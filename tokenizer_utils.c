@@ -3,31 +3,31 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 17:51:21 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/07 10:13:59 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/09 21:28:26 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char	*ft_charjoin_free(char *res, char *val, int flag)
+char *ft_charjoin_free(char *res, char *val, int flag)
 {
-	char	*tmp;
+	char *tmp;
 
 	tmp = ft_strjoin(res, val);
-	if (flag & 1) //res serbest
+	if (flag & 1) // res serbest
 		free(res);
-	if (flag & 2) //val serbest
+	if (flag & 2) // val serbest
 		free(val);
 	return (tmp);
 }
 
-char	*ft_charjoin(char *res, char c)
+char *ft_charjoin(char *res, char c)
 {
-	char	*tmp;
-	int		len;
+	char *tmp;
+	int len;
 
 	len = ft_strlen(res);
 	tmp = malloc(len + 2);
@@ -42,16 +42,16 @@ char	*ft_charjoin(char *res, char c)
 	free(res);
 	return (tmp);
 }
+// void free_tokens(t_token *head)
+// {
+// 	t_token *tmp;
 
-void	free_tokens(t_token *head)
-{
-	t_token	*tmp;
-
-	while (head)
-	{
-		tmp = head->next;
-		free(head->value);
-		free(head);
-		head = tmp;
-	}
-}
+// 	while (head)
+// 	{
+// 		tmp = head->next;
+// 		if (head->value)
+// 			free(head->value);
+// 		free(head);
+// 		head = tmp;
+// 	}
+// }
