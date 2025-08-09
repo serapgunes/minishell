@@ -31,81 +31,90 @@ static void handle_command_status(int status)
 		ft_exit_code(WEXITSTATUS(status));
 }
 
-void executor_structure(t_ast_tree *node, char ***envp, int in_pipeline)
+static int	try_execute_builtin(t_ast_tree *node, char ***envp, int in_pipeline, int std_in, int std_out)
 {
-	// Temel kontroller
-	int std_in;
-	int std_out;
+	int	argc;
+	int	status;
+
+	if (!in_pipeline && is_builtin(node->args[0]))
+	{
+		if (handle_redirections(node) != 0)
+		{
+			ft_exit_code(1);
+			dup2(std_in, STDIN_FILENO);     // input'u geri al
+			dup2(std_out, STDOUT_FILENO);  // output'u geri al
+			return (1);
+		}
+		argc = args_count(node->args);
+		status = builtin(argc, node->args, envp);
+		dup2(std_in, STDIN_FILENO);
+		dup2(std_out, STDOUT_FILENO);
+		if (status != -1)
+		{
+			ft_exit_code(status);
+			return (1);
+		}
+	}
+	return (0);
+}
+
+static void	execute_and_wait(t_ast_tree *node, char ***envp, int in_pipeline)
+{
+	pid_t	pid;
+	int		status;
+
+	pid = fork();
+	if (pid < 0)
+	{
+		perror("fork");
+		ft_exit_code(1);
+		return ;
+	}
+	else if (pid == 0)   // Child process
+	{
+		execute_command(node, envp, in_pipeline);  // Child process'te execute_command çağır
+		exit(1);  // Bu noktaya asla ulaşılmamalı, execute_command her zaman exit() çağırır
+	}
+	else  // Parent process
+	{
+		signal(SIGINT, signal_child); // Child process'i bekle
+		waitpid(pid, &status, 0);
+		handle_command_status(status); // Exit status'u işle
+		signal(SIGINT, signal_catch);
+	}
+}
+
+static void	free_redirections(t_ast_tree *node)
+{
+	t_redir	*current;
+	t_redir	*next;
+
+	current = node->redir_list;
+	while (current)
+	{
+		next = current->next;
+		if (current->target)
+			free(current->target);
+		free(current);
+		current = next;
+	}
+	node->redir_list = NULL;
+}
+
+void	executor_structure(t_ast_tree *node, char ***envp, int in_pipeline)
+{
+	int	std_in;
+	int	std_out;
 
 	std_in = dup(STDIN_FILENO);
 	std_out = dup(STDOUT_FILENO);
-
 	if (node->type == NODE_COMMAND)
 	{
-		// Pipe dışındaki builtin komutları direkt çalıştır
-		if (!in_pipeline && (is_builtin(node->args[0])))
-		{
-			if (handle_redirections(node) != 0)
-			{
-				ft_exit_code(1);
-				dup2(std_in, STDIN_FILENO);	  // input'u geri al
-				dup2(std_out, STDOUT_FILENO); // output'u geri al
-				return;
-			}
-
-			int argc = args_count(node->args);
-			int status = builtin(argc, node->args, envp);
-
-			dup2(std_in, STDIN_FILENO);
-			dup2(std_out, STDOUT_FILENO);
-
-			if (status != -1)
-			{
-				ft_exit_code(status);
-				return;
-			}
-		}
-		// Harici komutlar için fork
-		pid_t pid = fork();
-		if (pid < 0)
-		{
-			perror("fork");
-			ft_exit_code(1);
-			return;
-		}
-		else if (pid == 0) // Child process
-		{
-			// Child process'te execute_command çağır
-			execute_command(node, envp, in_pipeline);
-			// Bu noktaya asla ulaşılmamalı, execute_command her zaman exit() çağırır
-			exit(1);
-		}
-		else // Parent process
-		{
-			int status;
-			// Child process'i bekle
-			signal(SIGINT, signal_child);
-			waitpid(pid, &status, 0);
-			// Exit status'u işle
-			handle_command_status(status);
-			signal(SIGINT, signal_catch);
-
-			// Yönlendirmeleri temizle
-			if (node->redir_list)
-			{
-				t_redir *current = node->redir_list;
-				t_redir *next;
-				while (current)
-				{
-					next = current->next;
-					if (current->target)
-						free(current->target);
-					free(current);
-					current = next;
-				}
-				node->redir_list = NULL;
-			}
-		}
+		if (try_execute_builtin(node, envp, in_pipeline, std_in, std_out))
+			return ;
+		execute_and_wait(node, envp, in_pipeline);
+		if (node->redir_list)
+			free_redirections(node);
 	}
 	else if (node->type == NODE_PIPE)
 		execute_pipe(node, envp);
