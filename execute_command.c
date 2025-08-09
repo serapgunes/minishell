@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_command.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:51:02 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/09 20:53:14 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/10 02:39:44 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,12 +25,12 @@ static int cmd_skip_empty(char **args, int *cmd_idx)
 	return (0);
 }
 
-static void run_builtin_or_exit(t_ast_tree *node, int cmd_idx, char ***envp, int in_pipeline)
+static void run_builtin_or_exit(t_ast_tree *node, int cmd_idx, int in_pipeline, t_shell *shell)
 {
 	int ret;
 
 	ret = builtin(args_count(node->args + cmd_idx),
-				  node->args + cmd_idx, envp);
+				  node->args + cmd_idx, &shell->envp);
 	if (ret != -1)
 	{
 		if (in_pipeline)
@@ -49,7 +49,7 @@ static void exit_with_cmd_error(char *cmd, char *msg, int code)
 	exit(code);
 }
 
-static void exec_path(char *cmd, t_ast_tree *node, char ***envp, int cmd_idx)
+static void exec_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell)
 {
 	struct stat sb;
 
@@ -64,19 +64,19 @@ static void exec_path(char *cmd, t_ast_tree *node, char ***envp, int cmd_idx)
 		exit_with_cmd_error(cmd, ": Is a directory", 126);
 	if (access(cmd, X_OK) != 0)
 		exit_with_cmd_error(cmd, ": Permission denied", 126);
-	execve(cmd, node->args + cmd_idx, *envp);
+	execve(cmd, node->args + cmd_idx, shell->envp);
 	perror("execve");
 	exit(1);
 }
 
-static void lookup_path(char *cmd, t_ast_tree *node, char ***envp, int cmd_idx)
+static void lookup_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell)
 {
 	char *path;
 
 	path = find_path(cmd);
 	if (path)
 	{
-		execve(path, node->args + cmd_idx, *envp);
+		execve(path, node->args + cmd_idx, shell->envp);
 		free(path);
 		perror("execve");
 		exit(1);
@@ -86,7 +86,7 @@ static void lookup_path(char *cmd, t_ast_tree *node, char ***envp, int cmd_idx)
 	exit(127);
 }
 
-void execute_command(t_ast_tree *node, char ***envp, int in_pipeline)
+void execute_command(t_ast_tree *node, int in_pipeline, t_shell *shell)
 {
 	int cmd_idx;
 	char *cmd;
@@ -100,9 +100,9 @@ void execute_command(t_ast_tree *node, char ***envp, int in_pipeline)
 	cmd = node->args[cmd_idx];
 	if (handle_redirections(node) != 0)
 		exit(1);
-	run_builtin_or_exit(node, cmd_idx, envp, in_pipeline);
+	run_builtin_or_exit(node, cmd_idx, in_pipeline, shell);
 	if (cmd[0] == '/' || cmd[0] == '.')
-		exec_path(cmd, node, envp, cmd_idx);
+		exec_path(cmd, node, cmd_idx, shell);
 	else
-		lookup_path(cmd, node, envp, cmd_idx);
+		lookup_path(cmd, node, cmd_idx, shell);
 }

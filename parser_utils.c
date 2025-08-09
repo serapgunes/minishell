@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:54:37 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/09 21:18:31 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/10 02:17:16 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,15 +25,15 @@ static int find_pipe_split(t_token *tokens,
     {
         if (tokens->type == PIPE)
         {
-            if (!tokens->next)  // pipe'tan sonra hiçbir şey yoksa: syntax error
+            if (!tokens->next) // pipe'tan sonra hiçbir şey yoksa: syntax error
                 return (1);
 
-            *mid = tokens;           // pipe düğümünü geri ver
-            *right = tokens->next;   // sağ liste başlangıcı
+            *mid = tokens;         // pipe düğümünü geri ver
+            *right = tokens->next; // sağ liste başlangıcı
 
-            tokens->next = NULL;     // pipe'ı sağdan kopar
+            tokens->next = NULL; // pipe'ı sağdan kopar
             if (prev)
-                prev->next = NULL;   // solu da pipe'tan kopar
+                prev->next = NULL; // solu da pipe'tan kopar
 
             return (0);
         }
@@ -43,18 +43,18 @@ static int find_pipe_split(t_token *tokens,
     return (0);
 }
 
-static int	count_words(t_token *cur)
+static int count_words(t_token *cur)
 {
-	int	count;
+    int count;
 
-	count = 0;
-	while (cur)
-	{
-		if (cur->type == WORD)
-			count++;
-		cur = cur->next;
-	}
-	return (count);
+    count = 0;
+    while (cur)
+    {
+        if (cur->type == WORD)
+            count++;
+        cur = cur->next;
+    }
+    return (count);
 }
 
 static t_ast_tree *build_cmd_node(t_token *left_token)
@@ -64,7 +64,8 @@ static t_ast_tree *build_cmd_node(t_token *left_token)
     int count = count_words(left_token);
 
     node = create_cmd_node_with_args(count, &args);
-    if (!node) return NULL;
+    if (!node)
+        return NULL;
 
     if (fill_cmd_from_tokens(node, left_token, args) != 0)
     {
@@ -78,21 +79,22 @@ static t_ast_tree *build_cmd_node(t_token *left_token)
     return node;
 }
 
-static t_ast_tree *make_pipe_node(t_token *left, t_token *right, t_token *mid)
+static t_ast_tree *make_pipe_node(t_token *left, t_token *right, t_token *mid, t_shell *shell)
 {
     t_ast_tree *node;
 
-	node = malloc(sizeof(t_ast_tree));
+    node = malloc(sizeof(t_ast_tree));
     if (!node)
         return (NULL);
     node->type = NODE_PIPE;
     node->redir_list = NULL;
     node->args = NULL;
-    node->left  = ft_build_ast(left);
-    node->right = ft_build_ast(right);
+    node->left = ft_build_ast(left, shell);
+    node->right = ft_build_ast(right, shell);
     if (mid)
     {
-        if (mid->value) free(mid->value);
+        if (mid->value)
+            free(mid->value);
         free(mid);
     }
     if (!node->left || !node->right)
@@ -104,12 +106,12 @@ static t_ast_tree *make_pipe_node(t_token *left, t_token *right, t_token *mid)
     return (node);
 }
 
-t_ast_tree *ft_build_ast(t_token *tokens)
+t_ast_tree *ft_build_ast(t_token *tokens, t_shell *shell)
 {
     t_token *left, *right, *mid;
 
-    if (!tokens) 
-		return (NULL);
+    if (!tokens)
+        return (NULL);
 
     if (find_pipe_split(tokens, &left, &mid, &right))
     {
@@ -118,8 +120,8 @@ t_ast_tree *ft_build_ast(t_token *tokens)
         free_token_list(tokens);
         return (NULL);
     }
-    if (mid)     // pipe bulundu
-        return make_pipe_node(left, right, mid);
+    if (mid) // pipe bulundu
+        return make_pipe_node(left, right, mid, shell);
 
     // pipe yoksa tek komut; build_cmd_node tokenları kendi içinde free ediyor
     return (build_cmd_node(tokens));

@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/09 22:24:52 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 02:38:40 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,6 @@ typedef struct s_ast_tree
     t_redir *redir_list;
     struct s_ast_tree *left; // her nodun içinde alt nodelar var bu alt nodelar aynı yapıya yani structa eşit olduğu için böyle
     struct s_ast_tree *right;
-
 } t_ast_tree;
 
 typedef enum e_token_type
@@ -69,6 +68,16 @@ typedef struct s_token
     struct s_token *next;
 } t_token;
 
+typedef struct s_shell
+{
+    char *input;
+    t_token *tokens;
+    t_ast_tree *ast;
+    char **envp;
+} t_shell;
+
+void cleanup(t_shell *shell, int mode); // düşün
+
 int builtin_cd(int argc, char **argv);
 int builtin_echo(int argc, char **argv);
 int control_env(int argc);
@@ -88,10 +97,10 @@ int is_builtin(char *cmd);
 int is_digit(int c);
 
 int is_only_spaces(char *str);
-void executor_structure(t_ast_tree *node, char ***envp, int in_pipeline);
+void executor_structure(t_ast_tree *node, int in_pipeline, t_shell *shell);
 
 // parser///////////////////////
-t_ast_tree *ft_build_ast(t_token *tokens);
+t_ast_tree *ft_build_ast(t_token *tokens, t_shell *shell);
 // void print_ast(t_ast_tree *node, int depth);
 int ft_parser(t_token *input);
 ////////////////////////////////
@@ -128,14 +137,13 @@ char *normalize_filename(char *str);
 int ft_exit_code(int temp);
 char **copy_env(char **env);
 int handle_redirections(t_ast_tree *node);
-void execute_command(t_ast_tree *node, char ***envp, int in_pipeline);
-void execute_pipe(t_ast_tree *node, char ***envp);
+void execute_command(t_ast_tree *node, int in_pipeline, t_shell *shell);
+void execute_pipe(t_ast_tree *node, t_shell *shell);
 t_ast_tree *create_cmd_node_with_args(int count, char ***args_out);
 int fill_cmd_from_tokens(t_ast_tree *node, t_token *current, char **args);
 char *process_quoted(char *s, int *i, char quote_char);
 char *process_unquoted(char *s, int *j);
 int prepare_all_heredocs(t_ast_tree *node);
-void free_token_list(t_token *cur); //bak
-
+void free_token_list(t_token *cur); // bak
 
 #endif

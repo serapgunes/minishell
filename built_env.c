@@ -3,28 +3,28 @@
 /*                                                        :::      ::::::::   */
 /*   built_env.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:10:19 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/06 14:15:25 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/10 02:38:31 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	control_env(int argc)
+int control_env(int argc)
 {
 	if (argc > 1)
-	{	
+	{
 		write(1, "env: too many arguments\n", 23);
 		return (0);
 	}
-	return (1);	
+	return (1);
 }
 
-int	builtin_env(char ***env)
+int builtin_env(char ***env)
 {
-	int	i;
+	int i;
 
 	i = 0;
 	if (!env)

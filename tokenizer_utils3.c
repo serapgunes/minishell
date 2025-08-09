@@ -6,33 +6,11 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:59:29 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/09 22:10:18 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 01:47:49 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-void free_tokens(t_token *tokens)
-{
-	t_token *current;
-	t_token *next;
-
-	if (!tokens)
-		return;
-
-	current = tokens;
-	while (current)
-	{
-		next = current->next;
-		if (current->value)
-		{
-			free(current->value);
-			current->value = NULL;
-		}
-		free(current);
-		current = next;
-	}
-}
 
 t_token *create_word_token(char *value)
 {

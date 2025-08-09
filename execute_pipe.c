@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_pipe.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:53:32 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/09 20:53:36 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/10 02:40:36 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,9 +36,9 @@ static void handle_pipe_status(int status)
 		ft_exit_code(WEXITSTATUS(status));
 }
 
-static pid_t	create_child_with_pipe(t_ast_tree *node, char ***envp, int pipefd[2], char* side)
+static pid_t create_child_with_pipe(t_ast_tree *node, int pipefd[2], char *side, t_shell *shell)
 {
-	pid_t	pid;
+	pid_t pid;
 
 	pid = fork();
 	if (pid == 0)
@@ -50,27 +50,28 @@ static pid_t	create_child_with_pipe(t_ast_tree *node, char ***envp, int pipefd[2
 			dup2(pipefd[1], STDOUT_FILENO);
 			close(pipefd[0]);
 			close(pipefd[1]);
-			executor_structure(node->left, envp, 1);
+			executor_structure(node->left, 1, shell);
 		}
 		else
 		{
 			dup2(pipefd[0], STDIN_FILENO);
 			close(pipefd[1]);
 			close(pipefd[0]);
-			executor_structure(node->right, envp, 1);
+			executor_structure(node->right, 1, shell);
 		}
+		cleanup(shell, 0);
 		exit(ft_exit_code(-1));
 	}
 	return (pid);
 }
 
-void	execute_pipe(t_ast_tree *node, char ***envp)
+void execute_pipe(t_ast_tree *node, t_shell *shell)
 {
-	int		pipefd[2];
-	pid_t	pid1;
-	pid_t	pid2;
-	int		status1;
-	int		status2;
+	int pipefd[2];
+	pid_t pid1;
+	pid_t pid2;
+	int status1;
+	int status2;
 
 	if (pipe(pipefd) == -1)
 	{
@@ -78,16 +79,15 @@ void	execute_pipe(t_ast_tree *node, char ***envp)
 		ft_exit_code(1);
 		return;
 	}
-	pid1 = create_child_with_pipe(node, envp, pipefd, "left");
-	pid2 = create_child_with_pipe(node, envp, pipefd, "right");
+	pid1 = create_child_with_pipe(node, pipefd, "left", shell);
+	pid2 = create_child_with_pipe(node, pipefd, "right", shell);
 	close(pipefd[0]);
 	close(pipefd[1]);
 	signal(SIGINT, SIG_IGN);
 	waitpid(pid1, &status1, 0);
 	waitpid(pid2, &status2, 0);
 	signal(SIGINT, signal_catch);
-	if ((WIFSIGNALED(status1) && WTERMSIG(status1) == SIGPIPE)
-	 || (WIFEXITED(status1) && WEXITSTATUS(status1) == 141))
+	if ((WIFSIGNALED(status1) && WTERMSIG(status1) == SIGPIPE) || (WIFEXITED(status1) && WEXITSTATUS(status1) == 141))
 		write(2, " Broken pipe\n", 12);
 	else
 		handle_pipe_status(status2);

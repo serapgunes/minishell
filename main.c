@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/09 22:41:39 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 02:37:04 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,44 +61,72 @@ void free_redir_list(t_redir *redir)
 		free(tmp);
 	}
 }
+void free_tokens(t_token *tokens)
+{
+	t_token *current;
+	t_token *next;
+
+	if (!tokens)
+		return;
+
+	current = tokens;
+	while (current)
+	{
+		next = current->next;
+		if (current->value)
+		{
+			free(current->value);
+			current->value = NULL;
+		}
+		free(current);
+		current = next;
+	}
+}
 
 void free_ast_tree(t_ast_tree *node)
 {
 	if (!node)
 		return;
-
-	// args dizisini serbest bırak
 	if (node->args)
 	{
 		int i = 0;
-		while (node->args[i]) // args dizisindeki her stringi free et
+		while (node->args[i])
 		{
 			free(node->args[i]);
 			i++;
 		}
-		free(node->args); // args dizisini free et
+		free(node->args);
 	}
-
-	// Redirection listesindeki her elemanı serbest bırak
 	if (node->redir_list)
 		free_redir_list(node->redir_list);
-
-	// Sol ve sağ alt ağaçları serbest bırak (recursive)
 	if (node->left)
 		free_ast_tree(node->left);
 	if (node->right)
 		free_ast_tree(node->right);
-
-	// Node'un kendisini serbest bırak
 	free(node);
+}
+
+void cleanup(t_shell *shell, int mode)
+{
+	if (!shell)
+		return;
+	if (shell->input)
+		free(shell->input);
+	if (shell->tokens)
+		free_tokens(shell->tokens);
+	if (shell->ast)
+		free_ast_tree(shell->ast);
+	if (shell->envp && mode == 0)
+		ft_free(shell->envp);
+	free(shell);
 }
 
 int main(int argc, char **argv, char **env)
 {
-	char *input;
-	t_token *tokens;
-	t_ast_tree *ast;
-	char **envp = copy_env(env);
+	t_shell *shell = malloc(sizeof(t_shell));
+	if (!shell)
+		return (1);
+	shell->envp = copy_env(env);
 
 	(void)argv;
 	(void)argc;
@@ -106,58 +134,53 @@ int main(int argc, char **argv, char **env)
 	while (1)
 	{
 		signal(SIGINT, signal_catch);
-		input = readline("minishell$ ");
+		shell->input = readline("minishell$ ");
 
-		if (input == NULL)
+		if (shell->input == NULL)
 		{
 			write(1, "exit\n", 5);
-			if (envp)
-				ft_free(envp);
+			cleanup(shell, 1);
 			exit(0);
 		}
-		if (is_only_spaces(input))
+		if (is_only_spaces(shell->input))
 		{
-			add_history(input);
-			free(input);
+			add_history(shell->input);
+			cleanup(shell, 1);
 			continue;
 		}
-		if (*input)
-			add_history(input);
+		if (*shell->input)
+			add_history(shell->input);
 
-		tokens = tokenize_input(input);
-		if (!tokens)
+		shell->tokens = tokenize_input(shell->input);
+		if (!shell->tokens)
 		{
 			ft_exit_code(0);
-			free(input);
+			cleanup(shell, 1);
 			continue;
 		}
-		if (ft_parser(tokens))
+		if (ft_parser(shell->tokens))
 		{
-			free_tokens(tokens);
-			free(input);
+			cleanup(shell, 1);
 			continue;
 		}
-		ast = ft_build_ast(tokens);
-		tokens = NULL; 
-		if (!ast)
+		shell->ast = ft_build_ast(shell->tokens, shell);
+		shell->tokens = NULL;
+		if (!shell->ast)
 		{
-			free(input);
+			cleanup(shell, 1);
 			continue;
 		}
-		if (prepare_all_heredocs(ast) != 0)
+		if (prepare_all_heredocs(shell->ast) != 0)
 		{
-			free_ast_tree(ast);
-			free(input);
+			cleanup(shell, 1);
 			continue;
 		}
-		executor_structure(ast, &envp, 0);
-		if (ast)
-			free_ast_tree(ast);
-		free(input);
+		executor_structure(shell->ast, 0, shell);
+		if (shell->ast)
+			free_ast_tree(shell->ast);
+		free(shell->input);
 	}
-	if (envp)
-		ft_free(envp);
-
+	cleanup(shell, 0);
 	return (ft_exit_code(-1));
 }
 
