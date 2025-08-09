@@ -1,0 +1,2794 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   built_cd.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil < sakdil@student.42istanbul.com.tr> +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/18 20:09:08 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/09 20:50:30 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static int	builtin_cd_home(void)
+{
+	char	*home;
+
+	home = getenv("HOME");
+	if (!home)
+	{
+		ft_putendl_fd("cd: HOME not set", 2);
+		return (1);
+	}
+	if (chdir(home) != 0)
+	{
+		perror("cd");
+		return (1);
+	}
+	return (0);
+}
+
+static int	builtin_cd_path(char *path)
+{
+	if (chdir(path) != 0)
+	{
+		ft_putstr_fd("cd: ", 2);
+		ft_putstr_fd(path, 2);
+		ft_putendl_fd(": No such file or directory", 2);
+		return (1);
+	}
+	return (0);
+}
+
+int	builtin_cd(int argc, char **argv)
+{
+	if (argc > 2)
+	{
+		ft_putendl_fd("cd: too many arguments", 2);
+		return (1);
+	}
+	if (argc == 1)
+		return (builtin_cd_home());
+	else
+		return (builtin_cd_path(argv[1]));
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   built_echo.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/10 14:20:45 by segunes           #+#    #+#             */
+/*   Updated: 2025/08/05 23:44:22 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static int	parse_n_flag(int argc, char **argv, int *idx)
+{
+	int	nflag;
+	int	j;
+
+	nflag = 0;
+	while (*idx < argc && argv[*idx][0] == '-' && argv[*idx][1] == 'n')
+	{
+		j = 1;
+		while (argv[*idx][j] == 'n') j++;
+		if (argv[*idx][j] != '\0') break;
+		nflag = 1;
+		(*idx)++;
+	}
+	return (nflag);
+}
+
+static int	echo_write_arg(const char *arg, int first)
+{
+	if (!first && write(1, " ", 1) < 0)
+	{
+		if (errno == EPIPE) return 1;
+		perror("echo"); return 1;
+	}
+	if (write(1, arg, strlen(arg)) < 0)
+	{
+		if (errno == EPIPE) return 1;
+		perror("echo"); return 1;
+	}
+	return (0);
+}
+
+int	builtin_echo(int argc, char **argv)
+{
+	int	i;
+	int	first;
+	int	nflag;
+
+	i = 1;
+	first = 1;
+	nflag = parse_n_flag(argc, argv, &i);
+	while (i < argc)
+	{
+		if (strlen(argv[i]) > 0)
+		{
+			if (echo_write_arg(argv[i], first))
+				return (1);
+			first = 0;
+		}
+		i++;
+	}
+	if (!nflag && write(1, "\n", 1) < 0)
+	{
+		if (errno == EPIPE)
+			return 1;
+		perror("echo");
+		return (1);
+	}
+	return (0);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   built_env.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/18 20:10:19 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/06 14:15:25 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+int	control_env(int argc)
+{
+	if (argc > 1)
+	{	
+		write(1, "env: too many arguments\n", 23);
+		return (0);
+	}
+	return (1);	
+}
+
+int	builtin_env(char ***env)
+{
+	int	i;
+
+	i = 0;
+	if (!env)
+	{
+		printf("env: environment is NULL\n");
+		return (1);
+	}
+	while ((*env)[i])
+	{
+		if (ft_strchr((*env)[i], '='))
+			printf("%s\n", (*env)[i]);
+		i++;
+	}
+	return (0);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   built_exit.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/18 20:06:34 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/07 10:13:32 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+int is_digit(int c)
+{
+	return (c >= '0' && c <= '9');
+}
+
+static int is_numeric(const char *str)
+{
+	int i;
+
+	i = 0;
+	if (str[0] == '-' || str[0] == '+')
+		i++;
+	while (str[i])
+	{
+		if (!is_digit(str[i]))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+static int is_too_large(char *str)
+{
+	int len;
+
+	len = ft_strlen(str);
+	if (len > 19)
+		return (1);
+	if (len == 19 && ft_strcmp(str, "9223372036854775807") > 0)
+		return (1);
+	return (0);
+}
+int builtin_exit(int argc, char **argv)
+{
+	int exit_code;
+
+	exit_code = 0;
+	ft_putendl_fd("exit", 1);
+	if (argc > 2)
+	{
+		ft_putendl_fd("exit: too many arguments", 2);
+		ft_exit_code(1);
+		return (1);
+	}
+	if (argc == 2)
+	{
+		if (argc >= 2 && (!argv[1] || !is_numeric(argv[1]) || is_too_large(argv[1])))
+		{
+			ft_putstr_fd("exit: ", 2);
+			ft_putstr_fd(argv[1], 2);
+			ft_putendl_fd(": numeric argument required", 2);
+			exit(2);
+		}
+		exit_code = ft_atoi(argv[1]) % 256;
+	}
+	ft_exit_code(exit_code);
+	exit(exit_code);
+	return (0);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   built_export.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/08 12:27:34 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/06 15:03:05 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+int	is_valid_identifier(const char *name)
+{
+	int	i;
+
+	i = 0;
+	if (!name || !name[0])
+		return (0);
+	if (name[0] >= '0' && name[0] <= '9')
+		return (0);
+	while (name[i])
+	{
+		if (!(ft_isalnum(name[i]) || name[i] == '_'))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+static int	is_valid_identifier_len(const char *name, size_t len)
+{
+	size_t	i;
+
+	i = 0;
+	if (len == 0 || (name[0] >= '0' && name[0] <= '9'))
+		return (0);
+	while (i < len)
+	{
+		if (!(ft_isalnum(name[i]) || name[i] == '_'))
+			return (0);
+		i++;
+	}
+	return (1);
+}
+
+static int	process_export_assignment(char *arg, char ***envp)
+{
+	char	*name;
+	int		len;
+	int		status;
+
+	status = 0;
+	len = ft_strchr(arg, '=') - arg;
+	if (!is_valid_identifier_len(arg, len))
+	{
+		name = ft_substr(arg, 0, len);
+		if (name)
+		{
+			print_invalid_identifier(name);
+			free(name);
+		}
+		status = 1;
+	}
+	else if (set_env_var(arg, envp))
+		status = 1;
+	return (status);
+}
+
+static int	process_export_name(char *arg, char ***envp)
+{
+	int		status;
+	char	*entry;
+
+	status = 0;
+	if (!arg || arg[0] == '\0')
+	{
+		print_invalid_identifier(arg);
+		return (1);
+	}
+	if (arg[0] == '=' || ft_strchr(arg, '=') == arg)
+	{
+		print_invalid_identifier(arg);
+		return (1);
+	}
+	if (!is_valid_identifier(arg))
+	{
+		print_invalid_identifier(arg);
+		status = 1;
+	}
+	else if (find_in_environ(arg, *envp) < 0)
+	{
+		entry = ft_strdup(arg);
+		if (!entry || extend_env(envp, entry))
+			status = 1;
+	}
+	return (status);
+}
+
+int	builtin_export(int argc, char **argv, char ***envp)
+{
+	int	i;
+	int	status;
+
+	status = 0;
+	i = 1;
+	if (argc == 1)
+	{
+		print_sorted_env(*envp);
+		return (0);
+	}
+	while (i < argc)
+	{
+		if (argv[i] && ft_strchr(argv[i], '='))
+		{
+			if (process_export_assignment(argv[i], envp))
+				status = 1;
+		}
+		else
+		{
+			if (process_export_name(argv[i], envp))
+				status = 1;
+		}
+		i++;
+	}
+	return (status);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   built_export2.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 11:06:14 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/07 10:14:14 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+int	find_in_environ(const char *name, char **env)
+{
+	int	i;
+	int	len;
+
+	len = ft_strlen(name);
+	i = 0;
+	while (env[i])
+	{
+		if (ft_strncmp(env[i], name, len) == 0 && env[i][len] == '=')
+			return (i);
+		i++;
+	}
+	return (-1);
+}
+
+int	extend_env(char ***envp, char *new_entry)
+{
+	char	**old;
+	char	**new;
+	int		cnt;
+	int		j;
+
+	old = *envp;
+	cnt = 0;
+	j = 0;
+	while (old[cnt])
+		cnt++;
+	new = malloc(sizeof(char *) * (cnt + 2));
+	if (!new)
+		return (1);
+	while (j < cnt)
+	{
+		new[j] = old[j];
+		j++;
+	}
+	new[j++] = new_entry;
+	new[j] = NULL;
+	*envp = new;
+	free (old);
+	return (0);
+}
+
+static int	set_env_var_update(char *name, char *value, char **envp, int idx)
+{
+	char	*tmp;
+	char	*new_var;
+
+	free(envp[idx]);
+	tmp = ft_strjoin(name, "=");
+	if (!tmp)
+		return (1);
+	new_var = ft_strjoin(tmp, value);
+	free(tmp);
+	if (!new_var)
+		return (1);
+	envp[idx] = new_var;
+	return (0);
+}
+
+static int	set_env_var_add(char *name, char *value, char ***envp)
+{
+	char	*tmp;
+	char	*new_var;
+
+	tmp = ft_strjoin(name, "=");
+	if (!tmp)
+		return (1);
+	new_var = ft_strjoin(tmp, value);
+	free(tmp);
+	if (!new_var)
+		return (1);
+	if (extend_env(envp, new_var))
+		return (free(new_var), 1);
+	return (0);
+}
+
+int	set_env_var(char *arg, char ***envp)
+{
+	char	*eq;
+	char	*name;
+	char	*value;
+	int		idx;
+	int		ret;
+
+	eq = ft_strchr(arg, '=');
+	if (!eq)
+		return (1);
+	name = ft_substr(arg, 0, eq - arg);
+	value = ft_strdup(eq + 1);
+	if (!name || !value)
+	{
+		free(name);
+		free(value);
+		return (1);
+	}
+	idx = find_in_environ(name, *envp);
+	if (idx >= 0)
+		ret = set_env_var_update(name, value, *envp, idx);
+	else
+		ret = set_env_var_add(name, value, envp);
+	free(name);
+	free(value);
+	return (ret);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   built_export3.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 11:06:23 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/06 15:02:39 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+char	**copy_env(char **env)
+{
+	int		i;
+	int		count;
+	char	**copy;
+
+	i = 0;
+	count = 0;
+	while (env[count])
+		count++;
+	copy = malloc(sizeof(char *) * (count + 1));
+	if (!copy)
+		return (NULL);
+	while (i < count)
+	{
+		copy[i] = ft_strdup(env[i]);
+		i++;
+	}
+	copy[count] = NULL;
+	return (copy);
+}
+
+static int	compare_keys(char *s1, char *s2)
+{
+	char	*k1;
+	char	*k2;
+	int		res;
+
+	k1 = ft_substr(s1, 0, ft_strchr(s1, '=') - s1);
+	k2 = ft_substr(s2, 0, ft_strchr(s2, '=') - s2);
+	if (!k1 || !k2)
+	{
+		free(k1);
+		free(k2);
+		return (0);
+	}
+	res = ft_strcmp(k1, k2);
+	free(k1);
+	free(k2);
+	return (res);
+}
+
+static void	sort_env(char **copy)
+{
+	int		n;
+	int		i;
+	int		j;
+	char	*tmp;
+
+	n = 0;
+	i = 0;
+	while (copy[n])
+		n++;
+	while (i < n - 1)
+	{
+		j = 0;
+		while (j < n - i - 1)
+		{
+			if (compare_keys(copy[j], copy[j + 1]) > 0)
+			{
+				tmp = copy[j];
+				copy[j] = copy[j + 1];
+				copy[j + 1] = tmp;
+			}
+			j++;
+		}
+		i++;
+	}
+}
+
+void	print_sorted_env(char **env)
+{
+	char	**copy;
+	int		i;
+	char	*tmp;
+
+	i = 0;
+	copy = copy_env(env);
+	if (!copy)
+		return;
+	sort_env(copy);
+	while (copy[i])
+	{
+		if (copy[i][0] == '\0')
+		{
+			i++;
+			continue;
+		}
+		tmp = ft_strchr(copy[i], '=');
+		if (tmp)
+			printf("declare -x %.*s=\"%s\"\n", (int)(tmp - copy[i]), copy[i], tmp + 1);
+		else
+			printf("declare -x %s\n", copy[i]);
+		i++;
+	}
+	while (copy[i])
+	{
+		free(copy[i]);
+		i++;
+	}
+	free(copy);
+}
+
+void	print_invalid_identifier(char *arg)
+{
+	char	*msg;
+	char	*temp;
+
+	msg = ft_strjoin("export: '", arg);
+	if (!msg)
+		return;
+	temp = ft_strjoin(msg, "': not a valid identifier\n");
+	free(msg);
+	if (!temp)
+		return;
+	ft_putstr_fd(temp, 2);
+	free(temp);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   built_pwd.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/18 20:11:13 by sakdil            #+#    #+#             */
+/*   Updated: 2025/07/11 10:07:11 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+int	builtin_pwd(void)
+{
+	char	*cwd;
+
+	cwd = getcwd(NULL, 0);
+	if (cwd == NULL)
+	{
+		printf("pwd: error\n");
+		return (1);
+	}
+	printf("%s\n", cwd);
+	free(cwd);
+	return (0);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   built_unset.c                                      :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/18 18:03:45 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/04 20:18:29 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static int	remove_from_environ(int idx, char ***env)
+{
+	char	**e;
+	int		i;
+
+	i = idx;
+	e = *env;
+	if (!e[i])
+        return (0);
+	free(e[i]);
+	while (e[i + 1] != NULL)
+	{
+		e[i] = e[i + 1];
+		i++;
+	}
+	e[i] = NULL;
+	return (0);
+}
+
+static int	unset_one_var(char *var, int *status, char ***env)
+{
+	int	idx;
+
+	if (!is_valid_identifier(var))
+	{
+		printf("unset: '%s': not a valid identifier\n", var);
+		*status = 1;
+		return (1);
+	}
+	idx = find_in_environ(var, *env);
+	if (idx >= 0)
+	{
+		if (remove_from_environ(idx, env) != 0)
+			*status = 1;
+	}
+	return (0);
+}
+
+int	builtin_unset(int argc, char **argv, char ***env)
+{
+	int	i;
+	int	status;
+
+	status = 0;
+	i = 1;
+	if (argc < 2)
+		return (0);
+	while (i < argc)
+	{
+		if (argv[i])
+			unset_one_var(argv[i], &status, env);
+		i++;
+	}
+	return (status);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   builtin.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
+/*   Updated: 2025/08/07 09:24:20 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+int is_builtin(char *cmd)
+{
+	if (!cmd)
+		return (0);
+	return (!ft_strcmp(cmd, "cd") || !ft_strcmp(cmd, "echo") || !ft_strcmp(cmd, "env") || !ft_strcmp(cmd, "exit") || !ft_strcmp(cmd, "export") || !ft_strcmp(cmd, "pwd") || !ft_strcmp(cmd, "unset"));
+}
+
+
+int builtin(int argc, char **argv, char ***env)
+{
+	if (argc >= 1 && argv[0] && ft_strcmp(argv[0], "exit") == 0)
+		return (builtin_exit(argc, argv));
+	else if (ft_strcmp(argv[0], "env") == 0)
+	{
+		if (control_env(argc) == 1)
+			builtin_env(env);
+		return (0);
+	}
+	else if (ft_strcmp(argv[0], "echo") == 0)
+		return (builtin_echo(argc, argv));
+	else if (ft_strcmp(argv[0], "cd") == 0)
+		return (builtin_cd(argc, argv));
+	else if (ft_strcmp(argv[0], "export") == 0)
+		return (builtin_export(argc, argv, env));
+	else if (ft_strcmp(argv[0], "pwd") == 0)
+		return (builtin_pwd());
+	else if (ft_strcmp(argv[0], "unset") == 0)
+		return (builtin_unset(argc, argv, env));
+	return (-1);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   check.c                                            :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/22 15:29:22 by segunes           #+#    #+#             */
+/*   Updated: 2025/05/02 08:09:37 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+int	is_only_spaces(char *str)
+{
+	while (*str)
+	{
+		if (*str != ' ' && *str != '\t')
+			return (0);
+		str++;
+	}
+	return (1);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execute_command.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 20:51:02 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/09 20:53:14 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static int cmd_skip_empty(char **args, int *cmd_idx)
+{
+	while (args[*cmd_idx] && args[*cmd_idx][0] == '\0')
+		(*cmd_idx)++;
+	if (!args[*cmd_idx])
+	{
+		if (*cmd_idx == 0)
+			exit(1);
+		exit(0);
+	}
+	return (0);
+}
+
+static void run_builtin_or_exit(t_ast_tree *node, int cmd_idx, char ***envp, int in_pipeline)
+{
+	int ret;
+
+	ret = builtin(args_count(node->args + cmd_idx),
+				  node->args + cmd_idx, envp);
+	if (ret != -1)
+	{
+		if (in_pipeline)
+			signal(SIGPIPE, SIG_DFL);
+		else
+			signal(SIGPIPE, SIG_IGN);
+		exit(ret);
+	}
+	signal(SIGPIPE, SIG_DFL);
+}
+
+static void exit_with_cmd_error(char *cmd, char *msg, int code)
+{
+	ft_putstr_fd(cmd, 2);
+	ft_putendl_fd(msg, 2);
+	exit(code);
+}
+
+static void exec_path(char *cmd, t_ast_tree *node, char ***envp, int cmd_idx)
+{
+	struct stat sb;
+
+	if (stat(cmd, &sb) == -1)
+	{
+		if (errno == ENOENT)
+			exit_with_cmd_error(cmd, ": No such file or directory", 127);
+		perror(cmd);
+		exit(127);
+	}
+	if (S_ISDIR(sb.st_mode))
+		exit_with_cmd_error(cmd, ": Is a directory", 126);
+	if (access(cmd, X_OK) != 0)
+		exit_with_cmd_error(cmd, ": Permission denied", 126);
+	execve(cmd, node->args + cmd_idx, *envp);
+	perror("execve");
+	exit(1);
+}
+
+static void lookup_path(char *cmd, t_ast_tree *node, char ***envp, int cmd_idx)
+{
+	char *path;
+
+	path = find_path(cmd);
+	if (path)
+	{
+		execve(path, node->args + cmd_idx, *envp);
+		free(path);
+		perror("execve");
+		exit(1);
+	}
+	ft_putstr_fd(cmd, 2);
+	ft_putendl_fd(": command not found", 2);
+	exit(127);
+}
+
+void execute_command(t_ast_tree *node, char ***envp, int in_pipeline)
+{
+	int cmd_idx;
+	char *cmd;
+
+	cmd_idx = 0;
+	if (!node || !node->args)
+		exit(1);
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	cmd_skip_empty(node->args, &cmd_idx);
+	cmd = node->args[cmd_idx];
+	if (handle_redirections(node) != 0)
+		exit(1);
+	run_builtin_or_exit(node, cmd_idx, envp, in_pipeline);
+	if (cmd[0] == '/' || cmd[0] == '.')
+		exec_path(cmd, node, envp, cmd_idx);
+	else
+		lookup_path(cmd, node, envp, cmd_idx);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   execute_pipe.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 20:53:32 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/09 20:53:36 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static void handle_pipe_status(int status)
+{
+	int sig;
+
+	if (WIFSIGNALED(status))
+	{
+		sig = WTERMSIG(status);
+		if (sig == SIGINT)
+			ft_exit_code(130);
+		else if (sig == SIGQUIT)
+		{
+			write(2, "Quit: 3\n", 8);
+			ft_exit_code(131);
+		}
+		else if (sig == SIGPIPE)
+		{
+			write(2, "Broken pipe\n", 12);
+			ft_exit_code(141);
+		}
+	}
+	else
+		ft_exit_code(WEXITSTATUS(status));
+}
+
+static pid_t	create_child_with_pipe(t_ast_tree *node, char ***envp, int pipefd[2], char* side)
+{
+	pid_t	pid;
+
+	pid = fork();
+	if (pid == 0)
+	{
+		signal(SIGINT, SIG_DFL);
+		signal(SIGQUIT, SIG_DFL);
+		if (ft_strcmp(side, "left") == 0)
+		{
+			dup2(pipefd[1], STDOUT_FILENO);
+			close(pipefd[0]);
+			close(pipefd[1]);
+			executor_structure(node->left, envp, 1);
+		}
+		else
+		{
+			dup2(pipefd[0], STDIN_FILENO);
+			close(pipefd[1]);
+			close(pipefd[0]);
+			executor_structure(node->right, envp, 1);
+		}
+		exit(ft_exit_code(-1));
+	}
+	return (pid);
+}
+
+void	execute_pipe(t_ast_tree *node, char ***envp)
+{
+	int		pipefd[2];
+	pid_t	pid1;
+	pid_t	pid2;
+	int		status1;
+	int		status2;
+
+	if (pipe(pipefd) == -1)
+	{
+		perror("pipe");
+		ft_exit_code(1);
+		return;
+	}
+	pid1 = create_child_with_pipe(node, envp, pipefd, "left");
+	pid2 = create_child_with_pipe(node, envp, pipefd, "right");
+	close(pipefd[0]);
+	close(pipefd[1]);
+	signal(SIGINT, SIG_IGN);
+	waitpid(pid1, &status1, 0);
+	waitpid(pid2, &status2, 0);
+	signal(SIGINT, signal_catch);
+	if ((WIFSIGNALED(status1) && WTERMSIG(status1) == SIGPIPE)
+	 || (WIFEXITED(status1) && WEXITSTATUS(status1) == 141))
+		write(2, " Broken pipe\n", 12);
+	else
+		handle_pipe_status(status2);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   executor.c                                         :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
+/*   Updated: 2025/08/07 10:15:25 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static void handle_command_status(int status)
+{
+	if (WIFSIGNALED(status))
+	{
+		int sig = WTERMSIG(status);
+		if (sig == SIGINT)
+			ft_exit_code(130);
+		else if (sig == SIGQUIT)
+		{
+			write(2, "Quit: 3\n", 8);
+			ft_exit_code(131);
+		}
+		else if (sig == SIGPIPE)
+            ft_exit_code(141);
+	}
+	else
+		ft_exit_code(WEXITSTATUS(status));
+}
+
+static int	try_execute_builtin(t_ast_tree *node, char ***envp, int in_pipeline, int std_in, int std_out)
+{
+	int	argc;
+	int	status;
+
+	if (!in_pipeline && is_builtin(node->args[0]))
+	{
+		if (handle_redirections(node) != 0)
+		{
+			ft_exit_code(1);
+			dup2(std_in, STDIN_FILENO);     // input'u geri al
+			dup2(std_out, STDOUT_FILENO);  // output'u geri al
+			close(std_in);
+    		close(std_out);
+			return (1);
+		}
+		argc = args_count(node->args);
+		status = builtin(argc, node->args, envp);
+		dup2(std_in, STDIN_FILENO);
+		dup2(std_out, STDOUT_FILENO);
+		close(std_in);
+		close(std_out);
+		if (status != -1)
+		{
+			ft_exit_code(status);
+			return (1);
+		}
+	}
+	return (0);
+}
+
+static void	execute_and_wait(t_ast_tree *node, char ***envp, int in_pipeline)
+{
+	pid_t	pid;
+	int		status;
+
+	pid = fork();
+	if (pid < 0)
+	{
+		perror("fork");
+		ft_exit_code(1);
+		return ;
+	}
+	else if (pid == 0)   // Child process
+	{
+		execute_command(node, envp, in_pipeline);  // Child process'te execute_command çağır
+		exit(1);  // Bu noktaya asla ulaşılmamalı, execute_command her zaman exit() çağırır
+	}
+	else  // Parent process
+	{
+		signal(SIGINT, signal_child); // Child process'i bekle
+		waitpid(pid, &status, 0);
+		handle_command_status(status); // Exit status'u işle
+		signal(SIGINT, signal_catch);
+	}
+}
+
+static void	free_redirections(t_ast_tree *node)
+{
+	t_redir	*current;
+	t_redir	*next;
+
+	current = node->redir_list;
+	while (current)
+	{
+		next = current->next;
+		if (current->type == HEREDOC && current->fd >= 0)
+			close(current->fd); 
+		if (current->target)
+			free(current->target);
+		free(current);
+		current = next;
+	}
+	node->redir_list = NULL;
+}
+
+void	executor_structure(t_ast_tree *node, char ***envp, int in_pipeline)
+{
+	int	std_in;
+	int	std_out;
+
+	std_in = dup(STDIN_FILENO);
+	std_out = dup(STDOUT_FILENO);
+	if (node->type == NODE_COMMAND)
+	{
+		if (try_execute_builtin(node, envp, in_pipeline, std_in, std_out))
+			return ;
+		execute_and_wait(node, envp, in_pipeline);
+		if (node->redir_list)
+			free_redirections(node);
+	}
+	else if (node->type == NODE_PIPE)
+		execute_pipe(node, envp);
+	close(std_in);
+    close(std_out);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   handle_redirection.c                               :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 20:53:42 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/09 20:53:45 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static int	reopen_path(int *dst_fd, const char *path, int flags, mode_t mode)
+{
+	if (*dst_fd != -1)
+		close(*dst_fd);
+	*dst_fd = open(path, flags, mode);
+	if (*dst_fd < 0)
+	{
+		perror(path);
+		return (1);
+	}
+	return (0);
+}
+
+static int	set_heredoc_fd(int src_fd, int *fd_in)
+{
+	if (src_fd < 0)
+	{
+		printf("Heredoc fd geçersiz\n");
+		return (1);
+	}
+	if (*fd_in != -1)
+		close(*fd_in);
+	*fd_in = src_fd;
+	return (0);
+}
+
+static int	apply_redirection_entry(t_redir *redir, int *fd_in, int *fd_out)
+{
+	if (!redir->target || redir->target[0] == '\0')
+	{
+		printf("ambiguous redirect\n");
+		return (1);
+	}
+	if (redir->type == REDIR_IN)
+		return (reopen_path(fd_in, redir->target, O_RDONLY, 0));
+	if (redir->type == REDIR_OUT)
+		return (reopen_path(fd_out, redir->target,
+				O_WRONLY | O_CREAT | O_TRUNC, 0644));
+	if (redir->type == APPEND)
+		return (reopen_path(fd_out, redir->target,
+				O_WRONLY | O_CREAT | O_APPEND, 0644));
+	if (redir->type == HEREDOC)
+		return (set_heredoc_fd(redir->fd, fd_in));
+	return (0);
+}
+
+static int	dup_stdio_and_close(int fd, int dst_stdio, const char *who)
+{
+	if (fd == -1)
+		return (0);
+	if (dup2(fd, dst_stdio) == -1)
+	{
+		perror(who);
+		close(fd);
+		return (1);
+	}
+	close(fd);
+	return (0);
+}
+
+int	handle_redirections(t_ast_tree *node)
+{
+	t_redir	*redir;
+	int		fd_in;
+	int		fd_out;
+
+	redir = node->redir_list;
+	fd_in = -1;
+	fd_out = -1;
+	while (redir)
+	{
+		if (apply_redirection_entry(redir, &fd_in, &fd_out))
+			return (1);
+		redir = redir->next;
+	}
+	if (dup_stdio_and_close(fd_in, STDIN_FILENO, "dup21"))
+		return (1);
+	if (dup_stdio_and_close(fd_out, STDOUT_FILENO, "dup22"))
+		return (1);
+	return (0);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   heredoc.c                                          :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 22:08:51 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/09 22:20:58 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static void signal_heredoc(int sig)
+{
+	(void)sig;
+	write(1, "\n", 1);
+	exit(130);
+}
+
+static void	heredoc_child(const char *delimiter, int pipefd[2])
+{
+	char	*line;
+
+	signal(SIGINT, signal_heredoc);
+	close(pipefd[0]);
+	while (1)
+	{
+		line = readline("> ");
+		if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
+		{
+			free(line);
+			break ;
+		}
+		write(pipefd[1], line, ft_strlen(line));
+		write(pipefd[1], "\n", 1);
+		free(line);
+	}
+	close(pipefd[1]);  // yazmayı kapat
+	exit(0);  // çocuktan çık
+}
+
+static int	heredoc_parent(pid_t pid, int pipefd[2])  // PARENT: okuyucu
+{
+	int	status;
+
+	close(pipefd[1]); // yazma ucunu kapat
+	signal(SIGINT, SIG_IGN);
+	waitpid(pid, &status, 0);
+	signal(SIGINT, signal_catch);
+	if (WIFEXITED(status) && WEXITSTATUS(status) == 130)
+		return (-1);
+	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+		return (-1);
+	return (pipefd[0]);   // OKUMA ucu döndürülür, stdin'e bağlanmak için kullanılacak
+}
+
+static int	handle_heredoc(const char *delimiter)
+{
+	int		pipefd[2];
+	pid_t	pid;
+
+	if (pipe(pipefd) == -1)
+	{
+		perror("pipe");
+		return (-1);
+	}
+	pid = fork();
+	if (pid < 0)
+	{
+		perror("fork");
+		close(pipefd[0]);
+		close(pipefd[1]);
+		return (-1);
+	}
+	if (pid == 0)
+		heredoc_child(delimiter, pipefd);
+	return (heredoc_parent(pid, pipefd));
+}
+
+int prepare_all_heredocs(t_ast_tree *node)
+{
+	t_redir *redir;
+
+	if (!node)
+		return (0);
+
+	redir = node->redir_list;
+	while (redir)
+	{
+		if (redir->type == HEREDOC)
+		{
+			int fd = handle_heredoc(redir->target);
+			if (fd < 0)
+				return (1);
+			redir->fd = fd; // buraya fd'yi kaydet
+		}
+		redir = redir->next;
+	}
+	return (0);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   main.c                                             :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/09 22:41:39 by segunes          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+int args_count(char **args)
+{
+	int i;
+
+	i = 0;
+	while (args[i])
+		i++;
+	return (i);
+}
+
+int ft_exit_code(int temp)
+{
+	static int exit_code;
+
+	if (temp == -1)
+	{
+		return (exit_code);
+	}
+	exit_code = temp;
+	return (exit_code);
+}
+
+void ft_free(char **envp)
+{
+	int i = 0;
+
+	while (envp[i])
+	{
+		free(envp[i]);
+		i++;
+	}
+	free(envp);
+}
+
+void free_redir_list(t_redir *redir)
+{
+	t_redir *tmp;
+
+	while (redir)
+	{
+		tmp = redir;
+		redir = redir->next;
+		if (tmp->type == HEREDOC && tmp->fd >= 0)
+			close(tmp->fd); // heredoc fd'lerini de kapat
+		if (tmp->target)
+			free(tmp->target);
+		free(tmp);
+	}
+}
+
+void free_ast_tree(t_ast_tree *node)
+{
+	if (!node)
+		return;
+
+	// args dizisini serbest bırak
+	if (node->args)
+	{
+		int i = 0;
+		while (node->args[i]) // args dizisindeki her stringi free et
+		{
+			free(node->args[i]);
+			i++;
+		}
+		free(node->args); // args dizisini free et
+	}
+
+	// Redirection listesindeki her elemanı serbest bırak
+	if (node->redir_list)
+		free_redir_list(node->redir_list);
+
+	// Sol ve sağ alt ağaçları serbest bırak (recursive)
+	if (node->left)
+		free_ast_tree(node->left);
+	if (node->right)
+		free_ast_tree(node->right);
+
+	// Node'un kendisini serbest bırak
+	free(node);
+}
+
+int main(int argc, char **argv, char **env)
+{
+	char *input;
+	t_token *tokens;
+	t_ast_tree *ast;
+	char **envp = copy_env(env);
+
+	(void)argv;
+	(void)argc;
+	ft_exit_code(0);
+	while (1)
+	{
+		signal(SIGINT, signal_catch);
+		input = readline("minishell$ ");
+
+		if (input == NULL)
+		{
+			write(1, "exit\n", 5);
+			if (envp)
+				ft_free(envp);
+			exit(0);
+		}
+		if (is_only_spaces(input))
+		{
+			add_history(input);
+			free(input);
+			continue;
+		}
+		if (*input)
+			add_history(input);
+
+		tokens = tokenize_input(input);
+		if (!tokens)
+		{
+			ft_exit_code(0);
+			free(input);
+			continue;
+		}
+		if (ft_parser(tokens))
+		{
+			free_tokens(tokens);
+			free(input);
+			continue;
+		}
+		ast = ft_build_ast(tokens);
+		tokens = NULL; 
+		if (!ast)
+		{
+			free(input);
+			continue;
+		}
+		if (prepare_all_heredocs(ast) != 0)
+		{
+			free_ast_tree(ast);
+			free(input);
+			continue;
+		}
+		executor_structure(ast, &envp, 0);
+		if (ast)
+			free_ast_tree(ast);
+		free(input);
+	}
+	if (envp)
+		ft_free(envp);
+
+	return (ft_exit_code(-1));
+}
+NAME			=	minishell
+SRCS			=	built_cd.c				\
+					built_echo.c 			\
+					built_env.c				\
+					built_exit.c 			\
+					built_export.c			\
+					built_export2.c			\
+					built_export3.c			\
+					built_pwd.c 			\
+					built_unset.c			\
+					builtin.c 				\
+					check.c					\
+					main.c					\
+					path_find.c 			\
+					tokenizer.c 			\
+					tokenizer2.c			\
+					tokenizer3.c			\
+					tokenizer_utils.c   	\
+					tokenizer_utils2.c		\
+					tokenizer_utils3.c		\
+					parser.c    			\
+					executor.c 				\
+					signal.c				\
+					handle_redirection.c	\
+ 					execute_command.c		\
+					execute_pipe.c			\
+					parser_utils.c			\
+					parser_utils2.c			\
+					tokenizer4.c			\
+					heredoc.c				\
+
+OBJS			=	$(SRCS:.c=.o)
+RM				=	rm -f
+CFLAGS			=	-Wall -Wextra -Werror -g
+CC 				= 	cc
+LIBFT_DIR		= 	./libft
+LIBFT 			= 	$(LIBFT_DIR)/libft.a
+
+
+all: $(LIBFT) $(NAME)
+
+$(NAME): $(OBJS) $(LIBFT)
+	$(CC) $(OBJS) $(LIBFT) -o $(NAME) -lreadline
+
+$(LIBFT):
+		$(MAKE) -C $(LIBFT_DIR)
+
+clean:
+	$(RM) $(OBJS)
+	@make -C $(LIBFT_DIR) clean
+
+fclean: clean
+	$(RM) $(NAME)
+	@make -C $(LIBFT_DIR) fclean
+
+re: fclean all
+
+.PHONY: all clean fclean re
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/09 22:24:52 by segunes          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#ifndef MINISHELL_H
+#define MINISHELL_H
+
+#include <stdio.h>
+#include <unistd.h>
+#include <readline/readline.h>
+#include <readline/history.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <stdlib.h>
+#include <fcntl.h>
+#include "libft/libft.h"
+#include <signal.h>
+#include <errno.h>
+#include <sys/stat.h>
+
+typedef enum e_node_type
+{
+    NODE_COMMAND,
+    NODE_PIPE,
+    NODE_REDIR
+} t_node_type;
+
+typedef struct s_redir
+{
+    int type;     // REDIR_IN, etc.
+    char *target; // e.g. "input.txt"
+    int fd;       // HEREDOC için ekeldik
+    struct s_redir *next;
+} t_redir;
+
+typedef struct s_ast_tree
+{
+    t_node_type type;
+    char **args;
+    t_redir *redir_list;
+    struct s_ast_tree *left; // her nodun içinde alt nodelar var bu alt nodelar aynı yapıya yani structa eşit olduğu için böyle
+    struct s_ast_tree *right;
+
+} t_ast_tree;
+
+typedef enum e_token_type
+{
+    WORD,
+    PIPE,      // |
+    REDIR_OUT, // >
+    REDIR_IN,  // <
+    APPEND,    // >>
+    HEREDOC,   // <<
+    INVALID
+} t_token_type;
+
+typedef struct s_token
+{
+    t_token_type type;
+    char *value;
+    struct s_token *next;
+} t_token;
+
+int builtin_cd(int argc, char **argv);
+int builtin_echo(int argc, char **argv);
+int control_env(int argc);
+int builtin_env(char ***env);
+int builtin_exit(int argc, char **argv);
+int is_valid_identifier(const char *name);
+int builtin_export(int argc, char **argv, char ***envp);
+int find_in_environ(const char *name, char **env);
+int extend_env(char ***envp, char *new_entry);
+int set_env_var(char *arg, char ***envp);
+void print_sorted_env(char **env);
+void print_invalid_identifier(char *arg);
+int builtin_pwd(void);
+int builtin_unset(int argc, char **argv, char ***env);
+int builtin(int argc, char **argv, char ***env);
+int is_builtin(char *cmd);
+int is_digit(int c);
+
+int is_only_spaces(char *str);
+void executor_structure(t_ast_tree *node, char ***envp, int in_pipeline);
+
+// parser///////////////////////
+t_ast_tree *ft_build_ast(t_token *tokens);
+// void print_ast(t_ast_tree *node, int depth);
+int ft_parser(t_token *input);
+////////////////////////////////
+
+// path_find//////////////////////////
+char *find_path(char *command);
+//////////////////////////////////////
+
+// signal/////////////////////////
+void signal_catch(int signum);
+int check_sigint_flag(void);
+void signal_child(int signum);
+/////////////////////////////////
+
+int args_count(char **args);
+char *ft_charjoin_free(char *res, char *val, int flag);
+char *ft_charjoin(char *res, char c);
+void free_tokens(t_token *head); // şu anki mainde yok
+char *expand_variable(char *str);
+t_token *create_word_token(char *value);
+t_token *create_pipe_token(char *value);
+t_token *create_redir_token(char *value);
+t_token *create_token(char *value);
+int is_word_char(char c);
+t_token *tokenize_input(char *input);
+char *collect_argument(char *input, int *i);
+void add_token_to_list(t_token **head, t_token *new);
+int handle_redir_operator(char *s, t_token **head);
+int handle_redir_file(char *s, int *i, t_token **head);
+
+char *normalize_filename(char *str);
+
+// exit code
+int ft_exit_code(int temp);
+char **copy_env(char **env);
+int handle_redirections(t_ast_tree *node);
+void execute_command(t_ast_tree *node, char ***envp, int in_pipeline);
+void execute_pipe(t_ast_tree *node, char ***envp);
+t_ast_tree *create_cmd_node_with_args(int count, char ***args_out);
+int fill_cmd_from_tokens(t_ast_tree *node, t_token *current, char **args);
+char *process_quoted(char *s, int *i, char quote_char);
+char *process_unquoted(char *s, int *j);
+int prepare_all_heredocs(t_ast_tree *node);
+void free_token_list(t_token *cur); //bak
+
+
+#endif
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser_utils.c                                     :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 20:54:37 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/09 21:18:31 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static int find_pipe_split(t_token *tokens,
+                           t_token **left, t_token **mid, t_token **right)
+{
+    t_token *prev = NULL;
+
+    *left = tokens;
+    *mid = NULL;
+    *right = NULL;
+
+    while (tokens)
+    {
+        if (tokens->type == PIPE)
+        {
+            if (!tokens->next)  // pipe'tan sonra hiçbir şey yoksa: syntax error
+                return (1);
+
+            *mid = tokens;           // pipe düğümünü geri ver
+            *right = tokens->next;   // sağ liste başlangıcı
+
+            tokens->next = NULL;     // pipe'ı sağdan kopar
+            if (prev)
+                prev->next = NULL;   // solu da pipe'tan kopar
+
+            return (0);
+        }
+        prev = tokens;
+        tokens = tokens->next;
+    }
+    return (0);
+}
+
+static int	count_words(t_token *cur)
+{
+	int	count;
+
+	count = 0;
+	while (cur)
+	{
+		if (cur->type == WORD)
+			count++;
+		cur = cur->next;
+	}
+	return (count);
+}
+
+static t_ast_tree *build_cmd_node(t_token *left_token)
+{
+    t_ast_tree *node;
+    char **args;
+    int count = count_words(left_token);
+
+    node = create_cmd_node_with_args(count, &args);
+    if (!node) return NULL;
+
+    if (fill_cmd_from_tokens(node, left_token, args) != 0)
+    {
+        free(args);
+        free(node);
+        free_token_list(left_token);
+        return NULL;
+    }
+    node->args = args;
+    free_token_list(left_token);
+    return node;
+}
+
+static t_ast_tree *make_pipe_node(t_token *left, t_token *right, t_token *mid)
+{
+    t_ast_tree *node;
+
+	node = malloc(sizeof(t_ast_tree));
+    if (!node)
+        return (NULL);
+    node->type = NODE_PIPE;
+    node->redir_list = NULL;
+    node->args = NULL;
+    node->left  = ft_build_ast(left);
+    node->right = ft_build_ast(right);
+    if (mid)
+    {
+        if (mid->value) free(mid->value);
+        free(mid);
+    }
+    if (!node->left || !node->right)
+    {
+        printf("syntax error near unexpected token\n");
+        free(node);
+        return (NULL);
+    }
+    return (node);
+}
+
+t_ast_tree *ft_build_ast(t_token *tokens)
+{
+    t_token *left, *right, *mid;
+
+    if (!tokens) 
+		return (NULL);
+
+    if (find_pipe_split(tokens, &left, &mid, &right))
+    {
+        printf("syntax error near unexpected token\n");
+        // HATA: bütün token zinciri tek parça olabilir; tamamını bırak
+        free_token_list(tokens);
+        return (NULL);
+    }
+    if (mid)     // pipe bulundu
+        return make_pipe_node(left, right, mid);
+
+    // pipe yoksa tek komut; build_cmd_node tokenları kendi içinde free ediyor
+    return (build_cmd_node(tokens));
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser_utils2.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 21:14:58 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/09 21:19:12 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static  char *strip_quotes(char *str)
+{
+	size_t len;
+
+	if (!str)
+		return (NULL);
+	len = ft_strlen(str);
+	if ((str[0] == '"' && str[len - 1] == '"') || (str[0] == '\'' && str[len - 1] == '\''))
+		return (ft_substr(str, 1, len - 2));
+	return (ft_strdup(str));
+}
+
+static t_redir	*new_redir_from(t_token **current)
+{
+	t_redir	*r;
+	char	*raw;
+	char	*name;
+
+	r = malloc(sizeof(t_redir));
+	if (!r)
+		return (NULL);
+	r->type = (*current)->type;
+	r->fd = -1;
+	*current = (*current)->next;
+	if (*current && (*current)->value)
+	{
+		raw = strip_quotes((*current)->value);
+		name = normalize_filename(raw);
+		if (name != raw)
+			free(raw);
+		r->target = name;
+	}
+	else
+		r->target = NULL;
+	r->next = NULL;
+	if (*current)
+		*current = (*current)->next;
+	return (r);
+}
+
+static void	redir_push_back(t_redir **list, t_redir *r)
+{
+	t_redir	*tmp;
+
+	if (!*list)
+	{
+		*list = r;
+		return ;
+	}
+	tmp = *list;
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = r;
+}
+
+t_ast_tree	*create_cmd_node_with_args(int count, char ***args_out)
+{
+	t_ast_tree	*node;
+	char		**args;
+
+	node = malloc(sizeof(t_ast_tree));
+	if (!node)
+		return (NULL);
+	node->type = NODE_COMMAND;
+	node->redir_list = NULL;
+	node->left = NULL;
+	node->right = NULL;
+	args = malloc(sizeof(char *) * (count + 1));
+	if (!args)
+	{
+		free(node);
+		return (NULL);
+	}
+	*args_out = args;
+	return (node);
+}
+
+int	fill_cmd_from_tokens(t_ast_tree *node, t_token *current, char **args)
+{
+	int		i;
+	t_redir	*r;
+
+	i = 0;
+	while (current)
+	{
+		if (current->type == WORD)
+			args[i++] = ft_strdup(current->value);
+		else if (current->type == APPEND || current->type == HEREDOC
+			|| current->type == REDIR_IN || current->type == REDIR_OUT)
+		{
+			r = new_redir_from(&current);
+			if (!r)
+				return (-1);
+			redir_push_back(&node->redir_list, r);
+			continue ;
+		}
+		current = current->next;
+	}
+	args[i] = NULL;
+	return (0);
+}
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   parser.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/06/03 12:31:48 by segunes           #+#    #+#             */
+/*   Updated: 2025/08/04 20:14:47 by sakdil           ###   ########.fr       */
+/*       																	  */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+void free_token_list(t_token *cur)
+{
+    while (cur)
+    {
+        t_token *n = cur->next;
+        if (cur->value) free(cur->value);
+        free(cur);
+        cur = n;
+    }
+}
+
+static int ft_last(t_token *input)
+{
+	t_token *last;
+
+	last = input;
+
+	while (last && last->next)
+		last = last->next;
+	if (last->type == APPEND || last->type == REDIR_IN || last->type == REDIR_OUT || last->type == HEREDOC || last->type == PIPE)
+	{
+		printf("syntax error near unexpected token\n");
+		return (1);
+	}
+	return (0);
+}
+
+static int is_invalid_redir_target(t_token *token)
+{
+	if (!token || token->type != WORD)
+		return (1);
+	if (!token->value || token->value[0] == '\0')
+		return (1);
+	if (token->type == REDIR_IN || token->type == REDIR_OUT || token->type == APPEND || token->type == HEREDOC || token->type == PIPE)
+		return (1);
+	return (0);
+}
+
+static int	token_pair_error(t_token *input)
+{
+	if (input->type == PIPE && input->next == NULL)
+	{
+		printf("syntax error near unexpected token\n");
+		return (1);
+	}
+	if (input->type == PIPE && input->next->type == PIPE)
+	{
+		printf("syntax error near unexpected token\n");
+		return (1);
+	}
+	if ((input->type == APPEND || input->type == REDIR_IN
+		|| input->type == REDIR_OUT || input->type == HEREDOC)
+		&& is_invalid_redir_target(input->next))
+	{
+		printf("syntax error near unexpected token\n");
+		return (1);
+	}
+	return (0);
+}
+
+int	ft_parser(t_token *input)
+{
+	t_token	*start;
+
+	start = input;
+	if (!input)
+		return (1);
+	if (input->type == PIPE)
+	{
+		printf("syntax error near unexpected token\n");
+		return (1);
+	}
+	while (input)
+	{
+		if (token_pair_error(input))
+			return (1);
+		input = input->next;
+	}
+	if (ft_last(start) == 1)
+		return (1);
+	return (0);
+}
+
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   path_find.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/04/23 12:25:32 by segunes           #+#    #+#             */
+/*   Updated: 2025/08/09 21:35:53 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static void	free_string_array(char **array)
+{
+	int	i;
+
+	if (!array)
+		return;
+	i = 0;
+	while (array[i])
+	{
+		free(array[i]);
+		i++;
+	}
+	free(array);
+}
+
+static char	*try_join_exec(const char *path, char *command)
+{
+	char	*temp;
+	char	*join;
+	char	*ret;
+
+	temp = ft_strjoin(path, "/");  // PATH/command şeklinde birleştir
+	if (!temp)
+		return (NULL);
+	join = ft_strjoin(temp, command);
+	free(temp);
+	if (!join)
+		return (NULL);
+	ret = NULL;
+	if (access(join, X_OK) == 0)
+		ret = ft_strdup(join);  // Kopya oluştur
+	free(join);
+	return (ret);
+}
+
+static char	*search_path(char **path_env, char *command)
+{
+	int		i;
+	char	*res;
+
+	i = 0;
+	res = NULL;
+	while (path_env[i] && !res)
+	{
+		res = try_join_exec(path_env[i], command);
+		i++;
+	}
+	return (res);
+}
+
+char	*find_path(char *command)
+{
+	const char	*path;
+	char		**path_env;
+	char		*result;
+
+	if (command[0] == '/' || command[0] == '.') // Önce komutun mutlak yol olup olmadığını kontrol et
+	{
+		if (access(command, X_OK) == 0)
+			return (ft_strdup(command));
+		return (NULL);
+	}
+	path = getenv("PATH");   // PATH ortam değişkenini al
+	if (!path)
+		return (NULL);
+	path_env = ft_split(path, ':');
+	if (!path_env)
+		return (NULL);
+	result = search_path(path_env, command);
+	free_string_array(path_env);  // path_env dizisini tamamen temizle
+	return (result);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   signal.c                                           :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/28 15:19:50 by segunes           #+#    #+#             */
+/*   Updated: 2025/08/06 14:11:35 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static volatile sig_atomic_t sigint_flag = 0;
+
+void signal_catch(int signum)
+{
+	(void)signum;
+	sigint_flag = 1;
+	write(1, "\n", 1);		// ctrl c olduğunda yeni satıra geç
+	rl_replace_line("", 0); // satırı temizle
+	rl_on_new_line();		// yeni satır komutunu bildiriyor
+	rl_redisplay();			// promptu yeniden çiziyor
+}
+
+int check_sigint_flag(void)
+{
+	if (sigint_flag)
+	{
+		sigint_flag = 0;
+		return (1);
+	}
+	return (0);
+}
+
+void signal_child(int signum)
+{
+	(void)signum;
+	sigint_flag = 1;
+	write(1, "\n", 1);		// ctrl c olduğunda yeni satıra geç
+	rl_replace_line("", 0); // satırı temizle
+	rl_on_new_line();		// yeni satır komutunu bildiriyor
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenizer_utils.c                                  :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/31 17:51:21 by segunes           #+#    #+#             */
+/*   Updated: 2025/08/09 21:28:26 by segunes          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+char *ft_charjoin_free(char *res, char *val, int flag)
+{
+	char *tmp;
+
+	tmp = ft_strjoin(res, val);
+	if (flag & 1) // res serbest
+		free(res);
+	if (flag & 2) // val serbest
+		free(val);
+	return (tmp);
+}
+
+char *ft_charjoin(char *res, char c)
+{
+	char *tmp;
+	int len;
+
+	len = ft_strlen(res);
+	tmp = malloc(len + 2);
+	if (!tmp)
+	{
+		free(res);
+		return (NULL);
+	}
+	ft_strlcpy(tmp, res, len + 1);
+	tmp[len] = c;
+	tmp[len + 1] = '\0';
+	free(res);
+	return (tmp);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenizer_utils2.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 10:58:23 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/05 23:29:32 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static char	*handle_var_utils(char *res, char *str, int *i, int j)
+{
+	char	*var;
+	char	*val;
+	char	*rem;	
+
+	var = ft_substr(str, *i + 1, j - 1);
+	if (!var)
+		return (NULL);
+	val = getenv(var);
+	if (val)
+		res = ft_charjoin_free(res, ft_strdup(val), 3);
+	else
+	{
+		rem = ft_substr(str, *i + j, ft_strlen(str) - (*i + j));
+		res = ft_charjoin_free(res, rem, 3);
+		*i = ft_strlen(str);
+		free(var);
+		return (res);
+	}
+	free(var);
+	*i += j;
+	return (res);
+}
+
+static char	*handle_var(char *str, int *i, char *res)
+{
+	int		j;
+	char	*code;
+	
+	j = 1;
+	if (str[*i + 1] == '?')
+	{
+		code = ft_itoa(ft_exit_code(-1));
+		res = ft_charjoin_free(res, code, 1);
+		*i += 2;
+		return (res);
+	}
+	if (is_digit(str[*i + 1]))
+		j = 2;
+	else if (ft_isalpha(str[*i + 1]) || str[*i + 1] == '_')
+	{
+		while (str[*i + j] && (ft_isalnum(str[*i + j]) || str[*i + j] == '_'))
+			j++;
+	}
+	if (j == 1)
+	{
+		res = ft_charjoin(res, '$');
+		(*i)++;
+		return (res);
+	}
+	return (handle_var_utils(res, str, i, j));
+}
+
+static char	*expand_variable_loop(char *str, char *res)
+{
+	int	idx;
+
+	idx = 0;
+	while (str[idx])
+	{
+		if (str[idx] == '$')
+			res = handle_var(str, &idx, res);
+		else
+			res = ft_charjoin(res, str[idx++]);
+		if (!res)
+			return (NULL);
+	}
+	return (res);
+}
+
+char	*expand_variable(char *str)
+{
+	char	*res;
+
+	res = ft_strdup("");
+	if (!res)
+		return (NULL);
+	return (expand_variable_loop(str, res));
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenizer_utils3.c                                 :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 10:59:29 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/09 22:10:18 by segunes          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+void free_tokens(t_token *tokens)
+{
+	t_token *current;
+	t_token *next;
+
+	if (!tokens)
+		return;
+
+	current = tokens;
+	while (current)
+	{
+		next = current->next;
+		if (current->value)
+		{
+			free(current->value);
+			current->value = NULL;
+		}
+		free(current);
+		current = next;
+	}
+}
+
+t_token *create_word_token(char *value)
+{
+	t_token *new_token;
+
+	new_token = malloc(sizeof(t_token));
+	if (!new_token)
+		return (NULL);
+	new_token->type = WORD;
+	new_token->value = ft_strdup(value);
+	if (!new_token->value)
+	{
+		free(new_token);
+		return (NULL);
+	}
+	new_token->next = NULL;
+	return (new_token);
+}
+
+// t_token *create_pipe_token(char *value)
+// {
+// 	t_token *new_token;
+
+// 	new_token = malloc(sizeof(t_token));
+// 	if (!new_token)
+// 		return (NULL);
+// 	new_token->type = PIPE;
+// 	new_token->value = ft_strdup(value);
+// 	if (!new_token->value)
+// 	{
+// 		free(new_token);
+// 		return (NULL);
+// 	}
+// 	new_token->next = NULL;
+// 	return (new_token);
+// }
+
+t_token *create_pipe_token(char *value)
+{
+	t_token *new_token;
+	char *dup_value;
+
+	new_token = malloc(sizeof(t_token));
+	if (!new_token)
+		return (NULL);
+
+	dup_value = ft_strdup(value);
+	if (!dup_value)
+	{
+		free(new_token);
+		return (NULL);
+	}
+	new_token->type = PIPE;
+	new_token->value = dup_value;
+	new_token->next = NULL;
+	return (new_token);
+}
+t_token *create_redir_token(char *value)
+{
+	t_token *new_token;
+
+	new_token = malloc(sizeof(t_token));
+	if (!new_token)
+		return (NULL);
+	if (value[0] == '<')
+		new_token->type = REDIR_IN;
+	else
+		new_token->type = REDIR_OUT;
+	new_token->value = ft_strdup(value);
+	if (!new_token->value)
+	{
+		free(new_token);
+		return (NULL);
+	}
+	new_token->next = NULL;
+	return (new_token);
+}
+
+t_token *create_token(char *value)
+{
+	t_token *new_token;
+
+	new_token = malloc(sizeof(t_token));
+	if (!new_token)
+		return (NULL);
+	if (ft_strncmp(value, "<<", 2) == 0)
+		new_token->type = HEREDOC;
+	else
+		new_token->type = APPEND;
+	new_token->value = ft_strdup(value);
+	if (!new_token->value)
+	{
+		free(new_token);
+		return (NULL);
+	}
+	new_token->next = NULL;
+	return (new_token);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenizer.c                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/05/30 14:32:24 by segunes           #+#    #+#             */
+/*   Updated: 2025/08/09 22:27:02 by segunes          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+// void print_tokens(t_token *head)
+// {
+// 	t_token *tmp = head;
+
+// 	while (tmp)
+// 	{
+// 		printf("TOKEN TYPE: %u\tVALUE: %s\n", tmp->type, tmp->value);
+// 		tmp = tmp->next;
+// 	}
+// }// type yazdırmak için kontrol
+
+int is_word_char(char c)
+{
+	if (c == ' ' || c == '\t' || c == '\n' || c == '|' || c == '<' || c == '>' || c == '\'' || c == '"')
+		return (0);
+	return (1);
+}
+
+static int tokenize_redirection(char *input, t_token **head)
+{
+	int op_len;
+
+	op_len = handle_redir_operator(input, head);
+	handle_redir_file(input + op_len, &op_len, head);
+	return (op_len);
+}
+
+static void handle_special_char(char *input, int *i, t_token **head)
+{
+	t_token *token;
+
+	if (input[*i] == '>' || input[*i] == '<')
+		*i += tokenize_redirection(input + *i, head);
+	else if (input[*i] == '|')
+	{
+		token = create_pipe_token("|");
+		if (token) // token NULL değilse
+			add_token_to_list(head, token);
+		(*i)++;
+	}
+	else
+		(*i)++;
+}
+
+t_token *tokenize_input(char *input)
+{
+	int i;
+	t_token *head;
+
+	i = 0;
+	head = NULL;
+	while (input[i])
+	{
+		if (input[i] == ' ' || input[i] == '\t')
+			i++;
+		else if (input[i] == '>' || input[i] == '<' || input[i] == '|')
+			handle_special_char(input, &i, &head);
+		else
+		{
+			char *arg = collect_argument(input, &i);
+			if (!arg)
+				return (NULL);
+			char *tmp = ft_strdup(arg);
+			add_token_to_list(&head, create_word_token(tmp));
+			free(tmp);
+			free(arg);
+		}
+	}
+	return (head);
+}
+
+int handle_redir_operator(char *s, t_token **head)
+{
+	char *op;
+	int len;
+
+	if (s[0] == '>' && s[1] == '>')
+	{
+		op = ft_substr(s, 0, 2);
+		len = 2;
+	}
+	else if (s[0] == '<' && s[1] == '<')
+	{
+		op = ft_substr(s, 0, 2);
+		len = 2;
+	}
+	else
+	{
+		op = ft_substr(s, 0, 1);
+		len = 1;
+	}
+	if (len == 2)
+		add_token_to_list(head, create_token(op));
+	else
+		add_token_to_list(head, create_redir_token(op));
+	free(op);
+	return (len);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenizer2.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 10:51:36 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/05 15:48:29 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static char	*collect_single_quote(char *input, int *i, char *arg)
+{
+	int		start;
+	char	*piece;
+
+	start = ++(*i);
+	while (input[*i] && input[*i] != '\'')
+		(*i)++;
+	if (!input[*i])
+		return (printf("syntax error: unclosed quote\n"), free(arg), NULL);
+	piece = ft_substr(input, start, (*i) - start);
+	if (!piece)
+		return (free(arg), NULL);
+	arg = ft_charjoin_free(arg, piece, 3);
+	(*i)++;
+	return (arg);
+}
+
+static char	*collect_double_quote(char *input, int *i, char *arg)
+{
+	int		start;
+	char	*raw;
+	char	*exp;
+
+	start = ++(*i);
+	while (input[*i] && input[*i] != '"')
+		(*i)++;
+	if (!input[*i])
+		return (printf("syntax error: unclosed quote\n"), free(arg), NULL);
+	raw = ft_substr(input, start, (*i) - start);
+	if (!raw)
+		return (free(arg), NULL);
+	exp = expand_variable(raw);
+	free(raw);
+	if (!exp)
+		return (free(arg), NULL);
+	arg = ft_charjoin_free(arg, exp, 3);
+	(*i)++;
+	return (arg);
+}
+
+static char	*collect_argument_word(char *input, int *i, char *arg)
+{
+	int		start;
+	char	*raw;
+	char	*exp;
+
+	start = *i;
+	while (input[*i] && is_word_char(input[*i]))
+		(*i)++;
+	raw = ft_substr(input, start, (*i) - start);
+	if (!raw)
+		return (free(arg), NULL);
+	exp = expand_variable(raw);
+	free(raw);
+	if (!exp)
+		return (free(arg), NULL);
+	arg = ft_charjoin_free(arg, exp, 3);
+	return (arg);
+}
+
+static char	*collect_argument_quote(char *input, int *i, char *arg)
+{
+	if (input[*i] == '\'')
+		return (collect_single_quote(input, i, arg));
+	else if (input[*i] == '"')
+		return (collect_double_quote(input, i, arg));
+	return (arg);
+}
+
+char	*collect_argument(char *input, int *i)
+{
+	char	*arg;
+
+	arg = ft_strdup("");
+	if (!arg)
+		return (NULL);
+	while (input[*i] && !(input[*i] == ' ' || input[*i] == '\t'
+			|| input[*i] == '|' || input[*i] == '<' || input[*i] == '>'))
+	{
+		if (input[*i] == '\'' || input[*i] == '"')
+		{
+			arg = collect_argument_quote(input, i, arg);
+			if (!arg)
+				return (NULL);
+		}
+		else
+		{
+			arg = collect_argument_word(input, i, arg);
+			if (!arg)
+				return (NULL);
+		}
+	}
+	return (arg);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenizer3.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/07/11 10:55:20 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/09 22:37:04 by segunes          ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+void add_token_to_list(t_token **head, t_token *new)
+{
+	t_token *tmp;
+
+	if (!*head)
+		*head = new;
+	else
+	{
+		tmp = *head;
+		while (tmp->next)
+			tmp = tmp->next;
+		tmp->next = new;
+	}
+}
+
+char *process_quoted(char *s, int *i, char quote_char)
+{
+	int start;
+	int len;
+
+	start = *i;
+	len = 0;
+	while (s[*i] && s[*i] != quote_char)
+	{
+		(*i)++;
+		len++;
+	}
+	if (s[*i] == quote_char)
+		(*i)++;
+	return (ft_substr(s, start, len));
+}
+
+char *process_unquoted(char *s, int *j)
+{
+	int start;
+	char *raw;
+	char *expanded;
+
+	start = *j;
+	while (s[*j] && is_word_char(s[*j]))
+		(*j)++;
+	raw = ft_substr(s, start, *j - start);
+	expanded = expand_variable(raw);
+	free(raw);
+	return (expanded);
+}
+
+char *normalize_filename(char *str)
+{
+	if (!str || str[0] == '\0')
+	{
+		free(str);
+		return NULL;
+	}
+	return (str);
+}
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   tokenizer4.c                                       :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2025/08/09 21:48:31 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/09 21:58:14 by sakdil           ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
+#include "minishell.h"
+
+static int	is_redir_separator(char c)
+{
+	return (c == ' ' || c == '\t' || c == '|' || c == '<' || c == '>');
+}
+
+static int	append_piece(char **arg, char *piece)
+{
+	char	*joined;
+
+	if (!piece)
+	{
+		free(*arg);
+		ft_putendl_fd("redirect syntax error", 2);
+		return (-1);
+	}
+	joined = ft_charjoin_free(*arg, piece, 3);
+	if (!joined)
+	{
+		*arg = NULL;
+		return (-1);
+	}
+	*arg = joined;
+	return (0);
+}
+
+static int	read_redir_target(char *s, int *j, char **arg)
+{
+	char	quote;
+	char	*piece;
+
+	while (s[*j] && !is_redir_separator(s[*j]))
+	{
+		if (s[*j] == '\'' || s[*j] == '"')
+		{
+			quote = s[*j];
+			(*j)++;
+			piece = process_quoted(s, j, quote);
+		}
+		else
+			piece = process_unquoted(s, j);
+		if (append_piece(arg, piece) == -1)
+			return (-1);
+	}
+	return (0);
+}
+
+int	handle_redir_file(char *s, int *i, t_token **head)
+{
+	int		j;
+	char	*arg;
+
+	j = 0;
+	arg = ft_strdup("");
+	while (s[j] == ' ' || s[j] == '\t')
+		j++;
+	if (!s[j])
+		return (*i += j, j);
+	if (read_redir_target(s, &j, &arg) == -1)
+		return (-1);
+	arg = normalize_filename(arg);
+	if (!arg)
+	{
+		ft_putendl_fd("ambiguous redirect", 2);
+		return (-1);
+	}
+	add_token_to_list(head, create_word_token(arg));
+	free(arg);
+	*i += j;
+	return (j);
+}

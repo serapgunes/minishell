@@ -101,25 +101,26 @@ static t_ast_tree *make_pipe_node(t_token *left, t_token *right, t_token *mid)
         free(node);
         return (NULL);
     }
-    return node;
+    return (node);
 }
 
 t_ast_tree *ft_build_ast(t_token *tokens)
 {
     t_token *left, *right, *mid;
 
-    if (!tokens) return NULL;
+    if (!tokens) 
+		return (NULL);
 
     if (find_pipe_split(tokens, &left, &mid, &right))
     {
         printf("syntax error near unexpected token\n");
         // HATA: bütün token zinciri tek parça olabilir; tamamını bırak
         free_token_list(tokens);
-        return NULL;
+        return (NULL);
     }
     if (mid)     // pipe bulundu
         return make_pipe_node(left, right, mid);
 
     // pipe yoksa tek komut; build_cmd_node tokenları kendi içinde free ediyor
-    return build_cmd_node(tokens);
+    return (build_cmd_node(tokens));
 }
