@@ -23,6 +23,7 @@ SRCS			=	built_cd.c				\
 					signal.c				\
 					handle_redirection.c	\
  					execute_command.c		\
+					execute_pipe.c			\
 
 
 OBJS			=	$(SRCS:.c=.o)

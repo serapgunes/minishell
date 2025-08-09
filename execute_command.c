@@ -44,7 +44,7 @@ static void exec_path(char *cmd, t_ast_tree *node, char ***envp, int cmd_idx)
 			ft_putendl_fd(": No such file or directory", 2);
 		}
 		else
-			perror(cmd);                // zaten stderr
+			perror(cmd);
 		exit(127);
 	}
 	if (S_ISDIR(sb.st_mode))
