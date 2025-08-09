@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/07 10:13:03 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:16:29 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,16 +92,12 @@ void executor_structure(t_ast_tree *node, char ***envp, int in_pipeline);
 
 // parser///////////////////////
 t_ast_tree *ft_build_ast(t_token *tokens);
-int ft_last(t_token *input);
-int is_invalid_redir_target(t_token *token);
 // void print_ast(t_ast_tree *node, int depth);
 int ft_parser(t_token *input);
 ////////////////////////////////
 
 // path_find//////////////////////////
-void free_string_array(char **array);
 char *find_path(char *command);
-const char *pathname(char *command);
 //////////////////////////////////////
 
 // signal/////////////////////////
@@ -135,5 +131,12 @@ char **copy_env(char **env);
 int	handle_redirections(t_ast_tree *node);
 void	execute_command(t_ast_tree *node, char ***envp, int in_pipeline);
 void	execute_pipe(t_ast_tree *node, char ***envp);
+t_ast_tree	*create_cmd_node_with_args(int count, char ***args_out);
+int	fill_cmd_from_tokens(t_ast_tree *node, t_token *current, char **args);
+char *process_quoted(char *s, int *i, char quote_char);
+char *process_unquoted(char *s, int *j);
+int prepare_all_heredocs(t_ast_tree *node);
+
+
 
 #endif

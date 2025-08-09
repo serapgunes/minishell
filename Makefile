@@ -24,7 +24,10 @@ SRCS			=	built_cd.c				\
 					handle_redirection.c	\
  					execute_command.c		\
 					execute_pipe.c			\
-
+					parser_utils.c			\
+					parser_utils2.c			\
+					tokenizer4.c			\
+					heredoc.c				\
 
 OBJS			=	$(SRCS:.c=.o)
 RM				=	rm -f

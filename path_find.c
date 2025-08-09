@@ -3,70 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   path_find.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:25:32 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/07 09:49:15 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/09 21:35:53 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-// const char *pathname(char *command)
-// {
-// 	const char *path;
-// 	char **path_env;
-// 	const char *join;
-// 	const char *temp;
-// 	int i;
-
-// 	i = 0;
-// 	path = getenv("PATH");//getenv ile ortam değişkenlerine erişiyoruz
-// 	if(!path)
-// 		return (NULL);//erişemezsek null döndürüyoruz
-// 	path_env = ft_split(path, ':');//bu değişkenlerde her konuma bakıyoruz
-// 	//"/usr/local/sbin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin" örneğin bu şekilde bir ortam değişkeni aldıysak
-// 	// /usr/local/sbin ilk başta buraya kadar ayırıyoruz
-// 	// /usr/local/bin
-// 	// /usr/bin
-// 	// /bin
-// 	// /usr/sbin
-// 	// /sbin  bu şekilde hepsini alıp : göre ayırdık
-// 	while(path_env[i])
-// 	{
-// 		//daha sonra her bir konum için bakıyoruz diyelimki /usr/bin bu konumda arayacağız kendi komutumuzu arıyoruz diyedlim ki ben "cat" komutunu arıyorum
-// 		//ilk başta /usr/bin/ ile birleştiriyoruz /usr/bin buna "/" eklemiş oluyoruz
-// 		// daha sonra
-// 		//sonra cat ile birleştiriyoruz
-// 		// yani command den gelen komutla onu da biz mainden gönderiyoruz zaten
-// 		temp = ft_strjoin(path_env[i], "/");
-// 		join = ft_strjoin(temp, command);
-// 		//sonra bu birleştirdiğimiz komutun erişilebilir olup olmadığını kontrol ediyoruz
-// 		//eğer erişilebilir ise return ediyoruz
-// 		//access İlk parametre: kontrol etmek istediğin dosya yolu
-// 		//		 İkinci parametre: hangi izinleri kontrol etmek istiyoruz
-// 		// X_OK => dosyanın çalıştırılabilir olup olmadığını kontrol eder (executable ok demek açılımı çalıştırılabilir mi)
-// 		if (access(join, X_OK) == 0)
-// 			return (join);
-// 		else
-// 		{
-// 			free((char *)join);
-// 			free((char *)temp);
-// 		}
-// 		i++;
-// 	}
-// 	return (NULL);
-// }
-
-// char *find_path(char *command)
-// {
-//     char *temp = (char *)pathname(command);
-//     if (!temp)
-//         return NULL;
-//     return ft_strdup(temp); // Böylece belleği dışarıdan yönetebilirsin
-// }
-
-void	free_string_array(char **array)
+static void	free_string_array(char **array)
 {
 	int	i;
 
@@ -81,130 +27,60 @@ void	free_string_array(char **array)
 	free(array);
 }
 
-char *find_path(char *command)
+static char	*try_join_exec(const char *path, char *command)
 {
-    const char *path;
-    char **path_env;
-    char *temp;
-    char *join;
-    char *result;
-    int i;
+	char	*temp;
+	char	*join;
+	char	*ret;
 
-    // Önce komutun mutlak yol olup olmadığını kontrol et
-    if (command[0] == '/' || command[0] == '.')
-    {
-        if (access(command, X_OK) == 0)
-            return ft_strdup(command);
-        return NULL;
-    }
-
-    // PATH ortam değişkenini al
-    path = getenv("PATH");
-    if (!path)
-        return NULL;
-
-    path_env = ft_split(path, ':');
-    if (!path_env)
-        return NULL;
-
-    result = NULL;
-    i = 0;
-    while (path_env[i] && !result)
-    {
-        // PATH/command şeklinde birleştir
-        temp = ft_strjoin(path_env[i], "/");
-        if (!temp)
-        {
-            i++;
-            continue;
-        }
-
-        join = ft_strjoin(temp, command);
-        free(temp); // temp'i hemen serbest bırak
-
-        if (!join)
-        {
-            i++;
-            continue;
-        }
-
-        // Dosyanın erişilebilir ve çalıştırılabilir olup olmadığını kontrol et
-        if (access(join, X_OK) == 0)
-        {
-            result = ft_strdup(join); // Kopya oluştur
-        }
-
-        free(join); // join'i her durumda serbest bırak
-        i++;
-    }
-
-    // path_env dizisini tamamen temizle
-    free_string_array(path_env);
-
-    return result;
+	temp = ft_strjoin(path, "/");  // PATH/command şeklinde birleştir
+	if (!temp)
+		return (NULL);
+	join = ft_strjoin(temp, command);
+	free(temp);  // temp'i hemen serbest bırak
+	if (!join)
+		return (NULL);
+	ret = NULL;
+	if (access(join, X_OK) == 0)
+		ret = ft_strdup(join);  // Kopya oluştur
+	free(join);
+	return (ret);
 }
 
-// Alternatif olarak, eğer pathname fonksiyonunu kullanmak istiyorsanız:
-const char *pathname(char *command)
+static char	*search_path(char **path_env, char *command)
 {
-    const char *path;
-    char **path_env;
-    const char *join;
-    const char *temp;
-    int i;
+	int		i;
+	char	*res;
 
-    // Mutlak yol kontrolü
-    if (command[0] == '/' || command[0] == '.')
-    {
-        if (access(command, X_OK) == 0)
-        {
-            return ft_strdup(command);
-        }
-        return NULL;
-    }
+	i = 0;
+	res = NULL;
+	while (path_env[i] && !res)
+	{
+		res = try_join_exec(path_env[i], command);
+		i++;
+	}
+	return (res);
+}
 
-    path = getenv("PATH");
-    if (!path)
-        return NULL;
+char	*find_path(char *command)
+{
+	const char	*path;
+	char		**path_env;
+	char		*result;
 
-    path_env = ft_split(path, ':');
-    if (!path_env)
-        return NULL;
-
-    i = 0;
-    while (path_env[i])
-    {
-        temp = ft_strjoin(path_env[i], "/");
-        if (!temp)
-        {
-            i++;
-            continue;
-        }
-
-        join = ft_strjoin(temp, command);
-        if (!join)
-        {
-            free((char *)temp);
-            i++;
-            continue;
-        }
-
-        if (access(join, X_OK) == 0)
-        {
-            // Başarılı durumda: önce temizlik yap, sonra return et
-            free((char *)temp);
-            free_string_array(path_env);
-            return join; // Bu belleği çağıran fonksiyon yönetecek
-        }
-        else
-        {
-            free((char *)join);
-            free((char *)temp);
-        }
-        i++;
-    }
-
-    // Başarısız durumda: tüm belleği temizle
-    free_string_array(path_env);
-    return NULL;
+	if (command[0] == '/' || command[0] == '.') // Önce komutun mutlak yol olup olmadığını kontrol et
+	{
+		if (access(command, X_OK) == 0)
+			return (ft_strdup(command));
+		return (NULL);
+	}
+	path = getenv("PATH");   // PATH ortam değişkenini al
+	if (!path)
+		return (NULL);
+	path_env = ft_split(path, ':');
+	if (!path_env)
+		return (NULL);
+	result = search_path(path_env, command);
+	free_string_array(path_env);  // path_env dizisini tamamen temizle
+	return (result);
 }

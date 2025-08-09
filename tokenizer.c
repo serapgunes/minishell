@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:32:24 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/06 13:54:27 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/09 21:59:24 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,4 +75,32 @@ t_token *tokenize_input(char *input)
 		}
 	}
 	return (head);
+}
+
+int handle_redir_operator(char *s, t_token **head)
+{
+	char *op;
+	int len;
+
+	if (s[0] == '>' && s[1] == '>')
+	{
+		op = ft_substr(s, 0, 2);
+		len = 2;
+	}
+	else if (s[0] == '<' && s[1] == '<')
+	{
+		op = ft_substr(s, 0, 2);
+		len = 2;
+	}
+	else
+	{
+		op = ft_substr(s, 0, 1);
+		len = 1;
+	}
+	if (len == 2)
+		add_token_to_list(head, create_token(op));
+	else
+		add_token_to_list(head, create_redir_token(op));
+	free(op);
+	return (len);
 }

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/07 10:15:50 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/09 22:11:12 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,82 +32,6 @@ int ft_exit_code(int temp)
 	}
 	exit_code = temp;
 	return (exit_code);
-}
-
-void signal_heredoc(int sig)
-{
-	(void)sig;
-	write(1, "\n", 1);
-	exit(130);
-}
-
-int handle_heredoc(const char *delimiter)
-{
-	int pipefd[2];
-	pid_t pid;
-	char *line;
-
-	if (pipe(pipefd) == -1)
-		return (perror("pipe"), -1);
-
-	pid = fork();
-	if (pid < 0)
-		return (perror("fork"), -1);
-	if (pid == 0)
-	{
-		signal(SIGINT, signal_heredoc);
-		close(pipefd[0]);
-		while (1)
-		{
-			line = readline("> ");
-			if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
-			{
-				free(line);
-				break;
-			}
-			write(pipefd[1], line, ft_strlen(line));
-			write(pipefd[1], "\n", 1);
-			free(line);
-		}
-		close(pipefd[1]); // yazmayı kapat
-		exit(0);		  // çocuktan çık
-	}
-	else
-	{
-		// PARENT: okuyucu
-		int status;
-
-		close(pipefd[1]); // yazma ucunu kapat
-		signal(SIGINT, SIG_IGN);
-		waitpid(pid, &status, 0); // çocuk bitsin
-		signal(SIGINT, signal_catch);
-		if (WEXITSTATUS(status) == 130)
-			return -1;
-		// OKUMA ucu döndürülür, stdin'e bağlanmak için kullanılacak
-		return (pipefd[0]);
-	}
-}
-
-int prepare_all_heredocs(t_ast_tree *node)
-{
-	t_redir *redir;
-
-	if (!node)
-		return (0);
-
-	redir = node->redir_list;
-	while (redir)
-	{
-		if (redir->type == HEREDOC)
-		{
-			int fd = handle_heredoc(redir->target);
-			if (fd < 0)
-				return (1);
-			redir->fd = fd; // buraya fd'yi kaydet
-		}
-		redir = redir->next;
-	}
-	return (0);
 }
 
 int main(int argc, char **argv, char **env)
