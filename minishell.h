@@ -135,8 +135,7 @@ int fill_cmd_from_tokens(t_ast_tree *node, t_token *current, char **args);
 char *process_quoted(char *s, int *i, char quote_char);
 char *process_unquoted(char *s, int *j);
 int prepare_all_heredocs(t_ast_tree *node);
-
-
+void free_token_list(t_token *cur); //bak
 
 
 #endif

@@ -12,6 +12,17 @@
 
 #include "minishell.h"
 
+void free_token_list(t_token *cur)
+{
+    while (cur)
+    {
+        t_token *n = cur->next;
+        if (cur->value) free(cur->value);
+        free(cur);
+        cur = n;
+    }
+}
+
 static int ft_last(t_token *input)
 {
 	t_token *last;
@@ -27,6 +38,7 @@ static int ft_last(t_token *input)
 	}
 	return (0);
 }
+
 static int is_invalid_redir_target(t_token *token)
 {
 	if (!token || token->type != WORD)
@@ -37,6 +49,7 @@ static int is_invalid_redir_target(t_token *token)
 		return (1);
 	return (0);
 }
+
 static int	token_pair_error(t_token *input)
 {
 	if (input->type == PIPE && input->next == NULL)

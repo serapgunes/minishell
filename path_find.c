@@ -37,7 +37,7 @@ static char	*try_join_exec(const char *path, char *command)
 	if (!temp)
 		return (NULL);
 	join = ft_strjoin(temp, command);
-	free(temp);  // temp'i hemen serbest bırak
+	free(temp);
 	if (!join)
 		return (NULL);
 	ret = NULL;

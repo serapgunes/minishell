@@ -107,6 +107,11 @@ void	print_sorted_env(char **env)
 			printf("declare -x %s\n", copy[i]);
 		i++;
 	}
+	while (copy[i])
+	{
+		free(copy[i]);
+		i++;
+	}
 	free(copy);
 }
 

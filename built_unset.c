@@ -19,6 +19,9 @@ static int	remove_from_environ(int idx, char ***env)
 
 	i = idx;
 	e = *env;
+	if (!e[i])
+        return (0);
+	free(e[i]);
 	while (e[i + 1] != NULL)
 	{
 		e[i] = e[i + 1];

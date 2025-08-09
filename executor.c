@@ -43,12 +43,16 @@ static int	try_execute_builtin(t_ast_tree *node, char ***envp, int in_pipeline, 
 			ft_exit_code(1);
 			dup2(std_in, STDIN_FILENO);     // input'u geri al
 			dup2(std_out, STDOUT_FILENO);  // output'u geri al
+			close(std_in);
+    		close(std_out);
 			return (1);
 		}
 		argc = args_count(node->args);
 		status = builtin(argc, node->args, envp);
 		dup2(std_in, STDIN_FILENO);
 		dup2(std_out, STDOUT_FILENO);
+		close(std_in);
+		close(std_out);
 		if (status != -1)
 		{
 			ft_exit_code(status);
@@ -93,6 +97,8 @@ static void	free_redirections(t_ast_tree *node)
 	while (current)
 	{
 		next = current->next;
+		if (current->type == HEREDOC && current->fd >= 0)
+			close(current->fd); 
 		if (current->target)
 			free(current->target);
 		free(current);
@@ -118,6 +124,8 @@ void	executor_structure(t_ast_tree *node, char ***envp, int in_pipeline)
 	}
 	else if (node->type == NODE_PIPE)
 		execute_pipe(node, envp);
+	close(std_in);
+    close(std_out);
 }
 
 /*

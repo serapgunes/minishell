@@ -33,6 +33,7 @@ void free_tokens(t_token *tokens)
 		current = next;
 	}
 }
+
 t_token *create_word_token(char *value)
 {
 	t_token *new_token;
@@ -84,11 +85,9 @@ t_token *create_pipe_token(char *value)
 		free(new_token);
 		return (NULL);
 	}
-
 	new_token->type = PIPE;
 	new_token->value = dup_value;
 	new_token->next = NULL;
-
 	return (new_token);
 }
 t_token *create_redir_token(char *value)

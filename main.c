@@ -54,12 +54,11 @@ void free_redir_list(t_redir *redir)
 	{
 		tmp = redir;
 		redir = redir->next;
-
-		// Eğer target varsa, onu serbest bırak
+		if (tmp->type == HEREDOC && tmp->fd >= 0)
+			close(tmp->fd); // heredoc fd'lerini de kapat
 		if (tmp->target)
 			free(tmp->target);
-
-		free(tmp); // Redir node'unu serbest bırak
+		free(tmp);
 	}
 }
 
@@ -100,6 +99,7 @@ int main(int argc, char **argv, char **env)
 	t_token *tokens;
 	t_ast_tree *ast;
 	char **envp = copy_env(env);
+
 	(void)argv;
 	(void)argc;
 	ft_exit_code(0);
@@ -111,10 +111,10 @@ int main(int argc, char **argv, char **env)
 		if (input == NULL)
 		{
 			write(1, "exit\n", 5);
+			if (envp)
+				ft_free(envp);
 			exit(0);
 		}
-		if (!input)
-			break;
 		if (is_only_spaces(input))
 		{
 			add_history(input);
@@ -123,6 +123,7 @@ int main(int argc, char **argv, char **env)
 		}
 		if (*input)
 			add_history(input);
+
 		tokens = tokenize_input(input);
 		if (!tokens)
 		{
@@ -130,35 +131,28 @@ int main(int argc, char **argv, char **env)
 			free(input);
 			continue;
 		}
-		if (ft_parser(tokens)) // Syntax kontrolü başarısızsa
+		if (ft_parser(tokens))
 		{
 			free_tokens(tokens);
 			free(input);
 			continue;
 		}
 		ast = ft_build_ast(tokens);
+		tokens = NULL; 
 		if (!ast)
 		{
-			free_tokens(tokens);
 			free(input);
 			continue;
 		}
-		// exit(123);
-		//  print_ast(ast, 0);// ast yazdırmak için
-		//   print_tokens(tokens); type yazdırmak için
 		if (prepare_all_heredocs(ast) != 0)
 		{
-			free_tokens(tokens); // Tokenları serbest bırak
 			free_ast_tree(ast);
 			free(input);
 			continue;
 		}
 		executor_structure(ast, &envp, 0);
-		// ft_free(envp);
 		if (ast)
 			free_ast_tree(ast);
-		if (tokens)
-			free_tokens(tokens);
 		free(input);
 	}
 	if (envp)

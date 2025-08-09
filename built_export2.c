@@ -51,6 +51,7 @@ int	extend_env(char ***envp, char *new_entry)
 	new[j++] = new_entry;
 	new[j] = NULL;
 	*envp = new;
+	free (old);
 	return (0);
 }
 
