@@ -32,33 +32,28 @@ static void	run_builtin_or_exit(t_ast_tree *node, int cmd_idx, char ***envp, int
 	signal(SIGPIPE, SIG_DFL);
 }
 
-static void exec_path(char *cmd, t_ast_tree *node, char ***envp, int cmd_idx)
+static void	exit_with_cmd_error(char *cmd, char *msg, int code)
 {
-	struct stat sb;
+	ft_putstr_fd(cmd, 2);
+	ft_putendl_fd(msg, 2);
+	exit(code);
+}
+
+static void	exec_path(char *cmd, t_ast_tree *node, char ***envp, int cmd_idx)
+{
+	struct stat	sb;
 
 	if (stat(cmd, &sb) == -1)
 	{
 		if (errno == ENOENT)
-		{
-			ft_putstr_fd(cmd, 2);
-			ft_putendl_fd(": No such file or directory", 2);
-		}
-		else
-			perror(cmd);
+			exit_with_cmd_error(cmd, ": No such file or directory", 127);
+		perror(cmd);
 		exit(127);
 	}
 	if (S_ISDIR(sb.st_mode))
-	{
-		ft_putstr_fd(cmd, 2);
-		ft_putendl_fd(": Is a directory", 2);
-		exit(126);
-	}
+		exit_with_cmd_error(cmd, ": Is a directory", 126);
 	if (access(cmd, X_OK) != 0)
-	{
-		ft_putstr_fd(cmd, 2);
-		ft_putendl_fd(": Permission denied", 2);
-		exit(126);
-	}
+		exit_with_cmd_error(cmd, ": Permission denied", 126);
 	execve(cmd, node->args + cmd_idx, *envp);
 	perror("execve");
 	exit(1);
@@ -73,7 +68,7 @@ static void lookup_path(char *cmd, t_ast_tree *node, char ***envp, int cmd_idx)
 	{
 		execve(path, node->args + cmd_idx, *envp);
 		free(path);
-		perror("execve");               // stderr
+		perror("execve");
 		exit(1);
 	}
 	ft_putstr_fd(cmd, 2);
