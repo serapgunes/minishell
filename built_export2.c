@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:06:14 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/07 10:14:14 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/10 23:20:15 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,11 +17,14 @@ int	find_in_environ(const char *name, char **env)
 	int	i;
 	int	len;
 
+	if (!env || !name)
+		return (-1);
 	len = ft_strlen(name);
 	i = 0;
 	while (env[i])
 	{
-		if (ft_strncmp(env[i], name, len) == 0 && env[i][len] == '=')
+		if (ft_strncmp(env[i], name, len) == 0 &&
+			(env[i][len] == '=' || env[i][len] == '\0'))
 			return (i);
 		i++;
 	}
