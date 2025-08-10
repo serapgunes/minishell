@@ -6,50 +6,64 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 18:03:45 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 23:19:45 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/10 23:28:39 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	remove_env_index(char ***envp, int idx)
+static int	remove_from_environ(int idx, char ***env)
 {
-	char	**env;
+	char	**e;
 	int		i;
 
-	env = *envp;
-	free(env[idx]);
 	i = idx;
-	while (env[i])
+	e = *env;
+	if (!e[i])
+        return (0);
+	free(e[i]);
+	while (e[i + 1] != NULL)
 	{
-		env[i] = env[i + 1];
+		e[i] = e[i + 1];
 		i++;
 	}
-	*envp = env;
+	e[i] = NULL;
+	return (0);
 }
 
-int	builtin_unset(int argc, char **argv, char ***envp)
+static int	unset_one_var(char *var, int *status, char ***env)
+{
+	int	idx;
+
+	if (!is_valid_identifier(var))
+	{
+		printf("unset: '%s': not a valid identifier\n", var);
+		*status = 1;
+		return (1);
+	}
+	idx = find_in_environ(var, *env);
+	if (idx >= 0)
+	{
+		if (remove_from_environ(idx, env) != 0)
+			*status = 1;
+	}
+	return (0);
+}
+
+int	builtin_unset(int argc, char **argv, char ***env)
 {
 	int	i;
-	int	idx;
 	int	status;
 
 	status = 0;
 	i = 1;
+	if (argc < 2)
+		return (0);
 	while (i < argc)
 	{
-		if (!is_valid_identifier(argv[i]))
-		{
-			print_invalid_identifier(argv[i]);
-			status = 1;
-		}
-		else
-		{
-			while ((idx = find_in_environ(argv[i], *envp)) >= 0)
-				remove_env_index(envp, idx);
-		}
+		if (argv[i])
+			unset_one_var(argv[i], &status, env);
 		i++;
 	}
 	return (status);
 }
-

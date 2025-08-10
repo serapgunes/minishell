@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 14:30:09 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/10 23:29:21 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -121,15 +121,6 @@ void	cleanup(t_shell *shell, int mode)
 {
 	if (!shell)
 		return;
-	// if (shell->input)
-	// 	free(shell->input);
-	// if (shell->tokens)
-	// 	free_tokens(shell->tokens);
-	// if (shell->ast)
-	// 	free_ast_tree(shell->ast);
-	// if (shell->envp && mode == 0)
-	// 	ft_free(shell->envp);
-	// free(shell);
 	if (shell->ast)
 	{
 		free_ast_tree(shell->ast);
@@ -242,16 +233,13 @@ int	main(int argc, char **argv, char **env)
 	return (ft_exit_code(-1));
 }
 
-// export yanlış çalışıyor
-// minishell$ export VAR=42
-// minishell$ env | grep VAR
-// minishell$ export VAR2
-// minishell$ export
 // valgrind --leak-check=full --show-leak-kinds=all  --suppressions=./readline.supp ./minishell
 
 
 //çıkan leakler:
-// exit 666666666666666666666666666666666
+// cat << a
+// ctrl + c : still reachable
+// exit : definetly lost
 
 
 
