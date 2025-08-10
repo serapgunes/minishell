@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 02:38:40 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 05:17:58 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -82,7 +82,7 @@ int builtin_cd(int argc, char **argv);
 int builtin_echo(int argc, char **argv);
 int control_env(int argc);
 int builtin_env(char ***env);
-int builtin_exit(int argc, char **argv);
+int builtin_exit(int argc, char **argv, t_shell *shell);
 int is_valid_identifier(const char *name);
 int builtin_export(int argc, char **argv, char ***envp);
 int find_in_environ(const char *name, char **env);
@@ -92,7 +92,7 @@ void print_sorted_env(char **env);
 void print_invalid_identifier(char *arg);
 int builtin_pwd(void);
 int builtin_unset(int argc, char **argv, char ***env);
-int builtin(int argc, char **argv, char ***env);
+int builtin(int argc, char **argv, char ***env, t_shell *shell);
 int is_builtin(char *cmd);
 int is_digit(int c);
 
@@ -143,7 +143,7 @@ t_ast_tree *create_cmd_node_with_args(int count, char ***args_out);
 int fill_cmd_from_tokens(t_ast_tree *node, t_token *current, char **args);
 char *process_quoted(char *s, int *i, char quote_char);
 char *process_unquoted(char *s, int *j);
-int prepare_all_heredocs(t_ast_tree *node);
+int prepare_all_heredocs(t_ast_tree *node, t_shell *shell);
 void free_token_list(t_token *cur); // bak
 
 #endif

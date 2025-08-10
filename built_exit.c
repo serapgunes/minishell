@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:06:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 02:15:11 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 08:59:45 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static int is_too_large(char *str)
 	return (0);
 }
 
-int builtin_exit(int argc, char **argv)
+int builtin_exit(int argc, char **argv, t_shell *shell)
 {
 	int exit_code;
 
@@ -64,11 +64,15 @@ int builtin_exit(int argc, char **argv)
 			ft_putstr_fd("exit: ", 2);
 			ft_putstr_fd(argv[1], 2);
 			ft_putendl_fd(": numeric argument required", 2);
+			cleanup(shell, 1);
+			shell = NULL;
 			exit(2);
 		}
 		exit_code = ft_atoi(argv[1]) % 256;
 	}
 	ft_exit_code(exit_code);
+	cleanup(shell, 0);
+	shell = NULL;
 	exit(exit_code);
 	return (0);
 }

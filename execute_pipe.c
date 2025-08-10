@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:53:32 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 02:40:36 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 08:49:30 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,9 @@ static void handle_pipe_status(int status)
 		}
 	}
 	else
+	{
 		ft_exit_code(WEXITSTATUS(status));
+	}
 }
 
 static pid_t create_child_with_pipe(t_ast_tree *node, int pipefd[2], char *side, t_shell *shell)
@@ -60,6 +62,7 @@ static pid_t create_child_with_pipe(t_ast_tree *node, int pipefd[2], char *side,
 			executor_structure(node->right, 1, shell);
 		}
 		cleanup(shell, 0);
+		shell = NULL;
 		exit(ft_exit_code(-1));
 	}
 	return (pid);

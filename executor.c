@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/10 02:38:42 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 08:50:50 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -48,7 +48,7 @@ static int try_execute_builtin(t_ast_tree *node, int in_pipeline, int std_in, in
 			return (1);
 		}
 		argc = args_count(node->args);
-		status = builtin(argc, node->args, &shell->envp);
+		status = builtin(argc, node->args, &shell->envp, shell);
 		dup2(std_in, STDIN_FILENO);
 		dup2(std_out, STDOUT_FILENO);
 		close(std_in);
@@ -66,7 +66,6 @@ static void execute_and_wait(t_ast_tree *node, int in_pipeline, t_shell *shell)
 {
 	pid_t pid;
 	int status;
-
 	pid = fork();
 	if (pid < 0)
 	{
@@ -77,7 +76,9 @@ static void execute_and_wait(t_ast_tree *node, int in_pipeline, t_shell *shell)
 	else if (pid == 0) // Child process
 	{
 		execute_command(node, in_pipeline, shell); // Child process'te execute_command çağır
-		exit(1);								   // Bu noktaya asla ulaşılmamalı, execute_command her zaman exit() çağırır
+		cleanup(shell, 0);
+		// shell = NULL;
+		exit(1); // Bu noktaya asla ulaşılmamalı, execute_command her zaman exit() çağırır
 	}
 	else // Parent process
 	{
