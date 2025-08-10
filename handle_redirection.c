@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirection.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:53:42 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/09 20:53:45 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/10 13:34:17 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,12 @@ static int	apply_redirection_entry(t_redir *redir, int *fd_in, int *fd_out)
 		return (reopen_path(fd_out, redir->target,
 				O_WRONLY | O_CREAT | O_APPEND, 0644));
 	if (redir->type == HEREDOC)
-		return (set_heredoc_fd(redir->fd, fd_in));
+	{
+		if (set_heredoc_fd(redir->fd, fd_in))
+			return (1);
+		redir->fd = -1;
+		return (0);
+	}
 	return (0);
 }
 
@@ -84,7 +89,13 @@ int	handle_redirections(t_ast_tree *node)
 	while (redir)
 	{
 		if (apply_redirection_entry(redir, &fd_in, &fd_out))
+		{
+			if (fd_in != -1)
+				close(fd_in);
+			if (fd_out != -1)
+				close(fd_out);
 			return (1);
+		}
 		redir = redir->next;
 	}
 	if (dup_stdio_and_close(fd_in, STDIN_FILENO, "dup21"))

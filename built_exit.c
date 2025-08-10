@@ -3,23 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   built_exit.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:06:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 09:40:42 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 14:19:10 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int is_digit(int c)
+int	is_digit(int c)
 {
 	return (c >= '0' && c <= '9');
 }
 
-static int is_numeric(const char *str)
+static int	is_numeric(const char *str)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (str[0] == '-' || str[0] == '+')
@@ -33,9 +33,9 @@ static int is_numeric(const char *str)
 	return (1);
 }
 
-static int is_too_large(char *str)
+static int	is_too_large(char *str)
 {
-	int len;
+	int	len;
 
 	len = ft_strlen(str);
 	if (len > 19)
@@ -45,9 +45,9 @@ static int is_too_large(char *str)
 	return (0);
 }
 
-int builtin_exit(int argc, char **argv, t_shell *shell)
+int	builtin_exit(int argc, char **argv, t_shell *shell)
 {
-	int exit_code;
+	int	exit_code;
 
 	exit_code = 0;
 	ft_putendl_fd("exit", 1);
@@ -59,12 +59,13 @@ int builtin_exit(int argc, char **argv, t_shell *shell)
 	}
 	if (argc == 2)
 	{
-		if (argc >= 2 && (!argv[1] || !is_numeric(argv[1]) || is_too_large(argv[1])))
+		if (argc >= 2 && (!argv[1] || !is_numeric(argv[1])
+			|| is_too_large(argv[1])))
 		{
 			ft_putstr_fd("exit: ", 2);
 			ft_putstr_fd(argv[1], 2);
 			ft_putendl_fd(": numeric argument required", 2);
-			cleanup(shell, 1);
+			cleanup(shell, 0);
 			shell = NULL;
 			exit(2);
 		}

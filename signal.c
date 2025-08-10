@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   signal.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/28 15:19:50 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/06 14:11:35 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/10 14:38:26 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static volatile sig_atomic_t sigint_flag = 0;
+static volatile sig_atomic_t	sigint_flag = 0;
 
-void signal_catch(int signum)
+void	signal_catch(int signum)
 {
 	(void)signum;
 	sigint_flag = 1;
@@ -24,7 +24,7 @@ void signal_catch(int signum)
 	rl_redisplay();			// promptu yeniden çiziyor
 }
 
-int check_sigint_flag(void)
+int	check_sigint_flag(void)
 {
 	if (sigint_flag)
 	{
@@ -34,7 +34,7 @@ int check_sigint_flag(void)
 	return (0);
 }
 
-void signal_child(int signum)
+void	signal_child(int signum)
 {
 	(void)signum;
 	sigint_flag = 1;

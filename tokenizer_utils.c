@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 17:51:21 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/09 21:28:26 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 14:38:49 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-char *ft_charjoin_free(char *res, char *val, int flag)
+char	*ft_charjoin_free(char *res, char *val, int flag)
 {
-	char *tmp;
+	char	*tmp;
 
 	tmp = ft_strjoin(res, val);
 	if (flag & 1) // res serbest
@@ -24,10 +24,10 @@ char *ft_charjoin_free(char *res, char *val, int flag)
 	return (tmp);
 }
 
-char *ft_charjoin(char *res, char c)
+char	*ft_charjoin(char *res, char c)
 {
-	char *tmp;
-	int len;
+	char	*tmp;
+	int		len;
 
 	len = ft_strlen(res);
 	tmp = malloc(len + 2);

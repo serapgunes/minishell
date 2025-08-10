@@ -3,20 +3,22 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/10 09:36:26 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 14:26:58 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void handle_command_status(int status)
+static void	handle_command_status(int status)
 {
+	int	sig;
+
 	if (WIFSIGNALED(status))
 	{
-		int sig = WTERMSIG(status);
+		sig = WTERMSIG(status);
 		if (sig == SIGINT)
 			ft_exit_code(130);
 		else if (sig == SIGQUIT)
@@ -31,10 +33,10 @@ static void handle_command_status(int status)
 		ft_exit_code(WEXITSTATUS(status));
 }
 
-static int try_execute_builtin(t_ast_tree *node, int in_pipeline, int std_in, int std_out, t_shell *shell)
+static int	try_execute_builtin(t_ast_tree *node, int in_pipeline, int std_in, int std_out, t_shell *shell)
 {
-	int argc;
-	int status;
+	int	argc;
+	int	status;
 
 	if (!in_pipeline && is_builtin(node->args[0]))
 	{
@@ -62,10 +64,11 @@ static int try_execute_builtin(t_ast_tree *node, int in_pipeline, int std_in, in
 	return (0);
 }
 
-static void execute_and_wait(t_ast_tree *node, int in_pipeline, t_shell *shell)
+static void	execute_and_wait(t_ast_tree *node, int in_pipeline, t_shell *shell)
 {
-	pid_t pid;
-	int status;
+	pid_t	pid;
+	int		status;
+
 	pid = fork();
 	if (pid < 0)
 	{
@@ -77,7 +80,6 @@ static void execute_and_wait(t_ast_tree *node, int in_pipeline, t_shell *shell)
 	{
 		execute_command(node, in_pipeline, shell); // Child process'te execute_command çağır
 		cleanup(shell, 0);
-		// shell = NULL;
 		exit(1); // Bu noktaya asla ulaşılmamalı, execute_command her zaman exit() çağırır
 	}
 	else // Parent process
@@ -89,10 +91,10 @@ static void execute_and_wait(t_ast_tree *node, int in_pipeline, t_shell *shell)
 	}
 }
 
-static void free_redirections(t_ast_tree *node)
+static void	free_redirections(t_ast_tree *node)
 {
-	t_redir *current;
-	t_redir *next;
+	t_redir	*current;
+	t_redir	*next;
 
 	current = node->redir_list;
 	while (current)
@@ -108,10 +110,10 @@ static void free_redirections(t_ast_tree *node)
 	node->redir_list = NULL;
 }
 
-void executor_structure(t_ast_tree *node, int in_pipeline, t_shell *shell)
+void	executor_structure(t_ast_tree *node, int in_pipeline, t_shell *shell)
 {
-	int std_in;
-	int std_out;
+	int	std_in;
+	int	std_out;
 
 	std_in = dup(STDIN_FILENO);
 	std_out = dup(STDOUT_FILENO);

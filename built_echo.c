@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:20:45 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/05 23:44:22 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/10 14:17:30 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,7 @@ int	builtin_echo(int argc, char **argv)
 	if (!nflag && write(1, "\n", 1) < 0)
 	{
 		if (errno == EPIPE)
-			return 1;
+			return (1);
 		perror("echo");
 		return (1);
 	}

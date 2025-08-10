@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 10:17:21 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 14:30:09 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int args_count(char **args)
+int	args_count(char **args)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (args[i])
@@ -22,9 +22,9 @@ int args_count(char **args)
 	return (i);
 }
 
-int ft_exit_code(int temp)
+int	ft_exit_code(int temp)
 {
-	static int exit_code;
+	static int	exit_code;
 
 	if (temp == -1)
 	{
@@ -34,10 +34,11 @@ int ft_exit_code(int temp)
 	return (exit_code);
 }
 
-void ft_free(char **envp)
+void	ft_free(char **envp)
 {
-	int i = 0;
+	int i;
 
+	i = 0;
 	while (envp[i])
 	{
 		free(envp[i]);
@@ -46,9 +47,9 @@ void ft_free(char **envp)
 	free(envp);
 }
 
-void free_redir_list(t_redir *redir)
+void	free_redir_list(t_redir *redir)
 {
-	t_redir *tmp;
+	t_redir	*tmp;
 
 	while (redir)
 	{
@@ -61,14 +62,13 @@ void free_redir_list(t_redir *redir)
 		free(tmp);
 	}
 }
-void free_tokens(t_token *tokens)
+void	free_tokens(t_token *tokens)
 {
-	t_token *current;
-	t_token *next;
+	t_token	*current;
+	t_token	*next;
 
 	if (!tokens)
 		return;
-
 	current = tokens;
 	while (current)
 	{
@@ -83,13 +83,15 @@ void free_tokens(t_token *tokens)
 	}
 }
 
-void free_ast_tree(t_ast_tree *node)
+void	free_ast_tree(t_ast_tree *node)
 {
+	int i;
+
+	i = 0;
 	if (!node)
 		return;
 	if (node->args)
 	{
-		int i = 0;
 		while (node->args[i])
 		{
 			free(node->args[i]);
@@ -115,7 +117,7 @@ void free_ast_tree(t_ast_tree *node)
 	free(node);
 }
 
-void cleanup(t_shell *shell, int mode)
+void	cleanup(t_shell *shell, int mode)
 {
 	if (!shell)
 		return;
@@ -155,10 +157,13 @@ void cleanup(t_shell *shell, int mode)
 	}
 }
 
-int main(int argc, char **argv, char **env)
+int	main(int argc, char **argv, char **env)
 {
-	t_shell *shell = malloc(sizeof(t_shell));
+	t_shell	*shell;
 
+	(void)argv;
+	(void)argc;
+	shell = malloc(sizeof(t_shell));
 	if (!shell)
 		return (1);
 	shell->input = NULL;
@@ -170,9 +175,6 @@ int main(int argc, char **argv, char **env)
 		free(shell);
 		return (1);
 	}
-
-	(void)argv;
-	(void)argc;
 	ft_exit_code(0);
 	while (1)
 	{
@@ -246,3 +248,18 @@ int main(int argc, char **argv, char **env)
 // minishell$ export VAR2
 // minishell$ export
 // valgrind --leak-check=full --show-leak-kinds=all  --suppressions=./readline.supp ./minishell
+
+
+//çıkan leakler:
+// exit 666666666666666666666666666666666
+
+
+
+
+//DENENECEK TETLER:
+
+//minishell$ <<<
+// ambiguous redirect
+// syntax error near unexpected token
+
+

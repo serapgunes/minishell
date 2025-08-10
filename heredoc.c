@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 22:08:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 10:18:40 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 13:35:30 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,9 +53,15 @@ static int heredoc_parent(pid_t pid, int pipefd[2]) // PARENT: okuyucu
 	waitpid(pid, &status, 0);
 	signal(SIGINT, signal_catch);
 	if (WIFEXITED(status) && WEXITSTATUS(status) == 130)
+	{
+		close(pipefd[0]);
 		return (-1);
+	}
 	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
+	{
+		close(pipefd[0]);
 		return (-1);
+	}
 	return (pipefd[0]); // OKUMA ucu döndürülür, stdin'e bağlanmak için kullanılacak
 }
 

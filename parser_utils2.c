@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 21:14:58 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/09 21:19:12 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/10 14:30:45 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static  char *strip_quotes(char *str)
+static char	*strip_quotes(char *str)
 {
-	size_t len;
+	size_t	len;
 
 	if (!str)
 		return (NULL);

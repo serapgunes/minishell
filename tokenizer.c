@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:32:24 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/09 22:27:02 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 14:40:25 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,25 +23,25 @@
 // 	}
 // }// type yazdırmak için kontrol
 
-int is_word_char(char c)
+int	is_word_char(char c)
 {
 	if (c == ' ' || c == '\t' || c == '\n' || c == '|' || c == '<' || c == '>' || c == '\'' || c == '"')
 		return (0);
 	return (1);
 }
 
-static int tokenize_redirection(char *input, t_token **head)
+static int	tokenize_redirection(char *input, t_token **head)
 {
-	int op_len;
+	int	op_len;
 
 	op_len = handle_redir_operator(input, head);
 	handle_redir_file(input + op_len, &op_len, head);
 	return (op_len);
 }
 
-static void handle_special_char(char *input, int *i, t_token **head)
+static void	handle_special_char(char *input, int *i, t_token **head)
 {
-	t_token *token;
+	t_token	*token;
 
 	if (input[*i] == '>' || input[*i] == '<')
 		*i += tokenize_redirection(input + *i, head);
@@ -56,10 +56,10 @@ static void handle_special_char(char *input, int *i, t_token **head)
 		(*i)++;
 }
 
-t_token *tokenize_input(char *input)
+t_token	*tokenize_input(char *input)
 {
-	int i;
-	t_token *head;
+	int		i;
+	t_token	*head;
 
 	i = 0;
 	head = NULL;
@@ -73,7 +73,10 @@ t_token *tokenize_input(char *input)
 		{
 			char *arg = collect_argument(input, &i);
 			if (!arg)
+			{
+				free_token_list(head);
 				return (NULL);
+			}
 			char *tmp = ft_strdup(arg);
 			add_token_to_list(&head, create_word_token(tmp));
 			free(tmp);
@@ -83,10 +86,10 @@ t_token *tokenize_input(char *input)
 	return (head);
 }
 
-int handle_redir_operator(char *s, t_token **head)
+int	handle_redir_operator(char *s, t_token **head)
 {
-	char *op;
-	int len;
+	char	*op;
+	int		len;
 
 	if (s[0] == '>' && s[1] == '>')
 	{

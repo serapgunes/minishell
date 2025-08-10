@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   built_env.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:10:19 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 02:38:31 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 14:17:55 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int control_env(int argc)
+int	control_env(int argc)
 {
 	if (argc > 1)
 	{
@@ -22,9 +22,9 @@ int control_env(int argc)
 	return (1);
 }
 
-int builtin_env(char ***env)
+int	builtin_env(char ***env)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	if (!env)

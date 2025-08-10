@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:58:23 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/05 23:29:32 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/10 13:43:46 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ static char	*handle_var(char *str, int *i, char *res)
 	if (str[*i + 1] == '?')
 	{
 		code = ft_itoa(ft_exit_code(-1));
-		res = ft_charjoin_free(res, code, 1);
+		res = ft_charjoin_free(res, code, 3);
 		*i += 2;
 		return (res);
 	}

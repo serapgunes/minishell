@@ -12,23 +12,24 @@
 
 #include "minishell.h"
 
-void free_token_list(t_token *cur)
+void	free_token_list(t_token *cur)
 {
-    while (cur)
-    {
-        t_token *n = cur->next;
-        if (cur->value) free(cur->value);
-        free(cur);
-        cur = n;
-    }
+	t_token	*n;
+
+	while (cur)
+	{
+		n = cur->next;
+		if (cur->value) free(cur->value);
+		free(cur);
+		cur = n;
+	}
 }
 
-static int ft_last(t_token *input)
+static int	ft_last(t_token *input)
 {
-	t_token *last;
+	t_token	*last;
 
 	last = input;
-
 	while (last && last->next)
 		last = last->next;
 	if (last->type == APPEND || last->type == REDIR_IN || last->type == REDIR_OUT || last->type == HEREDOC || last->type == PIPE)
@@ -39,7 +40,7 @@ static int ft_last(t_token *input)
 	return (0);
 }
 
-static int is_invalid_redir_target(t_token *token)
+static int	is_invalid_redir_target(t_token *token)
 {
 	if (!token || token->type != WORD)
 		return (1);

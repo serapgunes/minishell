@@ -3,16 +3,16 @@
 /*                                                        :::      ::::::::   */
 /*   execute_command.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:51:02 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 09:04:49 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 14:24:05 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static int cmd_skip_empty(char **args, int *cmd_idx, t_shell *shell)
+static int	cmd_skip_empty(char **args, int *cmd_idx, t_shell *shell)
 {
 	while (args[*cmd_idx] && args[*cmd_idx][0] == '\0')
 		(*cmd_idx)++;
@@ -31,9 +31,9 @@ static int cmd_skip_empty(char **args, int *cmd_idx, t_shell *shell)
 	return (0);
 }
 
-static void run_builtin_or_exit(t_ast_tree *node, int cmd_idx, int in_pipeline, t_shell *shell)
+static void	run_builtin_or_exit(t_ast_tree *node, int cmd_idx, int in_pipeline, t_shell *shell)
 {
-	int ret;
+	int	ret;
 
 	ret = builtin(args_count(node->args + cmd_idx),
 				  node->args + cmd_idx, &shell->envp, shell);
@@ -50,7 +50,7 @@ static void run_builtin_or_exit(t_ast_tree *node, int cmd_idx, int in_pipeline, 
 	signal(SIGPIPE, SIG_DFL);
 }
 
-static void exit_with_cmd_error(char *cmd, char *msg, int code, t_shell *shell)
+static void	exit_with_cmd_error(char *cmd, char *msg, int code, t_shell *shell)
 {
 	ft_putstr_fd(cmd, 2);
 	ft_putendl_fd(msg, 2);
@@ -59,9 +59,9 @@ static void exit_with_cmd_error(char *cmd, char *msg, int code, t_shell *shell)
 	exit(code);
 }
 
-static void exec_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell)
+static void	exec_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell)
 {
-	struct stat sb;
+	struct stat	sb;
 
 	if (stat(cmd, &sb) == -1)
 	{
@@ -83,9 +83,9 @@ static void exec_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell)
 	exit(1);
 }
 
-static void lookup_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell)
+static void	lookup_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell)
 {
-	char *path;
+	char	*path;
 
 	path = find_path(cmd);
 	if (path)
@@ -104,10 +104,10 @@ static void lookup_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell
 	exit(127);
 }
 
-void execute_command(t_ast_tree *node, int in_pipeline, t_shell *shell)
+void	execute_command(t_ast_tree *node, int in_pipeline, t_shell *shell)
 {
-	int cmd_idx;
-	char *cmd;
+	int		cmd_idx;
+	char	*cmd;
 
 	cmd_idx = 0;
 	if (!node || !node->args)

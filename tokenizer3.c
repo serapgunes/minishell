@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer3.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:55:20 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 01:44:10 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 14:41:06 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-void add_token_to_list(t_token **head, t_token *new)
+void	add_token_to_list(t_token **head, t_token *new)
 {
-	t_token *tmp;
+	t_token	*tmp;
 
 	if (!*head)
 		*head = new;
@@ -27,10 +27,10 @@ void add_token_to_list(t_token **head, t_token *new)
 	}
 }
 
-char *process_quoted(char *s, int *i, char quote_char)
+char	*process_quoted(char *s, int *i, char quote_char)
 {
-	int start;
-	int len;
+	int	start;
+	int	len;
 
 	start = *i;
 	len = 0;
@@ -44,11 +44,11 @@ char *process_quoted(char *s, int *i, char quote_char)
 	return (ft_substr(s, start, len));
 }
 
-char *process_unquoted(char *s, int *j)
+char	*process_unquoted(char *s, int *j)
 {
-	int start;
-	char *raw;
-	char *expanded;
+	int		start;
+	char	*raw;
+	char	*expanded;
 
 	start = *j;
 	while (s[*j] && is_word_char(s[*j]))
@@ -59,7 +59,7 @@ char *process_unquoted(char *s, int *j)
 	return (expanded);
 }
 
-char *normalize_filename(char *str)
+char	*normalize_filename(char *str)
 {
 	if (!str || str[0] == '\0')
 	{

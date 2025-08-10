@@ -3,18 +3,18 @@
 /*                                                        :::      ::::::::   */
 /*   execute_pipe.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:53:32 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 08:49:30 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 14:25:10 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void handle_pipe_status(int status)
+static void	handle_pipe_status(int status)
 {
-	int sig;
+	int	sig;
 
 	if (WIFSIGNALED(status))
 	{
@@ -38,11 +38,18 @@ static void handle_pipe_status(int status)
 	}
 }
 
-static pid_t create_child_with_pipe(t_ast_tree *node, int pipefd[2], char *side, t_shell *shell)
+static pid_t	create_child_with_pipe(t_ast_tree *node, int pipefd[2], char *side, t_shell *shell)
 {
-	pid_t pid;
+	pid_t	pid;
 
 	pid = fork();
+	if (pid < 0)
+	{
+	close(pipefd[0]);
+	close(pipefd[1]);
+	ft_exit_code(1);
+	return (-1);
+	}
 	if (pid == 0)
 	{
 		signal(SIGINT, SIG_DFL);
@@ -68,13 +75,13 @@ static pid_t create_child_with_pipe(t_ast_tree *node, int pipefd[2], char *side,
 	return (pid);
 }
 
-void execute_pipe(t_ast_tree *node, t_shell *shell)
+void	execute_pipe(t_ast_tree *node, t_shell *shell)
 {
-	int pipefd[2];
-	pid_t pid1;
-	pid_t pid2;
-	int status1;
-	int status2;
+	int		pipefd[2];
+	pid_t	pid1;
+	pid_t	pid2;
+	int		status1;
+	int	status2;
 
 	if (pipe(pipefd) == -1)
 	{
