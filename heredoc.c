@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 22:08:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 06:54:04 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 10:18:40 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,7 +39,7 @@ static void heredoc_child(const char *delimiter, int pipefd[2], t_shell *shell)
 		free(line);
 	}
 	close(pipefd[1]); // yazmayı kapat
-	cleanup(shell, 1);
+	cleanup(shell, 0);
 	shell = NULL;
 	exit(0); // çocuktan çık
 }

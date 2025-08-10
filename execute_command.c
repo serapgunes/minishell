@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:51:02 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 08:52:02 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 09:04:49 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,11 +20,11 @@ static int cmd_skip_empty(char **args, int *cmd_idx, t_shell *shell)
 	{
 		if (*cmd_idx == 0)
 		{
-			cleanup(shell, 1);
+			cleanup(shell, 0);
 			shell = NULL;
 			exit(1);
 		}
-		cleanup(shell, 1);
+		cleanup(shell, 0);
 		shell = NULL;
 		exit(0);
 	}
@@ -43,7 +43,7 @@ static void run_builtin_or_exit(t_ast_tree *node, int cmd_idx, int in_pipeline, 
 			signal(SIGPIPE, SIG_DFL);
 		else
 			signal(SIGPIPE, SIG_IGN);
-		cleanup(shell, 1);
+		cleanup(shell, 0);
 		shell = NULL; // buradan emin değilim
 		exit(ret);
 	}
@@ -54,7 +54,7 @@ static void exit_with_cmd_error(char *cmd, char *msg, int code, t_shell *shell)
 {
 	ft_putstr_fd(cmd, 2);
 	ft_putendl_fd(msg, 2);
-	cleanup(shell, 1);
+	cleanup(shell, 0);
 	shell = NULL;
 	exit(code);
 }
@@ -68,7 +68,7 @@ static void exec_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell)
 		if (errno == ENOENT)
 			exit_with_cmd_error(cmd, ": No such file or directory", 127, shell);
 		perror(cmd);
-		cleanup(shell, 1);
+		cleanup(shell, 0);
 		shell = NULL;
 		exit(127);
 	}
@@ -78,7 +78,7 @@ static void exec_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell)
 		exit_with_cmd_error(cmd, ": Permission denied", 126, shell);
 	execve(cmd, node->args + cmd_idx, shell->envp);
 	perror("execve");
-	cleanup(shell, 1);
+	cleanup(shell, 0);
 	shell = NULL;
 	exit(1);
 }
@@ -93,13 +93,13 @@ static void lookup_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell
 		execve(path, node->args + cmd_idx, shell->envp);
 		free(path);
 		perror("execve");
-		cleanup(shell, 1);
+		cleanup(shell, 0);
 		shell = NULL;
 		exit(1);
 	}
 	ft_putstr_fd(cmd, 2);
 	ft_putendl_fd(": command not found", 2);
-	cleanup(shell, 1);
+	cleanup(shell, 0);
 	shell = NULL;
 	exit(127);
 }

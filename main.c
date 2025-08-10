@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 09:03:06 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/10 10:17:21 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -117,8 +117,8 @@ void free_ast_tree(t_ast_tree *node)
 
 void cleanup(t_shell *shell, int mode)
 {
-	// if (!shell)
-	// 	return;
+	if (!shell)
+		return;
 	// if (shell->input)
 	// 	free(shell->input);
 	// if (shell->tokens)
@@ -151,13 +151,14 @@ void cleanup(t_shell *shell, int mode)
 	if (mode == 0)
 	{
 		free(shell);
-		shell = NULL;
+		// shell = NULL;
 	}
 }
 
 int main(int argc, char **argv, char **env)
 {
 	t_shell *shell = malloc(sizeof(t_shell));
+
 	if (!shell)
 		return (1);
 	shell->input = NULL;
@@ -188,7 +189,7 @@ int main(int argc, char **argv, char **env)
 		{
 			add_history(shell->input);
 			cleanup(shell, 1);
-			shell = NULL;
+			// shell = NULL;
 			continue;
 		}
 		if (*shell->input)
@@ -199,13 +200,13 @@ int main(int argc, char **argv, char **env)
 		{
 			ft_exit_code(0);
 			cleanup(shell, 1);
-			shell = NULL;
+			// shell = NULL;
 			continue;
 		}
 		if (ft_parser(shell->tokens))
 		{
 			cleanup(shell, 1);
-			shell = NULL;
+			// shell = NULL;
 			continue;
 		}
 		shell->ast = ft_build_ast(shell->tokens, shell);
@@ -213,19 +214,26 @@ int main(int argc, char **argv, char **env)
 		if (!shell->ast)
 		{
 			cleanup(shell, 1);
-			shell = NULL;
+			// shell->ast = NULL;
 			continue;
 		}
 		if (prepare_all_heredocs(shell->ast, shell) != 0)
 		{
 			cleanup(shell, 1);
-			shell = NULL;
+			// shell = NULL;
 			continue;
 		}
 		executor_structure(shell->ast, 0, shell);
 		if (shell->ast)
+		{
 			free_ast_tree(shell->ast);
-		free(shell->input);
+			shell->ast = NULL;
+		}
+		if (shell->input)
+		{
+			free(shell->input);
+			shell->input = NULL;
+		}
 	}
 	// ft_free(shell->envp);
 	cleanup(shell, 0);
