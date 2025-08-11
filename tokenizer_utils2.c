@@ -12,75 +12,103 @@
 
 #include "minishell.h"
 
-static char *handle_var_utils(char *res, char *str, int *i, int j, char **envp)
+static int	var_name_len(const char *s, int i)
 {
-    char *var;
-    const char *val;
-    char *rem;
+	int	j;
 
-    var = ft_substr(str, *i + 1, j - 1);
-    if (!var) return NULL;
-
-    val = ms_getenv(var, envp);
-    if (val)
-        res = ft_charjoin_free(res, ft_strdup(val), 3);
-    else {
-        rem = ft_substr(str, *i + j, ft_strlen(str) - (*i + j));
-        res = ft_charjoin_free(res, rem, 3);
-        *i = ft_strlen(str);
-        free(var);
-        return res;
-    }
-    free(var);
-    *i += j;
-    return res;
+	if (!s[i + 1])
+		return (1);
+	if (s[i + 1] == '?')
+		return (2);
+	if (is_digit(s[i + 1]))
+		return (2);
+	if (ft_isalpha(s[i + 1]) || s[i + 1] == '_')
+	{
+		j = 2;
+		while (s[i + j] && (ft_isalnum(s[i + j]) || s[i + j] == '_'))
+			j++;
+		return (j);
+	}
+	return (1);
 }
 
-static char *handle_var(char *str, int *i, char *res, char **envp)
-{
-    int j;
-    char *code;
 
-    j = 1;
-    if (str[*i + 1] == '?') {
-        code = ft_itoa(ft_exit_code(-1));
-        res = ft_charjoin_free(res, code, 3);
-        *i += 2;
-        free(code);
-        return res;
-    }
-    if (is_digit(str[*i + 1]))
-        j = 2;
-    else if (ft_isalpha(str[*i + 1]) || str[*i + 1] == '_') {
-        while (str[*i + j] && (ft_isalnum(str[*i + j]) || str[*i + j] == '_'))
-            j++;
-    }
-    if (j == 1) {
-        res = ft_charjoin(res, '$');
-        (*i)++;
-        return res;
-    }
-    return handle_var_utils(res, str, i, j, envp);
+static char	*handle_var_utils(char *res, char *str, int *i, char **envp)
+{
+	int			j;
+	char		*var;
+	const char	*val;
+	char		*rem;
+
+	j = var_name_len(str, *i);
+	var = ft_substr(str, *i + 1, j - 1);
+	if (!var)
+		return (NULL);
+	val = ms_getenv(var, envp);
+	if (val)
+		res = ft_charjoin_free(res, ft_strdup(val), 3);
+	else
+	{
+		rem = ft_substr(str, *i + j, ft_strlen(str) - (*i + j));
+		res = ft_charjoin_free(res, rem, 3);
+		*i = ft_strlen(str);
+		free(var);
+		return (res);
+	}
+	free(var);
+	*i += j;
+	return (res);
 }
 
-static char *expand_variable_loop(char *str, char *res, char **envp)
+static char	*handle_var(char *str, int *i, char *res, char **envp)
 {
-    int idx = 0;
-    while (str[idx]) {
-        if (str[idx] == '$')
-            res = handle_var(str, &idx, res, envp);
-        else
-            res = ft_charjoin(res, str[idx++]);
-        if (!res) return NULL;
-    }
-    return res;
+	char	*code;
+	int		j;
+
+	if (str[*i + 1] == '?')
+	{
+		code = ft_itoa(ft_exit_code(-1));
+		if (!code)
+			return (NULL);
+		res = ft_charjoin_free(res, code, 3);
+		*i += 2;
+		return (res);
+	}
+	j = var_name_len(str, *i);
+	if (j == 1)
+	{
+		res = ft_charjoin(res, '$');
+		(*i)++;
+		return (res);
+	}
+	return (handle_var_utils(res, str, i, envp));
 }
 
-char *expand_variable(char *str, char **envp)
+static char	*expand_variable_loop(char *str, char *res, char **envp)
 {
-    char *res = ft_strdup("");
-    if (!res) return NULL;
-    return expand_variable_loop(str, res, envp);
+	int	idx;
+
+	idx = 0;
+	while (str[idx])
+	{
+		if (str[idx] == '$')
+			res = handle_var(str, &idx, res, envp);
+		else
+			res = ft_charjoin(res, str[idx++]);
+		if (!res)
+			return (NULL);
+	}
+	return (res);
+}
+
+char	*expand_variable(char *str, char **envp)
+{
+	char	*res;
+
+	res = ft_strdup("");
+	if (!res)
+		return (NULL);
+	return (expand_variable_loop(str, res, envp));
 }
 
 t_token *create_redir_token(char *value)

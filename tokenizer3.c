@@ -65,6 +65,15 @@ char	*process_quoted(char *s, int *i, char quote_char)
 	return (ft_substr(s, start, len));
 }
 
+
+static int	is_unquoted_word_char(char c)
+{
+	return (c != '\0'
+		&& c != ' ' && c != '\t'
+		&& c != '|' && c != '<' && c != '>'
+		&& c != '\'' && c != '"');
+}
+
 char	*process_unquoted(char *s, int *j, char **envp)
 {
 	int		start;
@@ -72,7 +81,7 @@ char	*process_unquoted(char *s, int *j, char **envp)
 	char	*expanded;
 
 	start = *j;
-	while (s[*j] && is_word_char(s[*j]))
+	while (s[*j] && is_unquoted_word_char(s[*j]))
 		(*j)++;
 	raw = ft_substr(s, start, *j - start);
 	if (!raw)
@@ -87,9 +96,6 @@ char	*process_unquoted(char *s, int *j, char **envp)
 char	*normalize_filename(char *str)
 {
 	if (!str || str[0] == '\0')
-	{
-		free(str);
-		return NULL;
-	}
-	return (str);
+		return (NULL);
+	return (ft_strdup(str));
 }
