@@ -40,10 +40,14 @@ static char	*collect_double_quote(char *input, int *i, char *arg)
 	while (input[*i] && input[*i] != '"')
 		(*i)++;
 	if (!input[*i])
-		return (printf("syntax error: unclosed quote\n"), free(arg), NULL);
+	{
+		printf("syntax error: unclosed quote\n");
+		free(arg);
+		return (NULL);
+	}
 	raw = ft_substr(input, start, (*i) - start);
 	if (!raw)
-		return (free(arg), NULL);
+		return (free(arg), NULL); //NROM BAK
 	exp = expand_variable(raw);
 	free(raw);
 	if (!exp)
@@ -64,11 +68,17 @@ static char	*collect_argument_word(char *input, int *i, char *arg)
 		(*i)++;
 	raw = ft_substr(input, start, (*i) - start);
 	if (!raw)
-		return (free(arg), NULL);
+	{
+		free(arg);
+		return (NULL);
+	}
 	exp = expand_variable(raw);
 	free(raw);
 	if (!exp)
-		return (free(arg), NULL);
+	{
+		free(arg);
+		return (NULL);
+	}
 	arg = ft_charjoin_free(arg, exp, 3);
 	return (arg);
 }

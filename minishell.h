@@ -76,6 +76,12 @@ typedef struct s_shell
     char **envp;
 } t_shell;
 
+typedef struct	s_std
+{
+	int	std_in;
+	int	std_out;
+}	t_std;
+
 void cleanup(t_shell *shell, int mode); // düşün
 
 int builtin_cd(int argc, char **argv);
@@ -145,5 +151,10 @@ char *process_quoted(char *s, int *i, char quote_char);
 char *process_unquoted(char *s, int *j);
 int prepare_all_heredocs(t_ast_tree *node, t_shell *shell);
 void free_token_list(t_token *cur); // bak
+
+void	exit_with_cmd_error(char *cmd, char *msg, int code, t_shell *shell);
+void	restore_std(t_std std);
+void	free_ast_tree(t_ast_tree *node);
+void	ft_free(char **envp);
 
 #endif

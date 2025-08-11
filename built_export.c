@@ -12,24 +12,6 @@
 
 #include "minishell.h"
 
-int	is_valid_identifier(const char *name)
-{
-	int	i;
-
-	i = 0;
-	if (!name || !name[0])
-		return (0);
-	if (name[0] >= '0' && name[0] <= '9')
-		return (0);
-	while (name[i])
-	{
-		if (!(ft_isalnum(name[i]) || name[i] == '_'))
-			return (0);
-		i++;
-	}
-	return (1);
-}
-
 static int	is_valid_identifier_len(const char *name, size_t len)
 {
 	size_t	i;
@@ -69,10 +51,25 @@ static int	process_export_assignment(char *arg, char ***envp)
 	return (status);
 }
 
+static int	export_add_if_missing(char *arg, char ***envp)
+{
+	char	*entry;
+
+	if (find_in_environ(arg, *envp) >= 0)
+		return (0);
+	entry = ft_strdup(arg);
+	if (!entry || extend_env(envp, entry))
+	{
+		if (entry)
+			free(entry);
+		return (1);
+	}
+	return (0);
+}
+
 static int	process_export_name(char *arg, char ***envp)
 {
-	int		status;
-	char	*entry;
+	int	status; //hatalı ise 1 döner, başarılı ise 0
 
 	status = 0;
 	if (!arg || arg[0] == '\0')
@@ -90,16 +87,8 @@ static int	process_export_name(char *arg, char ***envp)
 		print_invalid_identifier(arg);
 		status = 1;
 	}
-	else if (find_in_environ(arg, *envp) < 0)
-	{
-		entry = ft_strdup(arg);
-		if (!entry || extend_env(envp, entry))
-		{
-			if (entry)
-				free(entry);
-			status = 1;
-		}
-	}
+	else if (export_add_if_missing(arg, envp))
+		status = 1;
 	return (status);
 }
 

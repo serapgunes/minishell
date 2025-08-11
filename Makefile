@@ -6,10 +6,10 @@ SRCS			=	built_cd.c				\
 					built_export.c			\
 					built_export2.c			\
 					built_export3.c			\
+					built_export4.c			\
 					built_pwd.c 			\
 					built_unset.c			\
 					builtin.c 				\
-					check.c					\
 					main.c					\
 					path_find.c 			\
 					tokenizer.c 			\
@@ -17,7 +17,6 @@ SRCS			=	built_cd.c				\
 					tokenizer3.c			\
 					tokenizer_utils.c   	\
 					tokenizer_utils2.c		\
-					tokenizer_utils3.c		\
 					parser.c    			\
 					executor.c 				\
 					signal.c				\
@@ -28,6 +27,9 @@ SRCS			=	built_cd.c				\
 					parser_utils2.c			\
 					tokenizer4.c			\
 					heredoc.c				\
+					utils.c					\
+					executor_utils.c		\
+					free.c					\
 
 OBJS			=	$(SRCS:.c=.o)
 RM				=	rm -f

@@ -33,7 +33,8 @@ static void	handle_command_status(int status)
 		ft_exit_code(WEXITSTATUS(status));
 }
 
-static int	try_execute_builtin(t_ast_tree *node, int in_pipeline, int std_in, int std_out, t_shell *shell)
+static int	try_execute_builtin(t_ast_tree *node, int in_pipeline,
+				t_std std, t_shell *shell)
 {
 	int	argc;
 	int	status;
@@ -43,18 +44,12 @@ static int	try_execute_builtin(t_ast_tree *node, int in_pipeline, int std_in, in
 		if (handle_redirections(node) != 0)
 		{
 			ft_exit_code(1);
-			dup2(std_in, STDIN_FILENO);	  // input'u geri al
-			dup2(std_out, STDOUT_FILENO); // output'u geri al
-			close(std_in);
-			close(std_out);
+			restore_std(std);
 			return (1);
 		}
 		argc = args_count(node->args);
 		status = builtin(argc, node->args, &shell->envp, shell);
-		dup2(std_in, STDIN_FILENO);
-		dup2(std_out, STDOUT_FILENO);
-		close(std_in);
-		close(std_out);
+		restore_std(std);
 		if (status != -1)
 		{
 			ft_exit_code(status);
@@ -112,14 +107,22 @@ static void	free_redirections(t_ast_tree *node)
 
 void	executor_structure(t_ast_tree *node, int in_pipeline, t_shell *shell)
 {
-	int	std_in;
-	int	std_out;
+	t_std	std;
 
-	std_in = dup(STDIN_FILENO);
-	std_out = dup(STDOUT_FILENO);
+	std.std_in = dup(STDIN_FILENO);
+	std.std_out = dup(STDOUT_FILENO);
+	if (std.std_in < 0 || std.std_out < 0)
+	{
+		if (std.std_in >= 0)
+			close(std.std_in);
+		if (std.std_out >= 0)
+			close(std.std_out);
+		ft_exit_code(1);
+		return;
+	}
 	if (node->type == NODE_COMMAND)
 	{
-		if (try_execute_builtin(node, in_pipeline, std_in, std_out, shell))
+		if (try_execute_builtin(node, in_pipeline, std, shell))
 			return;
 		execute_and_wait(node, in_pipeline, shell);
 		if (node->redir_list)
@@ -127,8 +130,8 @@ void	executor_structure(t_ast_tree *node, int in_pipeline, t_shell *shell)
 	}
 	else if (node->type == NODE_PIPE)
 		execute_pipe(node, shell);
-	close(std_in);
-	close(std_out);
+	close(std.std_in);
+	close(std.std_out);
 }
 
 /*

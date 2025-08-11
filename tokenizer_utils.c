@@ -43,16 +43,49 @@ char	*ft_charjoin(char *res, char c)
 	return (tmp);
 }
 
-// void free_tokens(t_token *head)
-// {
-// 	t_token *tmp;
+int	is_word_char(char c)
+{
+	if (c == ' ' || c == '\t' || c == '\n' || c == '|'
+		|| c == '<' || c == '>' || c == '\'' || c == '"')
+		return (0);
+	return (1);
+}
 
-// 	while (head)
-// 	{
-// 		tmp = head->next;
-// 		if (head->value)
-// 			free(head->value);
-// 		free(head);
-// 		head = tmp;
-// 	}
-// }
+t_token	*create_word_token(char *value)
+{
+	t_token	*new_token;
+
+	new_token = malloc(sizeof(t_token));
+	if (!new_token)
+		return (NULL);
+	new_token->type = WORD;
+	new_token->value = ft_strdup(value);
+	if (!new_token->value)
+	{
+		free(new_token);
+		return (NULL);
+	}
+	new_token->next = NULL;
+	return (new_token);
+}
+
+t_token	*create_pipe_token(char *value)
+{
+	t_token	*new_token;
+	char	*dup_value;
+
+	new_token = malloc(sizeof(t_token));
+	if (!new_token)
+		return (NULL);
+
+	dup_value = ft_strdup(value);
+	if (!dup_value)
+	{
+		free(new_token);
+		return (NULL);
+	}
+	new_token->type = PIPE;
+	new_token->value = dup_value;
+	new_token->next = NULL;
+	return (new_token);
+}

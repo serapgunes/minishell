@@ -23,19 +23,16 @@
 // 	}
 // }// type yazdırmak için kontrol
 
-int	is_word_char(char c)
-{
-	if (c == ' ' || c == '\t' || c == '\n' || c == '|' || c == '<' || c == '>' || c == '\'' || c == '"')
-		return (0);
-	return (1);
-}
 
 static int	tokenize_redirection(char *input, t_token **head)
 {
 	int	op_len;
+	int	ret;
 
 	op_len = handle_redir_operator(input, head);
-	handle_redir_file(input + op_len, &op_len, head);
+	ret = handle_redir_file(input + op_len, &op_len, head);
+	if (ret < 0)
+		return (-1);
 	return (op_len);
 }
 
@@ -56,6 +53,21 @@ static void	handle_special_char(char *input, int *i, t_token **head)
 		(*i)++;
 }
 
+static int	process_word(char *input, int *i, t_token **head)
+{
+	char	*arg;
+	char	*tmp;
+
+	arg = collect_argument(input, i);
+	if (!arg)
+		return (-1);
+	tmp = ft_strdup(arg);
+	add_token_to_list(head, create_word_token(tmp));
+	free(tmp);
+	free(arg);
+	return (0);
+}
+
 t_token	*tokenize_input(char *input)
 {
 	int		i;
@@ -71,16 +83,11 @@ t_token	*tokenize_input(char *input)
 			handle_special_char(input, &i, &head);
 		else
 		{
-			char *arg = collect_argument(input, &i);
-			if (!arg)
+			if (process_word(input, &i, &head) < 0)
 			{
 				free_token_list(head);
 				return (NULL);
 			}
-			char *tmp = ft_strdup(arg);
-			add_token_to_list(&head, create_word_token(tmp));
-			free(tmp);
-			free(arg);
 		}
 	}
 	return (head);

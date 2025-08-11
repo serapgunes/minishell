@@ -12,36 +12,6 @@
 
 #include "minishell.h"
 
-char	**copy_env(char **env)
-{
-	int		i;
-	int	count;
-	char	**copy;
-
-	i = 0;
-	count = 0;
-	while (env[count])
-		count++;
-	copy = malloc(sizeof(char *) * (count + 1));
-	if (!copy)
-		return (NULL);
-	i = 0;
-	while (i < count)
-	{
-		copy[i] = ft_strdup(env[i]);
-		if (!copy[i])
-		{
-			while (i-- > 0)
-				free(copy[i]);
-			free(copy);
-			return (NULL);
-		}
-		i++;
-	}
-	copy[count] = NULL;
-	return (copy);
-}
-
 static int	compare_keys(char *s1, char *s2)
 {
 	char	*k1;

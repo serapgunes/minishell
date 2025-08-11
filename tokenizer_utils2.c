@@ -92,3 +92,24 @@ char	*expand_variable(char *str)
 		return (NULL);
 	return (expand_variable_loop(str, res));
 }
+
+t_token	*create_redir_token(char *value)
+{
+	t_token	*new_token;
+
+	new_token = malloc(sizeof(t_token));
+	if (!new_token)
+		return (NULL);
+	if (value[0] == '<')
+		new_token->type = REDIR_IN;
+	else
+		new_token->type = REDIR_OUT;
+	new_token->value = ft_strdup(value);
+	if (!new_token->value)
+	{
+		free(new_token);
+		return (NULL);
+	}
+	new_token->next = NULL;
+	return (new_token);
+}

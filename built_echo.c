@@ -72,22 +72,3 @@ int	builtin_echo(int argc, char **argv)
 	}
 	return (0);
 }
-
-/*
-mini: 
-minishell$ echo $A AAAA
- AAAA
-
-minishell$ echo $A1 AAAA
-1 AAAA
-
-minishell$ echo $A/AAA AAAA
- AAAA
-
-minishell$ echo $1/AAA AAAA (DOĞRU)
-/AAA AAAA 
-
-minishell$ echo $/AAA AAAA
-AAA AAAA
-
-*/

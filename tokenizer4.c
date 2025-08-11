@@ -68,7 +68,10 @@ int	handle_redir_file(char *s, int *i, t_token **head)
 	while (s[j] == ' ' || s[j] == '\t')
 		j++;
 	if (!s[j])
+	{
+		free(arg);
 		return (*i += j, j);
+	}
 	if (read_redir_target(s, &j, &arg) == -1)
 		return (-1);
 	arg = normalize_filename(arg);

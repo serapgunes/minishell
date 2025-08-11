@@ -12,6 +12,27 @@
 
 #include "minishell.h"
 
+t_token	*create_token(char *value)
+{
+	t_token	*new_token;
+
+	new_token = malloc(sizeof(t_token));
+	if (!new_token)
+		return (NULL);
+	if (ft_strncmp(value, "<<", 2) == 0)
+		new_token->type = HEREDOC;
+	else
+		new_token->type = APPEND;
+	new_token->value = ft_strdup(value);
+	if (!new_token->value)
+	{
+		free(new_token);
+		return (NULL);
+	}
+	new_token->next = NULL;
+	return (new_token);
+}
+
 void	add_token_to_list(t_token **head, t_token *new)
 {
 	t_token	*tmp;

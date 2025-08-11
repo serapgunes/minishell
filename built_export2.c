@@ -17,10 +17,10 @@ int	find_in_environ(const char *name, char **env)
 	int	i;
 	int	len;
 
-	if (!env || !name)
-		return (-1);
 	len = ft_strlen(name);
 	i = 0;
+	if (!env || !name)
+		return (-1);
 	while (env[i])
 	{
 		if (ft_strncmp(env[i], name, len) == 0 &&
@@ -41,8 +41,9 @@ int	extend_env(char ***envp, char *new_entry)
 	old = *envp;
 	cnt = 0;
 	j = 0;
-	while (old[cnt])
-		cnt++;
+	if (old)
+		while (old[cnt])
+			cnt++;
 	new = malloc(sizeof(char *) * (cnt + 2));
 	if (!new)
 		return (1);

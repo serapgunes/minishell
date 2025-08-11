@@ -50,15 +50,6 @@ static void	run_builtin_or_exit(t_ast_tree *node, int cmd_idx, int in_pipeline, 
 	signal(SIGPIPE, SIG_DFL);
 }
 
-static void	exit_with_cmd_error(char *cmd, char *msg, int code, t_shell *shell)
-{
-	ft_putstr_fd(cmd, 2);
-	ft_putendl_fd(msg, 2);
-	cleanup(shell, 0);
-	shell = NULL;
-	exit(code);
-}
-
 static void	exec_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell)
 {
 	struct stat	sb;

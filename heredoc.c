@@ -20,16 +20,17 @@ static void signal_heredoc(int sig)
 	exit(130);
 }
 
-static void heredoc_child(const char *delimiter, int pipefd[2], t_shell *shell)
+static void	heredoc_child(const char *delimiter, int pipefd[2], t_shell *shell)
 {
-	char *line;
+	char	*line;
 
 	signal(SIGINT, signal_heredoc);
 	close(pipefd[0]);
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || ft_strncmp(line, delimiter, ft_strlen(delimiter) + 1) == 0)
+		if (!line || ft_strncmp(line, delimiter,
+				(ft_strlen(delimiter) + 1)) == 0)
 		{
 			free(line);
 			break;

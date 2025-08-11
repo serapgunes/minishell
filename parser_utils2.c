@@ -19,7 +19,8 @@ static char	*strip_quotes(char *str)
 	if (!str)
 		return (NULL);
 	len = ft_strlen(str);
-	if ((str[0] == '"' && str[len - 1] == '"') || (str[0] == '\'' && str[len - 1] == '\''))
+	if ((str[0] == '"' && str[len - 1] == '"')
+		|| (str[0] == '\'' && str[len - 1] == '\''))
 		return (ft_substr(str, 1, len - 2));
 	return (ft_strdup(str));
 }
@@ -113,4 +114,3 @@ int	fill_cmd_from_tokens(t_ast_tree *node, t_token *current, char **args)
 	args[i] = NULL;
 	return (0);
 }
-

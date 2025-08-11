@@ -45,22 +45,13 @@ static int	is_too_large(char *str)
 	return (0);
 }
 
-int	builtin_exit(int argc, char **argv, t_shell *shell)
+static int	parse_exit_code(int argc, char **argv, t_shell *shell)
 {
 	int	exit_code;
 
-	exit_code = 0;
-	ft_putendl_fd("exit", 1);
-	if (argc > 2)
-	{
-		ft_putendl_fd("exit: too many arguments", 2);
-		ft_exit_code(1);
-		return (1);
-	}
 	if (argc == 2)
 	{
-		if (argc >= 2 && (!argv[1] || !is_numeric(argv[1])
-			|| is_too_large(argv[1])))
+		if (!argv[1] || !is_numeric(argv[1]) || is_too_large(argv[1]))
 		{
 			ft_putstr_fd("exit: ", 2);
 			ft_putstr_fd(argv[1], 2);
@@ -71,6 +62,23 @@ int	builtin_exit(int argc, char **argv, t_shell *shell)
 		}
 		exit_code = ft_atoi(argv[1]) % 256;
 	}
+	else
+		exit_code = 0;
+	return (exit_code);
+}
+
+int	builtin_exit(int argc, char **argv, t_shell *shell)
+{
+	int	exit_code;
+
+	ft_putendl_fd("exit", 1);
+	if (argc > 2)
+	{
+		ft_putendl_fd("exit: too many arguments", 2);
+		ft_exit_code(1);
+		return (1);
+	}
+	exit_code = parse_exit_code(argc, argv, shell);
 	ft_exit_code(exit_code);
 	cleanup(shell, 0);
 	shell = NULL;

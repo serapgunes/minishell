@@ -38,40 +38,45 @@ static void	handle_pipe_status(int status)
 	}
 }
 
-static pid_t	create_child_with_pipe(t_ast_tree *node, int pipefd[2], char *side, t_shell *shell)
+static void	child_run_with_pipe(t_ast_tree *node, int pipefd[2],
+				char *side, t_shell *shell)
+{
+	signal(SIGINT, SIG_DFL);
+	signal(SIGQUIT, SIG_DFL);
+	if (ft_strcmp(side, "left") == 0)
+	{
+		dup2(pipefd[1], STDOUT_FILENO);
+		close(pipefd[0]);
+		close(pipefd[1]);
+		executor_structure(node->left, 1, shell);
+	}
+	else
+	{
+		dup2(pipefd[0], STDIN_FILENO);
+		close(pipefd[1]);
+		close(pipefd[0]);
+		executor_structure(node->right, 1, shell);
+	}
+	cleanup(shell, 0);
+	shell = NULL;
+	exit(ft_exit_code(-1));
+}
+
+static pid_t	create_child_with_pipe(t_ast_tree *node, int pipefd[2],
+				char *side, t_shell *shell)
 {
 	pid_t	pid;
 
 	pid = fork();
 	if (pid < 0)
 	{
-	close(pipefd[0]);
-	close(pipefd[1]);
-	ft_exit_code(1);
-	return (-1);
+		close(pipefd[0]);
+		close(pipefd[1]);
+		ft_exit_code(1);
+		return (-1);
 	}
 	if (pid == 0)
-	{
-		signal(SIGINT, SIG_DFL);
-		signal(SIGQUIT, SIG_DFL);
-		if (ft_strcmp(side, "left") == 0)
-		{
-			dup2(pipefd[1], STDOUT_FILENO);
-			close(pipefd[0]);
-			close(pipefd[1]);
-			executor_structure(node->left, 1, shell);
-		}
-		else
-		{
-			dup2(pipefd[0], STDIN_FILENO);
-			close(pipefd[1]);
-			close(pipefd[0]);
-			executor_structure(node->right, 1, shell);
-		}
-		cleanup(shell, 0);
-		shell = NULL;
-		exit(ft_exit_code(-1));
-	}
+		child_run_with_pipe(node, pipefd, side, shell);
 	return (pid);
 }
 
@@ -97,7 +102,8 @@ void	execute_pipe(t_ast_tree *node, t_shell *shell)
 	waitpid(pid1, &status1, 0);
 	waitpid(pid2, &status2, 0);
 	signal(SIGINT, signal_catch);
-	if ((WIFSIGNALED(status1) && WTERMSIG(status1) == SIGPIPE) || (WIFEXITED(status1) && WEXITSTATUS(status1) == 141))
+	if ((WIFSIGNALED(status1) && WTERMSIG(status1) == SIGPIPE)
+		|| (WIFEXITED(status1) && WEXITSTATUS(status1) == 141))
 		write(2, " Broken pipe\n", 12);
 	else
 		handle_pipe_status(status2);
