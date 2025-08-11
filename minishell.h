@@ -112,7 +112,7 @@ int ft_parser(t_token *input);
 ////////////////////////////////
 
 // path_find//////////////////////////
-char *find_path(char *command);
+char *find_path(char *command, char **envp);
 //////////////////////////////////////
 
 // signal/////////////////////////
@@ -125,17 +125,13 @@ int args_count(char **args);
 char *ft_charjoin_free(char *res, char *val, int flag);
 char *ft_charjoin(char *res, char c);
 void free_tokens(t_token *head); // şu anki mainde yok
-char *expand_variable(char *str);
 t_token *create_word_token(char *value);
 t_token *create_pipe_token(char *value);
 t_token *create_redir_token(char *value);
 t_token *create_token(char *value);
 int is_word_char(char c);
-t_token *tokenize_input(char *input);
-char *collect_argument(char *input, int *i);
 void add_token_to_list(t_token **head, t_token *new);
 int handle_redir_operator(char *s, t_token **head);
-int handle_redir_file(char *s, int *i, t_token **head);
 
 char *normalize_filename(char *str);
 
@@ -148,7 +144,6 @@ void execute_pipe(t_ast_tree *node, t_shell *shell);
 t_ast_tree *create_cmd_node_with_args(int count, char ***args_out);
 int fill_cmd_from_tokens(t_ast_tree *node, t_token *current, char **args);
 char *process_quoted(char *s, int *i, char quote_char);
-char *process_unquoted(char *s, int *j);
 int prepare_all_heredocs(t_ast_tree *node, t_shell *shell);
 void free_token_list(t_token *cur); // bak
 
@@ -156,5 +151,14 @@ void	exit_with_cmd_error(char *cmd, char *msg, int code, t_shell *shell);
 void	restore_std(t_std std);
 void	free_ast_tree(t_ast_tree *node);
 void	ft_free(char **envp);
+
+
+const char *ms_getenv(const char *name, char **envp);
+t_token *tokenize_input(char *input, char **envp);
+char   *expand_variable(char *str, char **envp);
+char   *collect_argument(char *input, int *i, char **envp);
+int     handle_redir_file(char *s, int *i, t_token **head, char **envp);
+char   *process_unquoted(char *s, int *j, char **envp);
+
 
 #endif

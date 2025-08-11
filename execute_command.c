@@ -78,7 +78,7 @@ static void	lookup_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell
 {
 	char	*path;
 
-	path = find_path(cmd);
+	path = find_path(cmd, shell->envp);
 	if (path)
 	{
 		execve(path, node->args + cmd_idx, shell->envp);

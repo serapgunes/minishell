@@ -37,51 +37,37 @@ static int	append_piece(char **arg, char *piece)
 	return (0);
 }
 
-static int	read_redir_target(char *s, int *j, char **arg)
+static int read_redir_target(char *s, int *j, char **arg, char **envp)
 {
-	char	quote;
-	char	*piece;
+    char  quote;
+    char *piece;
 
-	while (s[*j] && !is_redir_separator(s[*j]))
-	{
-		if (s[*j] == '\'' || s[*j] == '"')
-		{
-			quote = s[*j];
-			(*j)++;
-			piece = process_quoted(s, j, quote);
-		}
-		else
-			piece = process_unquoted(s, j);
-		if (append_piece(arg, piece) == -1)
-			return (-1);
-	}
-	return (0);
+    while (s[*j] && !is_redir_separator(s[*j])) {
+        if (s[*j] == '\'' || s[*j] == '"') {
+            quote = s[*j];
+            (*j)++;
+            piece = process_quoted(s, j, quote);
+        } else {
+            piece = process_unquoted(s, j, envp);     // <<< değişiklik
+        }
+        if (append_piece(arg, piece) == -1) return -1;
+    }
+    return 0;
 }
 
-int	handle_redir_file(char *s, int *i, t_token **head)
+int handle_redir_file(char *s, int *i, t_token **head, char **envp) // <<< imza
 {
-	int		j;
-	char	*arg;
+    int   j = 0;
+    char *arg = ft_strdup("");
 
-	j = 0;
-	arg = ft_strdup("");
-	while (s[j] == ' ' || s[j] == '\t')
-		j++;
-	if (!s[j])
-	{
-		free(arg);
-		return (*i += j, j);
-	}
-	if (read_redir_target(s, &j, &arg) == -1)
-		return (-1);
-	arg = normalize_filename(arg);
-	if (!arg)
-	{
-		ft_putendl_fd("ambiguous redirect", 2);
-		return (-1);
-	}
-	add_token_to_list(head, create_word_token(arg));
-	free(arg);
-	*i += j;
-	return (j);
+    while (s[j] == ' ' || s[j] == '\t') j++;
+    if (!s[j]) { free(arg); return (*i += j, j); }
+    if (read_redir_target(s, &j, &arg, envp) == -1) return -1;
+
+    arg = normalize_filename(arg);
+    if (!arg) { ft_putendl_fd("ambiguous redirect", 2); return -1; }
+    add_token_to_list(head, create_word_token(arg));
+    free(arg);
+    *i += j;
+    return j;
 }

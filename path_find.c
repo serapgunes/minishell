@@ -62,25 +62,24 @@ static char	*search_path(char **path_env, char *command)
 	return (res);
 }
 
-char	*find_path(char *command)
+char *find_path(char *command, char **envp)   // <<< imza
 {
-	const char	*path;
-	char		**path_env;
-	char		*result;
+    const char *path;
+    char      **path_env;
+    char       *result;
 
-	if (command[0] == '/' || command[0] == '.') // Önce komutun mutlak yol olup olmadığını kontrol et
-	{
-		if (access(command, X_OK) == 0)
-			return (ft_strdup(command));
-		return (NULL);
-	}
-	path = getenv("PATH");   // PATH ortam değişkenini al
-	if (!path)
-		return (NULL);
-	path_env = ft_split(path, ':');
-	if (!path_env)
-		return (NULL);
-	result = search_path(path_env, command);
-	free_string_array(path_env);  // path_env dizisini tamamen temizle
-	return (result);
+    if (command[0] == '/' || command[0] == '.') {
+        if (access(command, X_OK) == 0)
+            return ft_strdup(command);
+        return NULL;
+    }
+    path = ms_getenv("PATH", envp);          // <<< değişiklik
+    if (!path) return NULL;
+
+    path_env = ft_split(path, ':');
+    if (!path_env) return NULL;
+    result = search_path(path_env, command);
+    free_string_array(path_env);
+    return result;
 }
+

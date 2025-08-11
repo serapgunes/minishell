@@ -54,7 +54,7 @@ static int	read_and_prepare(t_shell *shell)
 
 static int	tokenize_parse_build(t_shell *shell)
 {
-	shell->tokens = tokenize_input(shell->input);
+	shell->tokens = tokenize_input(shell->input, shell->envp);
 	if (!shell->tokens)
 	{
 		ft_exit_code(0);

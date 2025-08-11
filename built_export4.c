@@ -61,4 +61,3 @@ char	**copy_env(char **env)
 	copy[count] = NULL;
 	return (copy);
 }
-

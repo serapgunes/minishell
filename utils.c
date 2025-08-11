@@ -82,3 +82,16 @@ void	cleanup(t_shell *shell, int mode)
 	}
 	free(shell);
 }
+
+const char *ms_getenv(const char *name, char **envp)
+{
+	int   idx;
+	char *p;
+
+	if (!name || !envp) return NULL;
+	idx = find_in_environ(name, envp);
+	if (idx < 0) return NULL;
+	p = ft_strchr(envp[idx], '=');
+	if (!p) return "";          // "VAR" tanımlı ama değersizse boş döndür
+	return p + 1;               // değer kısmı
+}

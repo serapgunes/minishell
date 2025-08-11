@@ -31,15 +31,25 @@ static int	parse_n_flag(int argc, char **argv, int *idx)
 
 static int	echo_write_arg(const char *arg, int first)
 {
-	if (!first && write(1, " ", 1) < 0)
+	size_t	len;
+
+	if (!first)
 	{
-		if (errno == EPIPE) return 1;
-		perror("echo"); return 1;
+		if (write(1, " ", 1) < 0)
+		{
+			if (errno == EPIPE)
+				return (1);
+			perror("echo");
+			return (1);
+		}
 	}
-	if (write(1, arg, strlen(arg)) < 0)
+	len = ft_strlen(arg);
+	if (write(1, arg, len) < 0)
 	{
-		if (errno == EPIPE) return 1;
-		perror("echo"); return 1;
+		if (errno == EPIPE)
+			return (1);
+		perror("echo");
+		return (1);
 	}
 	return (0);
 }
