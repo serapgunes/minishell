@@ -3,20 +3,20 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:58:23 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 13:43:46 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/11 14:40:11 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static char	*handle_var_utils(char *res, char *str, int *i, int j)
+static char *handle_var_utils(char *res, char *str, int *i, int j)
 {
-	char	*var;
-	char	*val;
-	char	*rem;	
+	char *var;
+	char *val;
+	char *rem;
 
 	var = ft_substr(str, *i + 1, j - 1);
 	if (!var)
@@ -37,17 +37,18 @@ static char	*handle_var_utils(char *res, char *str, int *i, int j)
 	return (res);
 }
 
-static char	*handle_var(char *str, int *i, char *res)
+static char *handle_var(char *str, int *i, char *res)
 {
-	int		j;
-	char	*code;
-	
+	int j;
+	char *code;
+
 	j = 1;
 	if (str[*i + 1] == '?')
 	{
 		code = ft_itoa(ft_exit_code(-1));
 		res = ft_charjoin_free(res, code, 3);
 		*i += 2;
+		free(code);
 		return (res);
 	}
 	if (is_digit(str[*i + 1]))
@@ -66,9 +67,9 @@ static char	*handle_var(char *str, int *i, char *res)
 	return (handle_var_utils(res, str, i, j));
 }
 
-static char	*expand_variable_loop(char *str, char *res)
+static char *expand_variable_loop(char *str, char *res)
 {
-	int	idx;
+	int idx;
 
 	idx = 0;
 	while (str[idx])
@@ -83,9 +84,9 @@ static char	*expand_variable_loop(char *str, char *res)
 	return (res);
 }
 
-char	*expand_variable(char *str)
+char *expand_variable(char *str)
 {
-	char	*res;
+	char *res;
 
 	res = ft_strdup("");
 	if (!res)
@@ -93,9 +94,9 @@ char	*expand_variable(char *str)
 	return (expand_variable_loop(str, res));
 }
 
-t_token	*create_redir_token(char *value)
+t_token *create_redir_token(char *value)
 {
-	t_token	*new_token;
+	t_token *new_token;
 
 	new_token = malloc(sizeof(t_token));
 	if (!new_token)

@@ -3,23 +3,23 @@
 /*                                                        :::      ::::::::   */
 /*   built_export2.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:06:14 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 23:20:15 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/11 14:39:57 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-int	find_in_environ(const char *name, char **env)
+int find_in_environ(const char *name, char **env)
 {
-	int	i;
-	int	len;
+	int i;
+	int len;
 
 	len = ft_strlen(name);
 	i = 0;
-	if (!env || !name)
+	if (!name || !env)
 		return (-1);
 	while (env[i])
 	{
@@ -31,12 +31,12 @@ int	find_in_environ(const char *name, char **env)
 	return (-1);
 }
 
-int	extend_env(char ***envp, char *new_entry)
+int extend_env(char ***envp, char *new_entry)
 {
-	char	**old;
-	char	**new;
-	int		cnt;
-	int		j;
+	char **old;
+	char **new;
+	int cnt;
+	int j;
 
 	old = *envp;
 	cnt = 0;
@@ -55,14 +55,14 @@ int	extend_env(char ***envp, char *new_entry)
 	new[j++] = new_entry;
 	new[j] = NULL;
 	*envp = new;
-	free (old);
+	free(old);
 	return (0);
 }
 
-static int	set_env_var_update(char *name, char *value, char **envp, int idx)
+static int set_env_var_update(char *name, char *value, char **envp, int idx)
 {
-	char	*tmp;
-	char	*new_var;
+	char *tmp;
+	char *new_var;
 
 	free(envp[idx]);
 	tmp = ft_strjoin(name, "=");
@@ -76,10 +76,10 @@ static int	set_env_var_update(char *name, char *value, char **envp, int idx)
 	return (0);
 }
 
-static int	set_env_var_add(char *name, char *value, char ***envp)
+static int set_env_var_add(char *name, char *value, char ***envp)
 {
-	char	*tmp;
-	char	*new_var;
+	char *tmp;
+	char *new_var;
 
 	tmp = ft_strjoin(name, "=");
 	if (!tmp)
@@ -93,13 +93,13 @@ static int	set_env_var_add(char *name, char *value, char ***envp)
 	return (0);
 }
 
-int	set_env_var(char *arg, char ***envp)
+int set_env_var(char *arg, char ***envp)
 {
-	char	*eq;
-	char	*name;
-	char	*value;
-	int		idx;
-	int		ret;
+	char *eq;
+	char *name;
+	char *value;
+	int idx;
+	int ret;
 
 	eq = ft_strchr(arg, '=');
 	if (!eq)
