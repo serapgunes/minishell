@@ -65,6 +65,7 @@ t_token	*create_word_token(char *value)
 		free(new_token);
 		return (NULL);
 	}
+	new_token->quoted = 0;
 	new_token->next = NULL;
 	return (new_token);
 }
@@ -86,6 +87,7 @@ t_token	*create_pipe_token(char *value)
 	}
 	new_token->type = PIPE;
 	new_token->value = dup_value;
+	new_token->quoted = 0;
 	new_token->next = NULL;
 	return (new_token);
 }

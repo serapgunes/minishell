@@ -38,6 +38,7 @@ typedef struct s_redir
     int type;     // REDIR_IN, etc.
     char *target; // e.g. "input.txt"
     int fd;       // HEREDOC için ekeldik
+	int  quoted;
     struct s_redir *next;
 } t_redir;
 
@@ -65,6 +66,7 @@ typedef struct s_token
 {
     t_token_type type;
     char *value;
+    int  quoted;
     struct s_token *next;
 } t_token;
 

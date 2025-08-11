@@ -78,23 +78,27 @@ const char	*ms_getenv(const char *name, char **envp)
 	return (p + 1);
 }
 
-char *find_path(char *command, char **envp)
+char	*find_path(char *cmd, char **envp)
 {
-    const char *path;
-    char      **path_env;
-    char       *result;
+	const char	*path;
+	char		**dirs;
+	char		*res;
 
-    if (command[0] == '/' || command[0] == '.') {
-        if (access(command, X_OK) == 0)
-            return ft_strdup(command);
-        return NULL;
-    }
-    path = ms_getenv("PATH", envp);
-    if (!path) return NULL;
-
-    path_env = ft_split(path, ':');
-    if (!path_env) return NULL;
-    result = search_path(path_env, command);
-    free_string_array(path_env);
-    return result;
+	if (!cmd || !*cmd)
+		return (NULL);
+	if (ft_strchr(cmd, '/'))
+	{
+		if (access(cmd, X_OK) == 0)
+			return (ft_strdup(cmd));
+		return (NULL);
+	}
+	path = ms_getenv("PATH", envp);
+	if (!path)
+		return (NULL);
+	dirs = ft_split(path, ':');
+	if (!dirs)
+		return (NULL);
+	res = search_path(dirs, cmd);
+	free_string_array(dirs);
+	return (res);
 }

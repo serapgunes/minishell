@@ -37,7 +37,28 @@ static int	append_piece(char **arg, char *piece)
 	return (0);
 }
 
-static int	read_redir_target(char *s, int *j, char **arg, char **envp)
+static t_token	*last_token(t_token *head)
+{
+	if (!head)
+		return (NULL);
+	while (head->next)
+		head = head->next;
+	return (head);
+}
+
+static char	*process_unquoted_raw(char *s, int *j)
+{
+	int		start;
+
+	start = *j;
+	while (s[*j] && !is_redir_separator(s[*j])
+		&& s[*j] != '\'' && s[*j] != '"')
+		(*j)++;
+	return (ft_substr(s, start, *j - start));
+}
+
+static int	read_redir_target_mode(char *s, int *j, char **arg,
+				char **envp, int *has_quote, int expand)
 {
 	char	quote;
 	char	*piece;
@@ -49,58 +70,67 @@ static int	read_redir_target(char *s, int *j, char **arg, char **envp)
 			quote = s[*j];
 			(*j)++;
 			piece = process_quoted(s, j, quote);
+			*has_quote = 1;
 		}
-		else
+		else if (expand)
 			piece = process_unquoted(s, j, envp);
+		else
+			piece = process_unquoted_raw(s, j);
 		if (append_piece(arg, piece) == -1)
 			return (-1);
 	}
 	return (0);
 }
 
-static int	read_and_normalize_redir_arg(char *s, int *j,
-					char **norm, char **envp)
+static int	read_and_build_redir_arg(char *s, int *j, char **out,
+				char **envp, int *was_quoted, int expand)
 {
 	char	*arg;
+	int		rc;
 
 	while (s[*j] == ' ' || s[*j] == '\t')
 		(*j)++;
 	if (!s[*j])
 		return (1);
+	*was_quoted = 0;
 	arg = ft_strdup("");
 	if (!arg)
 		return (-1);
-	if (read_redir_target(s, j, &arg, envp) == -1)
-	{
-		free(arg);
-		return (-1);
-	}
-	*norm = normalize_filename(arg);
+	rc = read_redir_target_mode(s, j, &arg, envp, was_quoted, expand);
+	if (rc == -1)
+		return (free(arg), -1);
+	*out = normalize_filename(arg);
 	free(arg);
-	if (!*norm)
-	{
-		ft_putendl_fd("ambiguous redirect", 2);
-		return (-1);
-	}
+	if (!*out)
+		return (ft_putendl_fd("ambiguous redirect", 2), -1);
 	return (0);
 }
 
 int	handle_redir_file(char *s, int *i, t_token **head, char **envp)
 {
-	int		j;
-	int		rc;
-	char	*norm;
+	int			j;
+	int			rc;
+	int			was_q;
+	int			is_heredoc;
+	char		*norm;
+	t_token		*op;
+	t_token		*w;
 
 	j = 0;
-	rc = read_and_normalize_redir_arg(s, &j, &norm, envp);
+	was_q = 0;
+	norm = NULL;
+	op = last_token(*head);
+	is_heredoc = (op && op->type == HEREDOC);
+	rc = read_and_build_redir_arg(s, &j, &norm, envp, &was_q, !is_heredoc);
 	if (rc == 1)
-	{
-		*i += j;
-		return (j);
-	}
+		return (*i += j, j);
 	if (rc < 0)
 		return (-1);
-	add_token_to_list(head, create_word_token(norm));
+	w = create_word_token(norm);
+	if (!w)
+		return (free(norm), -1);
+	w->quoted = is_heredoc ? was_q : 0;
+	add_token_to_list(head, w);
 	free(norm);
 	*i += j;
 	return (j);

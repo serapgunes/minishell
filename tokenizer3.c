@@ -29,6 +29,7 @@ t_token	*create_token(char *value)
 		free(new_token);
 		return (NULL);
 	}
+	new_token->quoted = 0;
 	new_token->next = NULL;
 	return (new_token);
 }

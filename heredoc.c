@@ -12,70 +12,81 @@
 
 #include "minishell.h"
 
-static void signal_heredoc(int sig)
+static void	signal_heredoc(int sig)
 {
 	(void)sig;
 	write(1, "\n", 1);
-	// cleanup(shell, 1);olmadı bir daha bak
 	exit(130);
 }
 
-static void	heredoc_child(const char *delimiter, int pipefd[2], t_shell *shell)
+static void	heredoc_child(const char *delim, int quoted,
+				int pipefd[2], t_shell *shell)
 {
 	char	*line;
+	char	*exp;
 
 	signal(SIGINT, signal_heredoc);
 	close(pipefd[0]);
 	while (1)
 	{
 		line = readline("> ");
-		if (!line || ft_strncmp(line, delimiter,
-				(ft_strlen(delimiter) + 1)) == 0)
+		if (!line
+			|| ft_strncmp(line, delim, ft_strlen(delim) + 1) == 0)
 		{
 			free(line);
-			break;
+			break ;
 		}
-		write(pipefd[1], line, ft_strlen(line));
-		write(pipefd[1], "\n", 1);
+		if (!quoted)
+		{
+			exp = expand_variable(line, shell->envp);
+			if (exp)
+			{
+				write(pipefd[1], exp, ft_strlen(exp));
+				write(pipefd[1], "\n", 1);
+				free(exp);
+			}
+			else
+			{
+				write(pipefd[1], line, ft_strlen(line));
+				write(pipefd[1], "\n", 1);
+			}
+		}
+		else
+		{
+			write(pipefd[1], line, ft_strlen(line));
+			write(pipefd[1], "\n", 1);
+		}
 		free(line);
 	}
-	close(pipefd[1]); // yazmayı kapat
+	close(pipefd[1]);
 	cleanup(shell, 0);
-	shell = NULL;
-	exit(0); // çocuktan çık
+	exit(0);
 }
 
-static int heredoc_parent(pid_t pid, int pipefd[2]) // PARENT: okuyucu
+static int	heredoc_parent(pid_t pid, int pipefd[2])
 {
-	int status;
+	int	status;
 
-	close(pipefd[1]); // yazma ucunu kapat
+	close(pipefd[1]);
 	signal(SIGINT, SIG_IGN);
 	waitpid(pid, &status, 0);
 	signal(SIGINT, signal_catch);
-	if (WIFEXITED(status) && WEXITSTATUS(status) == 130)
+	if ((WIFEXITED(status) && WEXITSTATUS(status) == 130)
+		|| (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT))
 	{
 		close(pipefd[0]);
 		return (-1);
 	}
-	if (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT)
-	{
-		close(pipefd[0]);
-		return (-1);
-	}
-	return (pipefd[0]); // OKUMA ucu döndürülür, stdin'e bağlanmak için kullanılacak
+	return (pipefd[0]);
 }
 
-static int handle_heredoc(const char *delimiter, t_shell *shell)
+static int	handle_heredoc(const char *delim, int quoted, t_shell *shell)
 {
-	int pipefd[2];
-	pid_t pid;
+	int		pipefd[2];
+	pid_t	pid;
 
 	if (pipe(pipefd) == -1)
-	{
-		perror("pipe");
-		return (-1);
-	}
+		return (perror("pipe"), -1);
 	pid = fork();
 	if (pid < 0)
 	{
@@ -85,28 +96,28 @@ static int handle_heredoc(const char *delimiter, t_shell *shell)
 		return (-1);
 	}
 	if (pid == 0)
-		heredoc_child(delimiter, pipefd, shell);
+		heredoc_child(delim, quoted, pipefd, shell);
 	return (heredoc_parent(pid, pipefd));
 }
 
-int prepare_all_heredocs(t_ast_tree *node, t_shell *shell)
+int	prepare_all_heredocs(t_ast_tree *node, t_shell *shell)
 {
-	t_redir *redir;
+	t_redir	*r;
+	int		fd;
 
 	if (!node)
 		return (0);
-
-	redir = node->redir_list;
-	while (redir)
+	r = node->redir_list;
+	while (r)
 	{
-		if (redir->type == HEREDOC)
+		if (r->type == HEREDOC)
 		{
-			int fd = handle_heredoc(redir->target, shell);
+			fd = handle_heredoc(r->target, r->quoted, shell);
 			if (fd < 0)
 				return (1);
-			redir->fd = fd; // buraya fd'yi kaydet
+			r->fd = fd;
 		}
-		redir = redir->next;
+		r = r->next;
 	}
 	return (0);
 }

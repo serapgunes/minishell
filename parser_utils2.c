@@ -36,6 +36,7 @@ static t_redir	*new_redir_from(t_token **current)
 		return (NULL);
 	r->type = (*current)->type;
 	r->fd = -1;
+	r->quoted = 0;
 	*current = (*current)->next;
 	if (*current && (*current)->value)
 	{
@@ -44,6 +45,7 @@ static t_redir	*new_redir_from(t_token **current)
 		if (name != raw)
 			free(raw);
 		r->target = name;
+		r->quoted = (*current)->quoted;
 	}
 	else
 		r->target = NULL;

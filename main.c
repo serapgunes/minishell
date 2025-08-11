@@ -141,7 +141,3 @@ int	main(int argc, char **argv, char **env)
 // > $USER
 // > 
 
-
-// unset HELLO1 HELLO2
-// seg hatası veriyor
-
