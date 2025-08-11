@@ -159,6 +159,6 @@ char   *expand_variable(char *str, char **envp);
 char   *collect_argument(char *input, int *i, char **envp);
 int     handle_redir_file(char *s, int *i, t_token **head, char **envp);
 char   *process_unquoted(char *s, int *j, char **envp);
-
+int	is_redir_separator(char c);
 
 #endif

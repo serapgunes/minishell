@@ -65,18 +65,24 @@ char	*process_quoted(char *s, int *i, char quote_char)
 	return (ft_substr(s, start, len));
 }
 
-char *process_unquoted(char *s, int *j, char **envp)   // <<< imza
+char	*process_unquoted(char *s, int *j, char **envp)
 {
-    int   start = *j;
-    char *raw, *expanded;
+	int		start;
+	char	*raw;
+	char	*expanded;
 
-    while (s[*j] && is_word_char(s[*j])) (*j)++;
-    raw = ft_substr(s, start, *j - start);
-    expanded = expand_variable(raw, envp);             // <<< değişiklik
-    free(raw);
-    return expanded;
+	start = *j;
+	while (s[*j] && is_word_char(s[*j]))
+		(*j)++;
+	raw = ft_substr(s, start, *j - start);
+	if (!raw)
+		return (NULL);
+	expanded = expand_variable(raw, envp);
+	free(raw);
+	if (!expanded)
+		return (NULL);
+	return (expanded);
 }
-
 
 char	*normalize_filename(char *str)
 {

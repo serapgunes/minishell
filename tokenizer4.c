@@ -12,7 +12,7 @@
 
 #include "minishell.h"
 
-static int	is_redir_separator(char c)
+int	is_redir_separator(char c)
 {
 	return (c == ' ' || c == '\t' || c == '|' || c == '<' || c == '>');
 }
@@ -37,37 +37,71 @@ static int	append_piece(char **arg, char *piece)
 	return (0);
 }
 
-static int read_redir_target(char *s, int *j, char **arg, char **envp)
+static int	read_redir_target(char *s, int *j, char **arg, char **envp)
 {
-    char  quote;
-    char *piece;
+	char	quote;
+	char	*piece;
 
-    while (s[*j] && !is_redir_separator(s[*j])) {
-        if (s[*j] == '\'' || s[*j] == '"') {
-            quote = s[*j];
-            (*j)++;
-            piece = process_quoted(s, j, quote);
-        } else {
-            piece = process_unquoted(s, j, envp);     // <<< değişiklik
-        }
-        if (append_piece(arg, piece) == -1) return -1;
-    }
-    return 0;
+	while (s[*j] && !is_redir_separator(s[*j]))
+	{
+		if (s[*j] == '\'' || s[*j] == '"')
+		{
+			quote = s[*j];
+			(*j)++;
+			piece = process_quoted(s, j, quote);
+		}
+		else
+			piece = process_unquoted(s, j, envp);
+		if (append_piece(arg, piece) == -1)
+			return (-1);
+	}
+	return (0);
 }
 
-int handle_redir_file(char *s, int *i, t_token **head, char **envp) // <<< imza
+static int	read_and_normalize_redir_arg(char *s, int *j,
+					char **norm, char **envp)
 {
-    int   j = 0;
-    char *arg = ft_strdup("");
+	char	*arg;
 
-    while (s[j] == ' ' || s[j] == '\t') j++;
-    if (!s[j]) { free(arg); return (*i += j, j); }
-    if (read_redir_target(s, &j, &arg, envp) == -1) return -1;
+	while (s[*j] == ' ' || s[*j] == '\t')
+		(*j)++;
+	if (!s[*j])
+		return (1);
+	arg = ft_strdup("");
+	if (!arg)
+		return (-1);
+	if (read_redir_target(s, j, &arg, envp) == -1)
+	{
+		free(arg);
+		return (-1);
+	}
+	*norm = normalize_filename(arg);
+	free(arg);
+	if (!*norm)
+	{
+		ft_putendl_fd("ambiguous redirect", 2);
+		return (-1);
+	}
+	return (0);
+}
 
-    arg = normalize_filename(arg);
-    if (!arg) { ft_putendl_fd("ambiguous redirect", 2); return -1; }
-    add_token_to_list(head, create_word_token(arg));
-    free(arg);
-    *i += j;
-    return j;
+int	handle_redir_file(char *s, int *i, t_token **head, char **envp)
+{
+	int		j;
+	int		rc;
+	char	*norm;
+
+	j = 0;
+	rc = read_and_normalize_redir_arg(s, &j, &norm, envp);
+	if (rc == 1)
+	{
+		*i += j;
+		return (j);
+	}
+	if (rc < 0)
+		return (-1);
+	add_token_to_list(head, create_word_token(norm));
+	free(norm);
+	*i += j;
+	return (j);
 }

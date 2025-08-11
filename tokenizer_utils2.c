@@ -21,7 +21,7 @@ static char *handle_var_utils(char *res, char *str, int *i, int j, char **envp)
     var = ft_substr(str, *i + 1, j - 1);
     if (!var) return NULL;
 
-    val = ms_getenv(var, envp);           // <<< değişiklik
+    val = ms_getenv(var, envp);
     if (val)
         res = ft_charjoin_free(res, ft_strdup(val), 3);
     else {
@@ -60,7 +60,7 @@ static char *handle_var(char *str, int *i, char *res, char **envp)
         (*i)++;
         return res;
     }
-    return handle_var_utils(res, str, i, j, envp);   // <<< değişiklik
+    return handle_var_utils(res, str, i, j, envp);
 }
 
 static char *expand_variable_loop(char *str, char *res, char **envp)
@@ -68,7 +68,7 @@ static char *expand_variable_loop(char *str, char *res, char **envp)
     int idx = 0;
     while (str[idx]) {
         if (str[idx] == '$')
-            res = handle_var(str, &idx, res, envp);  // <<< değişiklik
+            res = handle_var(str, &idx, res, envp);
         else
             res = ft_charjoin(res, str[idx++]);
         if (!res) return NULL;
@@ -76,11 +76,11 @@ static char *expand_variable_loop(char *str, char *res, char **envp)
     return res;
 }
 
-char *expand_variable(char *str, char **envp)        // <<< imza değişti
+char *expand_variable(char *str, char **envp)
 {
     char *res = ft_strdup("");
     if (!res) return NULL;
-    return expand_variable_loop(str, res, envp);     // <<< değişiklik
+    return expand_variable_loop(str, res, envp);
 }
 
 t_token *create_redir_token(char *value)

@@ -62,7 +62,23 @@ static char	*search_path(char **path_env, char *command)
 	return (res);
 }
 
-char *find_path(char *command, char **envp)   // <<< imza
+const char	*ms_getenv(const char *name, char **envp)
+{
+	int		idx;
+	char	*p;
+
+	if (!name || !envp)
+		return (NULL);
+	idx = find_in_environ(name, envp);
+	if (idx < 0)
+		return (NULL);
+	p = ft_strchr(envp[idx], '=');
+	if (!p)
+		return ("");
+	return (p + 1);
+}
+
+char *find_path(char *command, char **envp)
 {
     const char *path;
     char      **path_env;
@@ -73,7 +89,7 @@ char *find_path(char *command, char **envp)   // <<< imza
             return ft_strdup(command);
         return NULL;
     }
-    path = ms_getenv("PATH", envp);          // <<< değişiklik
+    path = ms_getenv("PATH", envp);
     if (!path) return NULL;
 
     path_env = ft_split(path, ':');
@@ -82,4 +98,3 @@ char *find_path(char *command, char **envp)   // <<< imza
     free_string_array(path_env);
     return result;
 }
-

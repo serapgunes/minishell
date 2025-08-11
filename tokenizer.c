@@ -24,60 +24,94 @@
 // }// type yazdırmak için kontrol
 
 
-static int tokenize_redirection(char *input, t_token **head, char **envp)
+static int	tokenize_redirection(char *input, t_token **head, char **envp)
 {
-    int op_len = handle_redir_operator(input, head);
-    int ret    = handle_redir_file(input + op_len, &op_len, head, envp); // <<< değişiklik
-    if (ret < 0) return -1;
-    return op_len;
+	int	op_len;
+	int	ret;
+
+	op_len = handle_redir_operator(input, head);
+	ret = handle_redir_file(input + op_len, &op_len, head, envp);
+	if (ret < 0)
+		return (-1);
+	return (op_len);
 }
 
-static void	handle_special_char(char *input, int *i, t_token **head)
+static int	handle_special_char(char *input, int *i, t_token **head, char **envp)
 {
-	t_token	*token;
+	t_token	*tok;
+	int		adv;
 
 	if (input[*i] == '>' || input[*i] == '<')
-		*i += tokenize_redirection(input + *i, head, NULL);
-	else if (input[*i] == '|')
 	{
-		token = create_pipe_token("|");
-		if (token) // token NULL değilse
-			add_token_to_list(head, token);
+		adv = tokenize_redirection(input + *i, head, envp);
+		if (adv < 0)
+			return (-1);
+		*i += adv;
+	}
+	else if (input[*i] == '|') /* PIPE kısmı aynı */
+	{
+		tok = create_pipe_token("|");
+		if (tok)
+			add_token_to_list(head, tok);
 		(*i)++;
 	}
 	else
 		(*i)++;
+	return (0);
 }
 
-static int process_word(char *input, int *i, t_token **head, char **envp)
+static int	process_word(char *input, int *i, t_token **head, char **envp)
 {
-    char *arg = collect_argument(input, i, envp);  // <<< değişiklik
-    char *tmp;
-    if (!arg) return -1;
-    tmp = ft_strdup(arg);
-    add_token_to_list(head, create_word_token(tmp));
-    free(tmp);
-    free(arg);
-    return 0;
+	char	*arg;
+	char	*tmp;
+	t_token	*tok;
+
+	arg = collect_argument(input, i, envp);
+	if (!arg)
+		return (-1);
+	tmp = ft_strdup(arg);
+	if (!tmp)
+		return (free(arg), -1);
+	tok = create_word_token(tmp);
+	if (!tok)
+	{
+		free(tmp);
+		free(arg);
+		return (-1);
+	}
+	add_token_to_list(head, tok);
+	free(tmp);
+	free(arg);
+	return (0);
 }
 
-t_token *tokenize_input(char *input, char **envp)        // <<< imza
-{
-    int i = 0;
-    t_token *head = NULL;
 
-    while (input[i]) {
-        if (input[i] == ' ' || input[i] == '\t') i++;
-        else if (input[i] == '>' || input[i] == '<' || input[i] == '|')
-            handle_special_char(input, &i, &head);  // PIPE kısmı aynı
-        else {
-            if (process_word(input, &i, &head, envp) < 0) {
-                free_token_list(head);
-                return NULL;
-            }
-        }
-    }
-    return head;
+t_token	*tokenize_input(char *input, char **envp)
+{
+	int		i;
+	t_token	*head;
+
+	i = 0;
+	head = NULL;
+	while (input[i])
+	{
+		if (input[i] == ' ' || input[i] == '\t')
+			i++;
+		else if (input[i] == '>' || input[i] == '<' || input[i] == '|')
+		{
+			if (handle_special_char(input, &i, &head, envp) < 0)
+			{
+				free_token_list(head);
+				return (NULL);
+			}
+		}
+		else if (process_word(input, &i, &head, envp) < 0)
+		{
+			free_token_list(head);
+			return (NULL);
+		}
+	}
+	return (head);
 }
 
 int	handle_redir_operator(char *s, t_token **head)
