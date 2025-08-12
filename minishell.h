@@ -3,53 +3,53 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 05:17:58 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/12 11:25:13 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef MINISHELL_H
-#define MINISHELL_H
+# define MINISHELL_H
 
-#include <stdio.h>
-#include <unistd.h>
-#include <readline/readline.h>
-#include <readline/history.h>
-#include <sys/types.h>
-#include <sys/wait.h>
-#include <stdlib.h>
-#include <fcntl.h>
-#include "libft/libft.h"
-#include <signal.h>
-#include <errno.h>
-#include <sys/stat.h>
+# include <stdio.h>
+# include <unistd.h>
+# include <readline/readline.h>
+# include <readline/history.h>
+# include <sys/types.h>
+# include <sys/wait.h>
+# include <stdlib.h>
+# include <fcntl.h>
+# include "libft/libft.h"
+# include <signal.h>
+# include <errno.h>
+# include <sys/stat.h>
 
 typedef enum e_node_type
 {
-    NODE_COMMAND,
-    NODE_PIPE,
-    NODE_REDIR
-} t_node_type;
+	NODE_COMMAND,
+	NODE_PIPE,
+	NODE_REDIR
+}	t_node_type;
 
 typedef struct s_redir
 {
-    int type;     // REDIR_IN, etc.
-    char *target; // e.g. "input.txt"
-    int fd;       // HEREDOC için ekeldik
-	int  quoted;
-    struct s_redir *next;
-} t_redir;
+	int				type;     // REDIR_IN, etc.
+	char			*target; // e.g. "input.txt"
+	int				fd;       // HEREDOC için ekeldik
+	int 			quoted;
+	struct s_redir	*next;
+}	t_redir;
 
 typedef struct s_ast_tree
 {
-    t_node_type type;
-    char **args;
-    t_redir *redir_list;
-    struct s_ast_tree *left; // her nodun içinde alt nodelar var bu alt nodelar aynı yapıya yani structa eşit olduğu için böyle
-    struct s_ast_tree *right;
-} t_ast_tree;
+	t_node_type			type;
+	char				**args;
+	t_redir				*redir_list;
+	struct s_ast_tree	*left; // her nodun içinde alt nodelar var bu alt nodelar aynı yapıya yani structa eşit olduğu için böyle
+	struct s_ast_tree	*right;
+}	t_ast_tree;
 
 typedef enum e_token_type
 {
@@ -83,6 +83,13 @@ typedef struct	s_std
 	int	std_in;
 	int	std_out;
 }	t_std;
+
+typedef struct s_rtok {
+	char	**envp;
+	int		*has_quote;
+	int		expand;
+}	t_rtok;
+
 
 void cleanup(t_shell *shell, int mode); // düşün
 
@@ -162,5 +169,11 @@ char   *collect_argument(char *input, int *i, char **envp);
 int     handle_redir_file(char *s, int *i, t_token **head, char **envp);
 char   *process_unquoted(char *s, int *j, char **envp);
 int	is_redir_separator(char c);
+void	signal_heredoc(int sig);
+void	redir_push_back(t_redir **list, t_redir *r);
+char	*expand_double_quote_content(char *input, int start, int end, char **envp);
+t_token	*last_token(t_token *head);
+char	*process_unquoted_raw(char *s, int *j);
+int	prev_is_heredoc(t_token *head);
 
 #endif

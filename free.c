@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 22:08:06 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 22:12:47 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 10:54:12 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@ void	free_tokens(t_token *tokens)
 	t_token	*next;
 
 	if (!tokens)
-		return;
+		return ;
 	current = tokens;
 	while (current)
 	{
@@ -86,7 +86,7 @@ static void	free_ast_tree_continue(t_ast_tree *node)
 void	free_ast_tree(t_ast_tree *node)
 {
 	if (!node)
-		return;
+		return ;
 	free_ast_tree_continue(node);
 	if (node->left)
 	{

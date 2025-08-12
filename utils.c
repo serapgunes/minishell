@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/22 15:29:22 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/10 22:36:46 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 11:11:27 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,13 +67,12 @@ static void	free_iter_state(t_shell *shell)
 void	cleanup(t_shell *shell, int mode)
 {
 	if (!shell)
-		return;
+		return ;
 	if (mode == 1)
 	{
-		free_iter_state(shell);      // envp KALACAK
-		return;
+		free_iter_state(shell);// envp KALACAK
+		return ;
 	}
-	// mode == 0: her şeyi kapat
 	free_iter_state(shell);
 	if (shell->envp)
 	{

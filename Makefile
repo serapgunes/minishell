@@ -17,6 +17,8 @@ SRCS			=	built_cd.c				\
 					tokenizer3.c			\
 					tokenizer_utils.c   	\
 					tokenizer_utils2.c		\
+					tokenizer_utils3.c		\
+					tokenizer_utils4.c		\
 					parser.c    			\
 					executor.c 				\
 					signal.c				\

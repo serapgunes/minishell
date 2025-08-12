@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/11 14:39:27 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/12 11:12:38 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -109,35 +109,22 @@ int	main(int argc, char **argv, char **env)
 	while (1)
 	{
 		if (read_and_prepare(shell))
-			continue;
+			continue ;
 		if (tokenize_parse_build(shell))
-			continue;
+			continue ;
 		execute_and_cleanup(shell);
 	}
 	cleanup(shell, 0);
 	return (ft_exit_code(-1));
 }
 
-// valgrind --leak-check=full --show-leak-kinds=all  --suppressions=./readline.supp ./minishell
-
-
+// valgrind --leak-check=full --show-leak-kinds=all 
+		//--suppressions=./readline.supp ./minishell
 //çıkan leakler:
 // cat << a
 // ctrl + c : still reachable
 // exit : definetly lost
-
-
-
-
 //DENENECEK TETLER:
-
 //minishell$ <<<
 // ambiguous redirect
 // syntax error near unexpected token
-
-// minishell$ cat << $USER 
-// > FS
-// > FDS
-// > $USER
-// > 
-

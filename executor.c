@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/10 14:26:58 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 11:15:10 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static void	execute_and_wait(t_ast_tree *node, int in_pipeline, t_shell *shell)
 	{
 		perror("fork");
 		ft_exit_code(1);
-		return;
+		return ;
 	}
 	else if (pid == 0) // Child process
 	{
@@ -118,12 +118,12 @@ void	executor_structure(t_ast_tree *node, int in_pipeline, t_shell *shell)
 		if (std.std_out >= 0)
 			close(std.std_out);
 		ft_exit_code(1);
-		return;
+		return ;
 	}
 	if (node->type == NODE_COMMAND)
 	{
 		if (try_execute_builtin(node, in_pipeline, std, shell))
-			return;
+			return ;
 		execute_and_wait(node, in_pipeline, shell);
 		if (node->redir_list)
 			free_redirections(node);

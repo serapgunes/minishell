@@ -12,7 +12,7 @@
 
 int	ft_isdigit(char *c)
 {
-	int i;
+	int	i;
 
 	i = 0;
 	while (c[i])
@@ -24,4 +24,3 @@ int	ft_isdigit(char *c)
 	}
 	return (0);
 }
-

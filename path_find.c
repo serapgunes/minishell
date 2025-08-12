@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path_find.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.tr>  +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:25:32 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/09 21:35:53 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 11:11:05 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ static void	free_string_array(char **array)
 	int	i;
 
 	if (!array)
-		return;
+		return ;
 	i = 0;
 	while (array[i])
 	{
@@ -33,7 +33,7 @@ static char	*try_join_exec(const char *path, char *command)
 	char	*join;
 	char	*ret;
 
-	temp = ft_strjoin(path, "/");  // PATH/command şeklinde birleştir
+	temp = ft_strjoin(path, "/");// PATH/command şeklinde birleştir
 	if (!temp)
 		return (NULL);
 	join = ft_strjoin(temp, command);
@@ -42,7 +42,7 @@ static char	*try_join_exec(const char *path, char *command)
 		return (NULL);
 	ret = NULL;
 	if (access(join, X_OK) == 0)
-		ret = ft_strdup(join);  // Kopya oluştur
+		ret = ft_strdup(join);
 	free(join);
 	return (ret);
 }

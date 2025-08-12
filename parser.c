@@ -19,7 +19,8 @@ void	free_token_list(t_token *cur)
 	while (cur)
 	{
 		n = cur->next;
-		if (cur->value) free(cur->value);
+		if (cur->value)
+			free(cur->value);
 		free(cur);
 		cur = n;
 	}
@@ -33,8 +34,8 @@ static int	ft_last(t_token *input)
 	while (last && last->next)
 		last = last->next;
 	if (last->type == APPEND || last->type == REDIR_IN
-			|| last->type == REDIR_OUT
-			|| last->type == HEREDOC || last->type == PIPE)
+		|| last->type == REDIR_OUT
+		|| last->type == HEREDOC || last->type == PIPE)
 	{
 		printf("syntax error near unexpected token\n");
 		return (1);
@@ -49,8 +50,8 @@ static int	is_invalid_redir_target(t_token *token)
 	if (!token->value || token->value[0] == '\0')
 		return (1);
 	if (token->type == REDIR_IN || token->type == REDIR_OUT
-			|| token->type == APPEND || token->type == HEREDOC
-			|| token->type == PIPE)
+		|| token->type == APPEND || token->type == HEREDOC
+		|| token->type == PIPE)
 		return (1);
 	return (0);
 }
@@ -99,7 +100,6 @@ int	ft_parser(t_token *input)
 		return (1);
 	return (0);
 }
-
 
 //***************************************************************************************/
 // ast yapısı doğrumu diye kontrol ediliyor burada yazdırmak için//

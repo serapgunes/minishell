@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:54:37 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 14:35:58 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 10:58:56 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,7 +15,7 @@
 static int	find_pipe_split(t_token *tokens,
 						t_token **left, t_token **mid, t_token **right)
 {
-	t_token *prev;
+	t_token	*prev;
 
 	prev = NULL;
 	*left = tokens;

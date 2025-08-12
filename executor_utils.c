@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 21:18:30 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 21:43:02 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 10:23:12 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,4 +27,26 @@ void	restore_std(t_std std)
 	dup2(std.std_out, STDOUT_FILENO);
 	close(std.std_in);
 	close(std.std_out);
+}
+
+void	signal_heredoc(int sig)
+{
+	(void)sig;
+	write(1, "\n", 1);
+	exit(130);
+}
+
+void	redir_push_back(t_redir **list, t_redir *r)
+{
+	t_redir	*tmp;
+
+	if (!*list)
+	{
+		*list = r;
+		return ;
+	}
+	tmp = *list;
+	while (tmp->next)
+		tmp = tmp->next;
+	tmp->next = r;
 }

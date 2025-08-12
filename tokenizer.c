@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:32:24 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/10 14:40:25 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 11:12:02 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,6 @@
 // 	}
 // }// type yazdırmak için kontrol
 
-
 static int	tokenize_redirection(char *input, t_token **head, char **envp)
 {
 	int	op_len;
@@ -36,7 +35,8 @@ static int	tokenize_redirection(char *input, t_token **head, char **envp)
 	return (op_len);
 }
 
-static int	handle_special_char(char *input, int *i, t_token **head, char **envp)
+static int	handle_special_char(char *input, int *i,
+				t_token **head, char **envp)
 {
 	t_token	*tok;
 	int		adv;
@@ -84,7 +84,6 @@ static int	process_word(char *input, int *i, t_token **head, char **envp)
 	free(arg);
 	return (0);
 }
-
 
 t_token	*tokenize_input(char *input, char **envp)
 {

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils2.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:58:23 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/11 14:40:11 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/12 10:27:18 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,7 +31,6 @@ static int	var_name_len(const char *s, int i)
 	}
 	return (1);
 }
-
 
 static char	*handle_var_utils(char *res, char *str, int *i, char **envp)
 {
@@ -109,26 +108,4 @@ char	*expand_variable(char *str, char **envp)
 	if (!res)
 		return (NULL);
 	return (expand_variable_loop(str, res, envp));
-}
-
-t_token *create_redir_token(char *value)
-{
-	t_token *new_token;
-
-	new_token = malloc(sizeof(t_token));
-	if (!new_token)
-		return (NULL);
-	if (value[0] == '<')
-		new_token->type = REDIR_IN;
-	else
-		new_token->type = REDIR_OUT;
-	new_token->value = ft_strdup(value);
-	if (!new_token->value)
-	{
-		free(new_token);
-		return (NULL);
-	}
-	new_token->quoted = 0;
-	new_token->next = NULL;
-	return (new_token);
 }

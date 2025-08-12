@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:06:23 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 14:22:43 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 11:14:12 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,31 +60,37 @@ static void	sort_env(char **copy)
 	}
 }
 
-void	print_sorted_env(char **env)
+static void	print_env_entries(char **copy)
 {
-	char	**copy;
 	int		i;
 	char	*tmp;
 
 	i = 0;
-	copy = copy_env(env);
-	if (!copy)
-		return;
-	sort_env(copy);
 	while (copy[i])
 	{
-		if (copy[i][0] == '\0')
+		if (copy[i][0] != '\0')
 		{
-			i++;
-			continue;
+			tmp = ft_strchr(copy[i], '=');
+			if (tmp)
+				printf("declare -x %.*s=\"%s\"\n",
+					(int)(tmp - copy[i]), copy[i], tmp + 1);
+			else
+				printf("declare -x %s\n", copy[i]);
 		}
-		tmp = ft_strchr(copy[i], '=');
-		if (tmp)
-			printf("declare -x %.*s=\"%s\"\n", (int)(tmp - copy[i]), copy[i], tmp + 1);
-		else
-			printf("declare -x %s\n", copy[i]);
 		i++;
 	}
+}
+
+void	print_sorted_env(char **env)
+{
+	char	**copy;
+	int		i;
+
+	copy = copy_env(env);
+	if (!copy)
+		return ;
+	sort_env(copy);
+	print_env_entries(copy);
 	i = 0;
 	while (copy[i])
 	{
@@ -101,11 +107,11 @@ void	print_invalid_identifier(char *arg)
 
 	msg = ft_strjoin("export: '", arg);
 	if (!msg)
-		return;
+		return ;
 	temp = ft_strjoin(msg, "': not a valid identifier\n");
 	free(msg);
 	if (!temp)
-		return;
+		return ;
 	ft_putstr_fd(temp, 2);
 	free(temp);
 }

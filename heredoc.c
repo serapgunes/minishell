@@ -6,24 +6,35 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 22:08:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 13:35:30 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 10:18:54 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-static void	signal_heredoc(int sig)
+static void	hd_write(int fd, char *line, int quoted, char **envp)
 {
-	(void)sig;
-	write(1, "\n", 1);
-	exit(130);
+	char	*exp;
+
+	if (!quoted)
+	{
+		exp = expand_variable(line, envp);
+		if (exp)
+		{
+			write(fd, exp, ft_strlen(exp));
+			write(fd, "\n", 1);
+			free(exp);
+			return ;
+		}
+	}
+	write(fd, line, ft_strlen(line));
+	write(fd, "\n", 1);
 }
 
 static void	heredoc_child(const char *delim, int quoted,
 				int pipefd[2], t_shell *shell)
 {
 	char	*line;
-	char	*exp;
 
 	signal(SIGINT, signal_heredoc);
 	close(pipefd[0]);
@@ -36,26 +47,7 @@ static void	heredoc_child(const char *delim, int quoted,
 			free(line);
 			break ;
 		}
-		if (!quoted)
-		{
-			exp = expand_variable(line, shell->envp);
-			if (exp)
-			{
-				write(pipefd[1], exp, ft_strlen(exp));
-				write(pipefd[1], "\n", 1);
-				free(exp);
-			}
-			else
-			{
-				write(pipefd[1], line, ft_strlen(line));
-				write(pipefd[1], "\n", 1);
-			}
-		}
-		else
-		{
-			write(pipefd[1], line, ft_strlen(line));
-			write(pipefd[1], "\n", 1);
-		}
+		hd_write(pipefd[1], line, quoted, shell->envp);
 		free(line);
 	}
 	close(pipefd[1]);

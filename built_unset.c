@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 18:03:45 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 23:28:39 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 11:13:09 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,7 +20,7 @@ static int	remove_from_environ(int idx, char ***env)
 	i = idx;
 	e = *env;
 	if (!e[i])
-        return (0);
+		return (0);
 	free(e[i]);
 	while (e[i + 1] != NULL)
 	{

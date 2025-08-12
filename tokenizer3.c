@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:55:20 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 14:41:06 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 10:53:29 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,6 @@ char	*process_quoted(char *s, int *i, char quote_char)
 	return (ft_substr(s, start, len));
 }
 
-
 static int	is_unquoted_word_char(char c)
 {
 	return (c != '\0'
@@ -92,11 +91,4 @@ char	*process_unquoted(char *s, int *j, char **envp)
 	if (!expanded)
 		return (NULL);
 	return (expanded);
-}
-
-char	*normalize_filename(char *str)
-{
-	if (!str || str[0] == '\0')
-		return (NULL);
-	return (ft_strdup(str));
 }

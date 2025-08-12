@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 21:14:58 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 14:30:45 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 10:22:52 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,19 +25,11 @@ static char	*strip_quotes(char *str)
 	return (ft_strdup(str));
 }
 
-static t_redir	*new_redir_from(t_token **current)
+static void	redir_fill_from_next_token(t_redir *r, t_token **current)
 {
-	t_redir	*r;
 	char	*raw;
 	char	*name;
 
-	r = malloc(sizeof(t_redir));
-	if (!r)
-		return (NULL);
-	r->type = (*current)->type;
-	r->fd = -1;
-	r->quoted = 0;
-	*current = (*current)->next;
 	if (*current && (*current)->value)
 	{
 		raw = strip_quotes((*current)->value);
@@ -52,22 +44,21 @@ static t_redir	*new_redir_from(t_token **current)
 	r->next = NULL;
 	if (*current)
 		*current = (*current)->next;
-	return (r);
 }
 
-static void	redir_push_back(t_redir **list, t_redir *r)
+static t_redir	*new_redir_from(t_token **current)
 {
-	t_redir	*tmp;
+	t_redir	*r;
 
-	if (!*list)
-	{
-		*list = r;
-		return ;
-	}
-	tmp = *list;
-	while (tmp->next)
-		tmp = tmp->next;
-	tmp->next = r;
+	r = malloc(sizeof(t_redir));
+	if (!r)
+		return (NULL);
+	r->type = (*current)->type;
+	r->fd = -1;
+	r->quoted = 0;
+	*current = (*current)->next;
+	redir_fill_from_next_token(r, current);
+	return (r);
 }
 
 t_ast_tree	*create_cmd_node_with_args(int count, char ***args_out)

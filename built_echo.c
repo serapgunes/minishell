@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:20:45 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/10 14:17:30 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 10:57:14 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,10 @@ static int	parse_n_flag(int argc, char **argv, int *idx)
 	while (*idx < argc && argv[*idx][0] == '-' && argv[*idx][1] == 'n')
 	{
 		j = 1;
-		while (argv[*idx][j] == 'n') j++;
-		if (argv[*idx][j] != '\0') break;
+		while (argv[*idx][j] == 'n')
+			j++;
+		if (argv[*idx][j] != '\0')
+			break ;
 		nflag = 1;
 		(*idx)++;
 	}

@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/10 14:23:08 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 11:01:56 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,12 +17,12 @@ int	is_builtin(char *cmd)
 	if (!cmd)
 		return (0);
 	return (!ft_strcmp(cmd, "cd")
-			|| !ft_strcmp(cmd, "echo")
-			|| !ft_strcmp(cmd, "env")
-			|| !ft_strcmp(cmd, "exit")
-			|| !ft_strcmp(cmd, "export")
-			|| !ft_strcmp(cmd, "pwd")
-			|| !ft_strcmp(cmd, "unset"));
+		|| !ft_strcmp(cmd, "echo")
+		|| !ft_strcmp(cmd, "env")
+		|| !ft_strcmp(cmd, "exit")
+		|| !ft_strcmp(cmd, "export")
+		|| !ft_strcmp(cmd, "pwd")
+		|| !ft_strcmp(cmd, "unset"));
 }
 
 int	builtin(int argc, char **argv, char ***env, t_shell *shell)

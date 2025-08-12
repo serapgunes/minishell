@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:51:02 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 14:24:05 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 11:03:27 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,12 +31,13 @@ static int	cmd_skip_empty(char **args, int *cmd_idx, t_shell *shell)
 	return (0);
 }
 
-static void	run_builtin_or_exit(t_ast_tree *node, int cmd_idx, int in_pipeline, t_shell *shell)
+static void	run_builtin_or_exit(t_ast_tree *node, int cmd_idx,
+					int in_pipeline, t_shell *shell)
 {
 	int	ret;
 
 	ret = builtin(args_count(node->args + cmd_idx),
-				  node->args + cmd_idx, &shell->envp, shell);
+			node->args + cmd_idx, &shell->envp, shell);
 	if (ret != -1)
 	{
 		if (in_pipeline)
@@ -74,7 +75,8 @@ static void	exec_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell)
 	exit(1);
 }
 
-static void	lookup_path(char *cmd, t_ast_tree *node, int cmd_idx, t_shell *shell)
+static void	lookup_path(char *cmd, t_ast_tree *node,
+				int cmd_idx, t_shell *shell)
 {
 	char	*path;
 

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer2.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil <sakdil@student.42istanbul.com.t    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:51:36 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/05 15:48:29 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 10:47:42 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,7 @@ static char	*collect_single_quote(char *input, int *i, char *arg)
 static char	*collect_double_quote(char *input, int *i, char *arg, char **envp)
 {
 	int		start;
-	char	*raw;
-	char	*exp;
+	char	*piece;
 
 	start = ++(*i);
 	while (input[*i] && input[*i] != '"')
@@ -45,20 +44,13 @@ static char	*collect_double_quote(char *input, int *i, char *arg, char **envp)
 		free(arg);
 		return (NULL);
 	}
-	raw = ft_substr(input, start, (*i) - start);
-	if (!raw)
+	piece = expand_double_quote_content(input, start, *i, envp);
+	if (!piece)
 	{
 		free(arg);
 		return (NULL);
 	}
-	exp = expand_variable(raw, envp);
-	free(raw);
-	if (!exp)
-	{
-		free(arg);
-		return (NULL);
-	}
-	arg = ft_charjoin_free(arg, exp, 3);
+	arg = ft_charjoin_free(arg, piece, 3);
 	(*i)++;
 	return (arg);
 }

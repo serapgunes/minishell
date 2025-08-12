@@ -1,23 +1,28 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_strcmp.c                                        :+:      :+:    :+:   */
+/*   tokenizer_utils4.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2025/04/29 16:17:47 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/12 10:52:56 by sakdil           ###   ########.fr       */
+/*   Created: 2025/08/12 10:41:16 by sakdil            #+#    #+#             */
+/*   Updated: 2025/08/12 10:44:04 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "minishell.h"
 
-int	ft_strcmp(char *s1, char *s2)
+char	*normalize_filename(char *str)
 {
-	int	i;
+	if (!str || str[0] == '\0')
+		return (NULL);
+	return (ft_strdup(str));
+}
 
-	i = 0;
-	while ((s1[i] == s2[i]) && s1[i] && s2[i])
-		i++;
-	return (s1[i] - s2[i]);
+int	prev_is_heredoc(t_token *head)
+{
+	t_token	*last;
+
+	last = last_token(head);
+	return (last && last->type == HEREDOC);
 }

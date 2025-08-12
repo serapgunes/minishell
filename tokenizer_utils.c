@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 17:51:21 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/10 14:38:49 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 11:09:06 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,7 +78,6 @@ t_token	*create_pipe_token(char *value)
 	new_token = malloc(sizeof(t_token));
 	if (!new_token)
 		return (NULL);
-
 	dup_value = ft_strdup(value);
 	if (!dup_value)
 	{

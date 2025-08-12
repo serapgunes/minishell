@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:53:32 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 14:25:10 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 10:57:52 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -86,13 +86,13 @@ void	execute_pipe(t_ast_tree *node, t_shell *shell)
 	pid_t	pid1;
 	pid_t	pid2;
 	int		status1;
-	int	status2;
+	int		status2;
 
 	if (pipe(pipefd) == -1)
 	{
 		perror("pipe");
 		ft_exit_code(1);
-		return;
+		return ;
 	}
 	pid1 = create_child_with_pipe(node, pipefd, "left", shell);
 	pid2 = create_child_with_pipe(node, pipefd, "right", shell);

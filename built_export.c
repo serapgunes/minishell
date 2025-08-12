@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/08 12:27:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 14:20:52 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 11:16:36 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,7 +69,7 @@ static int	export_add_if_missing(char *arg, char ***envp)
 
 static int	process_export_name(char *arg, char ***envp)
 {
-	int	status; //hatalı ise 1 döner, başarılı ise 0
+	int	status;//hatalı ise 1 döner, başarılı ise 0
 
 	status = 0;
 	if (!arg || arg[0] == '\0')
