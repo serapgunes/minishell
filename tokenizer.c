@@ -3,25 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:32:24 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/12 11:12:02 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 15:00:37 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
-
-// void print_tokens(t_token *head)
-// {
-// 	t_token *tmp = head;
-
-// 	while (tmp)
-// 	{
-// 		printf("TOKEN TYPE: %u\tVALUE: %s\n", tmp->type, tmp->value);
-// 		tmp = tmp->next;
-// 	}
-// }// type yazdırmak için kontrol
 
 static int	tokenize_redirection(char *input, t_token **head, char **envp)
 {
@@ -48,7 +37,7 @@ static int	handle_special_char(char *input, int *i,
 			return (-1);
 		*i += adv;
 	}
-	else if (input[*i] == '|') /* PIPE kısmı aynı */
+	else if (input[*i] == '|')
 	{
 		tok = create_pipe_token("|");
 		if (tok)

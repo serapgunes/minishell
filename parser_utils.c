@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser_utils.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:54:37 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 10:58:56 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 14:56:58 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,13 +25,13 @@ static int	find_pipe_split(t_token *tokens,
 	{
 		if (tokens->type == PIPE)
 		{
-			if (!tokens->next) // pipe'tan sonra hiçbir şey yoksa: syntax error
+			if (!tokens->next)
 				return (1);
-			*mid = tokens;         // pipe düğümünü geri ver
-			*right = tokens->next; // sağ liste başlangıcı
-			tokens->next = NULL; // pipe'ı sağdan kopar
+			*mid = tokens;
+			*right = tokens->next;
+			tokens->next = NULL;
 			if (prev)
-				prev->next = NULL; // solu da pipe'tan kopar
+				prev->next = NULL;
 			return (0);
 		}
 		prev = tokens;
@@ -76,7 +76,8 @@ static t_ast_tree	*build_cmd_node(t_token *left_token)
 	return (node);
 }
 
-static t_ast_tree	*make_pipe_node(t_token *left, t_token *right, t_token *mid, t_shell *shell)
+static t_ast_tree	*make_pipe_node(t_token *left, t_token *right, t_token *mid,
+				t_shell *shell)
 {
 	t_ast_tree	*node;
 
@@ -113,11 +114,11 @@ t_ast_tree	*ft_build_ast(t_token *tokens, t_shell *shell)
 		return (NULL);
 	if (find_pipe_split(tokens, &left, &mid, &right))
 	{
-		printf("syntax error near unexpected token\n"); // HATA: bütün token zinciri tek parça olabilir; tamamını bırak
+		printf("syntax error near unexpected token\n");
 		free_token_list(tokens);
 		return (NULL);
 	}
-	if (mid) // pipe bulundu
-		return (make_pipe_node(left, right, mid, shell));  // pipe yoksa tek komut; build_cmd_node tokenları kendi içinde free ediyor
+	if (mid)
+		return (make_pipe_node(left, right, mid, shell));
 	return (build_cmd_node(tokens));
 }

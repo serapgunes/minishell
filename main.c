@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 11:12:38 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 17:32:21 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,6 +34,7 @@ static t_shell	*init_shell(char **env)
 static int	read_and_prepare(t_shell *shell)
 {
 	signal(SIGINT, signal_catch);
+	signal(SIGQUIT, SIG_IGN);
 	shell->input = readline("minishell$ ");
 	if (shell->input == NULL)
 	{
@@ -41,7 +42,7 @@ static int	read_and_prepare(t_shell *shell)
 		cleanup(shell, 0);
 		exit(0);
 	}
-	if (is_only_spaces(shell->input))
+	if (is_only_spaces(shell->input) && *shell->input != '\0')
 	{
 		add_history(shell->input);
 		cleanup(shell, 1);
@@ -118,13 +119,3 @@ int	main(int argc, char **argv, char **env)
 	return (ft_exit_code(-1));
 }
 
-// valgrind --leak-check=full --show-leak-kinds=all 
-		//--suppressions=./readline.supp ./minishell
-//çıkan leakler:
-// cat << a
-// ctrl + c : still reachable
-// exit : definetly lost
-//DENENECEK TETLER:
-//minishell$ <<<
-// ambiguous redirect
-// syntax error near unexpected token

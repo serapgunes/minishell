@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor.c                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/12 11:15:10 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 14:54:45 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,17 +71,17 @@ static void	execute_and_wait(t_ast_tree *node, int in_pipeline, t_shell *shell)
 		ft_exit_code(1);
 		return ;
 	}
-	else if (pid == 0) // Child process
+	else if (pid == 0)
 	{
-		execute_command(node, in_pipeline, shell); // Child process'te execute_command çağır
+		execute_command(node, in_pipeline, shell);
 		cleanup(shell, 0);
-		exit(1); // Bu noktaya asla ulaşılmamalı, execute_command her zaman exit() çağırır
+		exit(1);
 	}
-	else // Parent process
+	else
 	{
-		signal(SIGINT, signal_child); // Child process'i bekle
+		signal(SIGINT, signal_child);
 		waitpid(pid, &status, 0);
-		handle_command_status(status); // Exit status'u işle
+		handle_command_status(status);
 		signal(SIGINT, signal_catch);
 	}
 }
@@ -133,31 +133,3 @@ void	executor_structure(t_ast_tree *node, int in_pipeline, t_shell *shell)
 	close(std.std_in);
 	close(std.std_out);
 }
-
-/*
-| pid == 0 | Bu kod bloğu child process içindir |
-| pid > 0 | Bu kod bloğu parent process içindir |
-| pid < 0 | Hata: fork başarısız oldu |
-
-********************************************************************
-
-dup() sistem çağrısı bir dosya tanımlayıcısının kopyasını oluşturur.
-
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-															 !!
-			  [ PARENT PROCESS ]                             !!
-					 |                                       !!
-				pipe(pipefd)                                 !!
-					 |                                       !!
-			  ┌──────┴──────┐                                !!
-			  |             |                                !!
-		fork() →         fork()                              !!
-		 |                 |                                 !!
-	 [ CHILD 1 ]       [ CHILD 2 ]                           !!
-	  echo serap        wc -c                                !!
-	 stdout → pipe      stdin ← pipe                         !!
-		 |                  ^                                !!
-		 └──── pipefd[1]    └──── pipefd[0]                  !!
-!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-
-*/

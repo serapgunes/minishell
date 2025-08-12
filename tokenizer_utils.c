@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/31 17:51:21 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/12 11:09:06 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 15:00:57 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,9 +17,9 @@ char	*ft_charjoin_free(char *res, char *val, int flag)
 	char	*tmp;
 
 	tmp = ft_strjoin(res, val);
-	if (flag & 1) // res serbest
+	if (flag & 1)
 		free(res);
-	if (flag & 2) // val serbest
+	if (flag & 2)
 		free(val);
 	return (tmp);
 }

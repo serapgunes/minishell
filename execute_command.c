@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   execute_command.c                                  :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:51:02 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 11:03:27 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 17:35:32 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ static void	run_builtin_or_exit(t_ast_tree *node, int cmd_idx,
 		else
 			signal(SIGPIPE, SIG_IGN);
 		cleanup(shell, 0);
-		shell = NULL; // buradan emin değilim
+		shell = NULL;
 		exit(ret);
 	}
 	signal(SIGPIPE, SIG_DFL);
@@ -94,6 +94,7 @@ static void	lookup_path(char *cmd, t_ast_tree *node,
 	ft_putendl_fd(": command not found", 2);
 	cleanup(shell, 0);
 	shell = NULL;
+	ft_exit_code(127);
 	exit(127);
 }
 

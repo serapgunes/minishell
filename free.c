@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   free.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 22:08:06 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 10:54:12 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 14:51:34 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -55,7 +55,7 @@ static void	free_redir_list(t_redir *redir)
 		tmp = redir;
 		redir = redir->next;
 		if (tmp->type == HEREDOC && tmp->fd >= 0)
-			close(tmp->fd); // heredoc fd'lerini de kapat
+			close(tmp->fd);
 		if (tmp->target)
 			free(tmp->target);
 		free(tmp);

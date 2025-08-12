@@ -69,7 +69,7 @@ static int	token_pair_error(t_token *input)
 		return (1);
 	}
 	if ((input->type == APPEND || input->type == REDIR_IN
-		|| input->type == REDIR_OUT || input->type == HEREDOC)
+			|| input->type == REDIR_OUT || input->type == HEREDOC)
 		&& is_invalid_redir_target(input->next))
 	{
 		printf("syntax error near unexpected token\n");
@@ -100,37 +100,3 @@ int	ft_parser(t_token *input)
 		return (1);
 	return (0);
 }
-
-//***************************************************************************************/
-// ast yapısı doğrumu diye kontrol ediliyor burada yazdırmak için//
-// void print_ast(t_ast_tree *node, int depth)
-// {
-// 	if (!node)
-// 		return;
-
-// 	for (int i = 0; i < depth; i++)
-// 		printf("  "); // girinti
-
-// 	if (node->type == NODE_PIPE)
-// 		printf("PIPE\n");
-// 	else if (node->type == NODE_COMMAND)
-// 	{
-// 		printf("CMD: ");
-// 		for (int i = 0; node->args && node->args[i]; i++)
-// 			printf("%s ", node->args[i]);
-// 		printf("\n");
-
-// 		if (node->redir_type)
-// 		{
-// 			for (int i = 0; i < depth + 1; i++)
-// 				printf("  ");
-// 			printf("REDIR: %d -> %s\n", node->redir_type, node->redir_target);
-// 		}
-// 	}
-
-// 	if (node->left)
-// 		print_ast(node->left, depth + 1);
-// 	if (node->right)
-// 		print_ast(node->right, depth + 1);
-// }
-//***************************************************************************************/

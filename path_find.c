@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   path_find.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/23 12:25:32 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/12 11:11:05 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/12 14:57:20 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ static char	*try_join_exec(const char *path, char *command)
 	char	*join;
 	char	*ret;
 
-	temp = ft_strjoin(path, "/");// PATH/command şeklinde birleştir
+	temp = ft_strjoin(path, "/");
 	if (!temp)
 		return (NULL);
 	join = ft_strjoin(temp, command);
