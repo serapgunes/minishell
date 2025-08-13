@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/29 14:32:39 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/12 11:01:56 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/13 08:45:56 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -38,7 +38,7 @@ int	builtin(int argc, char **argv, char ***env, t_shell *shell)
 	else if (ft_strcmp(argv[0], "echo") == 0)
 		return (builtin_echo(argc, argv));
 	else if (ft_strcmp(argv[0], "cd") == 0)
-		return (builtin_cd(argc, argv));
+		return (builtin_cd(argc, argv, shell));
 	else if (ft_strcmp(argv[0], "export") == 0)
 		return (builtin_export(argc, argv, env));
 	else if (ft_strcmp(argv[0], "pwd") == 0)

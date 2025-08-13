@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:06:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 14:19:10 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/13 08:59:53 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,6 +37,10 @@ static int	is_too_large(char *str)
 {
 	int	len;
 
+	if (!str || !*str)
+		return (1);
+	if (*str == '+' || *str == '-')
+		str++;
 	len = ft_strlen(str);
 	if (len > 19)
 		return (1);
@@ -45,26 +49,25 @@ static int	is_too_large(char *str)
 	return (0);
 }
 
-static int	parse_exit_code(int argc, char **argv, t_shell *shell)
+static int	check_exit_args(int argc, char **argv, t_shell *shell)
 {
-	int	exit_code;
-
-	if (argc == 2)
+	if (argc >= 2 && (!argv[1] || !is_numeric(argv[1])
+			|| is_too_large(argv[1])))
 	{
-		if (!argv[1] || !is_numeric(argv[1]) || is_too_large(argv[1]))
-		{
-			ft_putstr_fd("exit: ", 2);
-			ft_putstr_fd(argv[1], 2);
-			ft_putendl_fd(": numeric argument required", 2);
-			cleanup(shell, 0);
-			shell = NULL;
-			exit(2);
-		}
-		exit_code = ft_atoi(argv[1]) % 256;
+		ft_putstr_fd("exit: ", 2);
+		ft_putstr_fd(argv[1], 2);
+		ft_putendl_fd(": numeric argument required", 2);
+		cleanup(shell, 0);
+		shell = NULL;
+		exit(2);
 	}
-	else
-		exit_code = 0;
-	return (exit_code);
+	if (argc > 2)
+	{
+		ft_putendl_fd("exit: too many arguments", 2);
+		ft_exit_code(1);
+		return (1);
+	}
+	return (0);
 }
 
 int	builtin_exit(int argc, char **argv, t_shell *shell)
@@ -72,13 +75,12 @@ int	builtin_exit(int argc, char **argv, t_shell *shell)
 	int	exit_code;
 
 	ft_putendl_fd("exit", 1);
-	if (argc > 2)
-	{
-		ft_putendl_fd("exit: too many arguments", 2);
-		ft_exit_code(1);
+	if (check_exit_args(argc, argv, shell))
 		return (1);
-	}
-	exit_code = parse_exit_code(argc, argv, shell);
+	if (argc == 1)
+		exit_code = ft_exit_code(-1);
+	else
+		exit_code = (unsigned char)ft_atoi(argv[1]);
 	ft_exit_code(exit_code);
 	cleanup(shell, 0);
 	shell = NULL;

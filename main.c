@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 17:32:21 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/13 08:03:02 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -118,4 +118,3 @@ int	main(int argc, char **argv, char **env)
 	cleanup(shell, 0);
 	return (ft_exit_code(-1));
 }
-

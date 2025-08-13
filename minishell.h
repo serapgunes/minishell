@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 14:43:49 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/13 08:45:29 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -91,7 +91,7 @@ typedef struct s_rtok
 }	t_rtok;
 
 void		cleanup(t_shell *shell, int mode);
-int			builtin_cd(int argc, char **argv);
+int			builtin_cd(int argc, char **argv, t_shell *shell);
 int			builtin_echo(int argc, char **argv);
 int			control_env(int argc);
 int			builtin_env(char ***env);
