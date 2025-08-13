@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:53:32 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 10:57:52 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/13 20:03:01 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,9 +28,11 @@ static void	handle_pipe_status(int status)
 		}
 		else if (sig == SIGPIPE)
 		{
-			write(2, "Broken pipe\n", 12);
+			// write(2, "Broken pipe\n", 12);
 			ft_exit_code(141);
 		}
+		else // yeni
+			ft_exit_code(128 + sig);
 	}
 	else
 	{
@@ -102,9 +104,9 @@ void	execute_pipe(t_ast_tree *node, t_shell *shell)
 	waitpid(pid1, &status1, 0);
 	waitpid(pid2, &status2, 0);
 	signal(SIGINT, signal_catch);
-	if ((WIFSIGNALED(status1) && WTERMSIG(status1) == SIGPIPE)
-		|| (WIFEXITED(status1) && WEXITSTATUS(status1) == 141))
-		write(2, " Broken pipe\n", 12);
-	else
-		handle_pipe_status(status2);
+	// if ((WIFSIGNALED(status1) && WTERMSIG(status1) == SIGPIPE)
+	// 	|| (WIFEXITED(status1) && WEXITSTATUS(status1) == 141))
+	// 	write(2, " Broken pipe\n", 12);
+	// else
+	handle_pipe_status(status2);
 }

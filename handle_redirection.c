@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:53:42 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 13:34:17 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/13 20:20:04 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static int	set_heredoc_fd(int src_fd, int *fd_in)
 {
 	if (src_fd < 0)
 	{
-		printf("Heredoc fd geçersiz\n");
+		ft_putendl_fd("heredoc: invalid fd", 2); // değiştirdim
 		return (1);
 	}
 	if (*fd_in != -1)

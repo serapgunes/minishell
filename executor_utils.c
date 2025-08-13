@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 21:18:30 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 10:23:12 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/13 21:01:05 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,7 @@ void	signal_heredoc(int sig)
 {
 	(void)sig;
 	write(1, "\n", 1);
-	exit(130);
+	exit(130); // leak burda olabilir
 }
 
 void	redir_push_back(t_redir **list, t_redir *r)

@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 22:08:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 10:18:54 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/13 21:04:53 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -92,13 +92,11 @@ static int	handle_heredoc(const char *delim, int quoted, t_shell *shell)
 	return (heredoc_parent(pid, pipefd));
 }
 
-int	prepare_all_heredocs(t_ast_tree *node, t_shell *shell)
-{
+static int	heredocs_prepare(t_ast_tree *node, t_shell *shell)
+{	
 	t_redir	*r;
 	int		fd;
 
-	if (!node)
-		return (0);
 	r = node->redir_list;
 	while (r)
 	{
@@ -112,4 +110,19 @@ int	prepare_all_heredocs(t_ast_tree *node, t_shell *shell)
 		r = r->next;
 	}
 	return (0);
+}
+
+int	prepare_all_heredocs(t_ast_tree *node, t_shell *shell)
+{
+	if (!node)
+		return (0);
+	if (node->type == NODE_PIPE)
+	{
+		if (prepare_all_heredocs(node->left, shell)) // Sol ve sağ alt ağaçlardaki heredocları da hazırlar(recursive)
+			return (1);
+		if (prepare_all_heredocs(node->right, shell))
+			return (1);
+		return (0);
+	}
+	return (heredocs_prepare(node, shell));
 }
