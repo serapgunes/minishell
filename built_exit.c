@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:06:34 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/13 08:59:53 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/13 09:41:49 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static int	is_too_large(char *str)
 	return (0);
 }
 
-static int	check_exit_args(int argc, char **argv, t_shell *shell)
+static int	check_exit_args(int argc, char **argv)
 {
 	if (argc >= 2 && (!argv[1] || !is_numeric(argv[1])
 			|| is_too_large(argv[1])))
@@ -57,14 +57,11 @@ static int	check_exit_args(int argc, char **argv, t_shell *shell)
 		ft_putstr_fd("exit: ", 2);
 		ft_putstr_fd(argv[1], 2);
 		ft_putendl_fd(": numeric argument required", 2);
-		cleanup(shell, 0);
-		shell = NULL;
-		exit(2);
+		return (2);
 	}
 	if (argc > 2)
 	{
 		ft_putendl_fd("exit: too many arguments", 2);
-		ft_exit_code(1);
 		return (1);
 	}
 	return (0);
@@ -72,11 +69,16 @@ static int	check_exit_args(int argc, char **argv, t_shell *shell)
 
 int	builtin_exit(int argc, char **argv, t_shell *shell)
 {
+	int	check;
 	int	exit_code;
 
 	ft_putendl_fd("exit", 1);
-	if (check_exit_args(argc, argv, shell))
-		return (1);
+	check = check_exit_args(argc, argv);
+	if (check != 0)
+	{
+		ft_exit_code(check);
+		return (check);
+	}
 	if (argc == 1)
 		exit_code = ft_exit_code(-1);
 	else
@@ -85,5 +87,4 @@ int	builtin_exit(int argc, char **argv, t_shell *shell)
 	cleanup(shell, 0);
 	shell = NULL;
 	exit(exit_code);
-	return (0);
 }
