@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/10 14:20:45 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/12 10:57:14 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/13 09:07:06 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,12 +67,9 @@ int	builtin_echo(int argc, char **argv)
 	nflag = parse_n_flag(argc, argv, &i);
 	while (i < argc)
 	{
-		if (strlen(argv[i]) > 0)
-		{
-			if (echo_write_arg(argv[i], first))
-				return (1);
-			first = 0;
-		}
+		if (echo_write_arg(argv[i], first))
+			return (1);
+		first = 0;
 		i++;
 	}
 	if (!nflag && write(1, "\n", 1) < 0)
