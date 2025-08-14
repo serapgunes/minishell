@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   minishell.h                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/13 08:45:29 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/14 17:08:08 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -145,6 +145,11 @@ int			handle_redir_file(char *s, int *i, t_token **head, char **envp);
 char		*process_unquoted(char *s, int *j, char **envp);
 int			is_redir_separator(char c);
 void		signal_heredoc(int sig);
+char		**heredoc_signal(int flag, t_shell *shell, const char *target);
+int			heredocs_prepare(t_ast_tree *node, t_shell *shell);
+int			handle_heredoc(const char *delim, int quoted, t_shell *shell);
+int			heredoc_parent(pid_t pid, int pipefd[2]);
+
 void		redir_push_back(t_redir **list, t_redir *r);
 char		*expand_double_quote_content(char *input, int start, int end,
 				char **envp);

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   heredoc.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 22:08:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/13 21:04:53 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/14 17:23:25 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,26 +36,30 @@ static void	heredoc_child(const char *delim, int quoted,
 {
 	char	*line;
 
+	(void)delim;
+	(void)shell;
 	signal(SIGINT, signal_heredoc);
 	close(pipefd[0]);
 	while (1)
 	{
 		line = readline("> ");
 		if (!line
-			|| ft_strncmp(line, delim, ft_strlen(delim) + 1) == 0)
+			|| ft_strncmp(line,
+				*(heredoc_signal(3, NULL, NULL)),
+				ft_strlen(*(heredoc_signal(3, NULL, NULL))) + 1) == 0)
 		{
 			free(line);
 			break ;
 		}
-		hd_write(pipefd[1], line, quoted, shell->envp);
+		hd_write(pipefd[1], line, quoted, heredoc_signal(2, NULL, NULL));
 		free(line);
 	}
 	close(pipefd[1]);
-	cleanup(shell, 0);
+	heredoc_signal(1, NULL, NULL);
 	exit(0);
 }
 
-static int	heredoc_parent(pid_t pid, int pipefd[2])
+int	heredoc_parent(pid_t pid, int pipefd[2])
 {
 	int	status;
 
@@ -72,10 +76,11 @@ static int	heredoc_parent(pid_t pid, int pipefd[2])
 	return (pipefd[0]);
 }
 
-static int	handle_heredoc(const char *delim, int quoted, t_shell *shell)
+int	handle_heredoc(const char *delim, int quoted, t_shell *shell)
 {
 	int		pipefd[2];
 	pid_t	pid;
+	char	*target;
 
 	if (pipe(pipefd) == -1)
 		return (perror("pipe"), -1);
@@ -88,28 +93,12 @@ static int	handle_heredoc(const char *delim, int quoted, t_shell *shell)
 		return (-1);
 	}
 	if (pid == 0)
-		heredoc_child(delim, quoted, pipefd, shell);
-	return (heredoc_parent(pid, pipefd));
-}
-
-static int	heredocs_prepare(t_ast_tree *node, t_shell *shell)
-{	
-	t_redir	*r;
-	int		fd;
-
-	r = node->redir_list;
-	while (r)
 	{
-		if (r->type == HEREDOC)
-		{
-			fd = handle_heredoc(r->target, r->quoted, shell);
-			if (fd < 0)
-				return (1);
-			r->fd = fd;
-		}
-		r = r->next;
+		heredoc_signal(0, shell, delim);
+		cleanup(shell, 0);
+		heredoc_child(target, quoted, pipefd, shell);
 	}
-	return (0);
+	return (heredoc_parent(pid, pipefd));
 }
 
 int	prepare_all_heredocs(t_ast_tree *node, t_shell *shell)
@@ -118,7 +107,7 @@ int	prepare_all_heredocs(t_ast_tree *node, t_shell *shell)
 		return (0);
 	if (node->type == NODE_PIPE)
 	{
-		if (prepare_all_heredocs(node->left, shell)) // Sol ve sağ alt ağaçlardaki heredocları da hazırlar(recursive)
+		if (prepare_all_heredocs(node->left, shell))
 			return (1);
 		if (prepare_all_heredocs(node->right, shell))
 			return (1);

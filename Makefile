@@ -32,6 +32,7 @@ SRCS			=	built_cd.c				\
 					utils.c					\
 					executor_utils.c		\
 					free.c					\
+					heredoc_utils.c			\
 
 OBJS			=	$(SRCS:.c=.o)
 RM				=	rm -f

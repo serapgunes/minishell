@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   handle_redirection.c                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:53:42 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/13 20:20:04 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/14 15:15:42 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ static int	set_heredoc_fd(int src_fd, int *fd_in)
 {
 	if (src_fd < 0)
 	{
-		ft_putendl_fd("heredoc: invalid fd", 2); // değiştirdim
+		ft_putendl_fd("heredoc: invalid fd", 2);
 		return (1);
 	}
 	if (*fd_in != -1)

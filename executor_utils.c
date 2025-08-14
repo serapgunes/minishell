@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   executor_utils.c                                   :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/10 21:18:30 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/13 21:01:05 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/14 16:50:11 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,7 +33,8 @@ void	signal_heredoc(int sig)
 {
 	(void)sig;
 	write(1, "\n", 1);
-	exit(130); // leak burda olabilir
+	heredoc_signal(1, NULL, NULL);
+	exit(130);
 }
 
 void	redir_push_back(t_redir **list, t_redir *r)
