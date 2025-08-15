@@ -58,7 +58,6 @@ typedef enum e_token_type
 	REDIR_IN,
 	APPEND,
 	HEREDOC,
-	INVALID
 }	t_token_type;
 
 typedef struct s_token

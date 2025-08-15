@@ -97,31 +97,31 @@ static int	add_redir_target_word(char *normalized, int in_heredoc,
 	return (0);
 }
 
-int	handle_redir_file(char *s, int *i, t_token **head, char **envp)
+int	handle_redir_file(char *str, int *i, t_token **head, char **envp)
 {
-	int		adv;
-	int		rc;
-	int		q;
+	int		consumed;
+	int		status;
+	int		was_quoted;
 	char	*norm;
 	t_rtok	ctx;
 
-	adv = 0;
-	q = 0;
+	consumed = 0;
+	was_quoted = 0;
 	norm = NULL;
 	ctx.envp = envp;
-	ctx.has_quote = &q;
+	ctx.has_quote = &was_quoted;
 	ctx.expand = !prev_is_heredoc(*head);
-	rc = read_and_build_redir_arg(s, &adv, &norm, &ctx);
-	if (rc == 1)
+	status = read_and_build_redir_arg(str, &consumed, &norm, &ctx);
+	if (status == 1)
 	{
-		*i += adv;
-		return (adv);
+		*i += consumed;
+		return (consumed);
 	}
-	if (rc < 0)
+	if (status < 0)
 		return (-1);
-	if (add_redir_target_word(norm, prev_is_heredoc(*head), q, head))
+	if (add_redir_target_word(norm, prev_is_heredoc(*head), was_quoted, head))
 		return (free(norm), -1);
 	free(norm);
-	*i += adv;
-	return (adv);
+	*i += consumed;
+	return (consumed);
 }
