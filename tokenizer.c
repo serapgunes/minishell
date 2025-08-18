@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
+/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/30 14:32:24 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/12 15:00:37 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/18 22:07:53 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,14 +28,14 @@ static int	handle_special_char(char *input, int *i,
 				t_token **head, char **envp)
 {
 	t_token	*tok;
-	int		adv;
+	int		consumed;
 
 	if (input[*i] == '>' || input[*i] == '<')
 	{
-		adv = tokenize_redirection(input + *i, head, envp);
-		if (adv < 0)
+		consumed = tokenize_redirection(input + *i, head, envp);
+		if (consumed < 0)
 			return (-1);
-		*i += adv;
+		*i += consumed;
 	}
 	else if (input[*i] == '|')
 	{
