@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 20:53:42 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/14 15:15:42 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/18 13:51:03 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,9 +98,9 @@ int	handle_redirections(t_ast_tree *node)
 		}
 		redir = redir->next;
 	}
-	if (dup_stdio_and_close(fd_in, STDIN_FILENO, "dup21"))
+	if (dup_stdio_and_close(fd_in, STDIN_FILENO, "dup"))
 		return (1);
-	if (dup_stdio_and_close(fd_out, STDOUT_FILENO, "dup22"))
+	if (dup_stdio_and_close(fd_out, STDOUT_FILENO, "dup"))
 		return (1);
 	return (0);
 }

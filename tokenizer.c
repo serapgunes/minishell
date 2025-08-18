@@ -28,14 +28,14 @@ static int	handle_special_char(char *input, int *i,
 				t_token **head, char **envp)
 {
 	t_token	*tok;
-	int		consumed;
+	int		adv;
 
 	if (input[*i] == '>' || input[*i] == '<')
 	{
-		consumed = tokenize_redirection(input + *i, head, envp);
-		if (consumed < 0)
+		adv = tokenize_redirection(input + *i, head, envp);
+		if (adv < 0)
 			return (-1);
-		*i += consumed;
+		*i += adv;
 	}
 	else if (input[*i] == '|')
 	{

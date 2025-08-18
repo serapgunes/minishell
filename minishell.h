@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:47 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/14 17:08:08 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/18 18:29:08 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -102,18 +102,24 @@ int			extend_env(char ***envp, char *new_entry);
 int			set_env_var(char *arg, char ***envp);
 void		print_sorted_env(char **env);
 void		print_invalid_identifier(char *arg);
+void		execute_and_wait(t_ast_tree *node, int in_pipeline, t_shell *shell);
+void		free_redirections(t_ast_tree *node);
 int			builtin_pwd(void);
 int			builtin_unset(int argc, char **argv, char ***env);
 int			builtin(int argc, char **argv, char ***env, t_shell *shell);
 int			is_builtin(char *cmd);
 int			is_digit(int c);
 int			is_only_spaces(char *str);
+int			exec_handle_redirs(t_ast_tree *node, t_std std);
 void		executor_structure(t_ast_tree *node, int in_pipeline,
 				t_shell *shell);
+void		exec_command(t_ast_tree *node, int in_pipeline,
+				t_std std, t_shell *shell);
+int			try_execute_builtin(t_ast_tree *node, int in_pipeline,
+				t_std std, t_shell *shell);
 int			ft_parser(t_token *input);
 char		*find_path(char *command, char **envp);
 void		signal_catch(int signum);
-int			check_sigint_flag(void);
 void		signal_child(int signum);
 int			args_count(char **args);
 char		*ft_charjoin_free(char *res, char *val, int flag);

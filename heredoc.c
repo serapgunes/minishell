@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 22:08:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/14 17:23:25 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/18 14:53:36 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ int	heredoc_parent(pid_t pid, int pipefd[2])
 	signal(SIGINT, SIG_IGN);
 	waitpid(pid, &status, 0);
 	signal(SIGINT, signal_catch);
+	if (WEXITSTATUS(status) == 130)
+		ft_exit_code(130);
 	if ((WIFEXITED(status) && WEXITSTATUS(status) == 130)
 		|| (WIFSIGNALED(status) && WTERMSIG(status) == SIGINT))
 	{

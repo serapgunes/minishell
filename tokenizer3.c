@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer3.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 10:55:20 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 10:53:29 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/18 18:31:57 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,10 +68,8 @@ char	*process_quoted(char *s, int *i, char quote_char)
 
 static int	is_unquoted_word_char(char c)
 {
-	return (c != '\0'
-		&& c != ' ' && c != '\t'
-		&& c != '|' && c != '<' && c != '>'
-		&& c != '\'' && c != '"');
+	return (c != '\0' && c != ' ' && c != '\t' && c != '|'
+		&& c != '<' && c != '>' && c != '\'' && c != '"');
 }
 
 char	*process_unquoted(char *s, int *j, char **envp)

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/04/18 17:40:51 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/13 08:03:02 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/18 18:27:06 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -100,9 +100,13 @@ static void	execute_and_cleanup(t_shell *shell)
 int	main(int argc, char **argv, char **env)
 {
 	t_shell	*shell;
+	int		std_in;
+	int		std_out;
 
 	(void)argv;
 	(void)argc;
+	std_in = dup(STDIN_FILENO);
+	std_out = dup(STDOUT_FILENO);
 	shell = init_shell(env);
 	if (!shell)
 		return (1);
@@ -114,6 +118,8 @@ int	main(int argc, char **argv, char **env)
 		if (tokenize_parse_build(shell))
 			continue ;
 		execute_and_cleanup(shell);
+		dup2(std_in, STDIN_FILENO);
+		dup2(std_out, STDOUT_FILENO);
 	}
 	cleanup(shell, 0);
 	return (ft_exit_code(-1));

@@ -33,10 +33,11 @@ SRCS			=	built_cd.c				\
 					executor_utils.c		\
 					free.c					\
 					heredoc_utils.c			\
+					execute_utils_two.c		\
 
 OBJS			=	$(SRCS:.c=.o)
 RM				=	rm -f
-CFLAGS			=	-Wall -Wextra -Werror
+CFLAGS			=	-Wall -Wextra -Werror -g
 CC 				= 	cc
 LIBFT_DIR		= 	./libft
 LIBFT 			= 	$(LIBFT_DIR)/libft.a

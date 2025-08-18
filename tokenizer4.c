@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer4.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/09 21:48:31 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 11:44:27 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/15 11:51:34 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -97,31 +97,31 @@ static int	add_redir_target_word(char *normalized, int in_heredoc,
 	return (0);
 }
 
-int	handle_redir_file(char *str, int *i, t_token **head, char **envp)
+int	handle_redir_file(char *s, int *i, t_token **head, char **envp)
 {
-	int		consumed;
-	int		status;
-	int		was_quoted;
+	int		adv;
+	int		rc;
+	int		q;
 	char	*norm;
 	t_rtok	ctx;
 
-	consumed = 0;
-	was_quoted = 0;
+	adv = 0;
+	q = 0;
 	norm = NULL;
 	ctx.envp = envp;
-	ctx.has_quote = &was_quoted;
+	ctx.has_quote = &q;
 	ctx.expand = !prev_is_heredoc(*head);
-	status = read_and_build_redir_arg(str, &consumed, &norm, &ctx);
-	if (status == 1)
+	rc = read_and_build_redir_arg(s, &adv, &norm, &ctx);
+	if (rc == 1)
 	{
-		*i += consumed;
-		return (consumed);
+		*i += adv;
+		return (adv);
 	}
-	if (status < 0)
+	if (rc < 0)
 		return (-1);
-	if (add_redir_target_word(norm, prev_is_heredoc(*head), was_quoted, head))
+	if (add_redir_target_word(norm, prev_is_heredoc(*head), q, head))
 		return (free(norm), -1);
 	free(norm);
-	*i += consumed;
-	return (consumed);
+	*i += adv;
+	return (adv);
 }

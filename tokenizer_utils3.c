@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   tokenizer_utils3.c                                 :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
+/*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/08/12 10:25:58 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 11:00:40 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/18 18:30:05 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 

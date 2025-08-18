@@ -6,7 +6,7 @@
 /*   By: segunes <segunes@student.42istanbul.com    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/17 14:55:04 by segunes           #+#    #+#             */
-/*   Updated: 2025/08/12 14:54:45 by segunes          ###   ########.fr       */
+/*   Updated: 2025/08/18 18:21:37 by segunes          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,8 +33,8 @@ static void	handle_command_status(int status)
 		ft_exit_code(WEXITSTATUS(status));
 }
 
-static int	try_execute_builtin(t_ast_tree *node, int in_pipeline,
-				t_std std, t_shell *shell)
+int	try_execute_builtin(t_ast_tree *node, int in_pipeline,
+							t_std std, t_shell *shell)
 {
 	int	argc;
 	int	status;
@@ -59,7 +59,7 @@ static int	try_execute_builtin(t_ast_tree *node, int in_pipeline,
 	return (0);
 }
 
-static void	execute_and_wait(t_ast_tree *node, int in_pipeline, t_shell *shell)
+void	execute_and_wait(t_ast_tree *node, int in_pipeline, t_shell *shell)
 {
 	pid_t	pid;
 	int		status;
@@ -86,7 +86,7 @@ static void	execute_and_wait(t_ast_tree *node, int in_pipeline, t_shell *shell)
 	}
 }
 
-static void	free_redirections(t_ast_tree *node)
+void	free_redirections(t_ast_tree *node)
 {
 	t_redir	*current;
 	t_redir	*next;
@@ -120,14 +120,9 @@ void	executor_structure(t_ast_tree *node, int in_pipeline, t_shell *shell)
 		ft_exit_code(1);
 		return ;
 	}
+	exec_handle_redirs(node, std);
 	if (node->type == NODE_COMMAND)
-	{
-		if (try_execute_builtin(node, in_pipeline, std, shell))
-			return ;
-		execute_and_wait(node, in_pipeline, shell);
-		if (node->redir_list)
-			free_redirections(node);
-	}
+		exec_command(node, in_pipeline, std, shell);
 	else if (node->type == NODE_PIPE)
 		execute_pipe(node, shell);
 	close(std.std_in);
