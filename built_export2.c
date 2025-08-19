@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:06:14 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 10:56:24 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/19 23:45:59 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,10 +17,10 @@ int	find_in_environ(const char *name, char **env)
 	int	i;
 	int	len;
 
-	len = ft_strlen(name);
-	i = 0;
 	if (!name || !env)
 		return (-1);
+	len = ft_strlen(name);
+	i = 0;
 	while (env[i])
 	{
 		if (ft_strncmp(env[i], name, len) == 0
@@ -35,19 +35,19 @@ int	extend_env(char ***envp, char *new_entry)
 {
 	char	**old;
 	char	**new;
-	int		cnt;
+	int		count;
 	int		j;
 
 	old = *envp;
-	cnt = 0;
+	count = 0;
 	j = 0;
 	if (old)
-		while (old[cnt])
-			cnt++;
-	new = malloc(sizeof(char *) * (cnt + 2));
+		while (old[count])
+			count++;
+	new = malloc(sizeof(char *) * (count + 2));
 	if (!new)
 		return (1);
-	while (j < cnt)
+	while (j < count)
 	{
 		new[j] = old[j];
 		j++;
@@ -95,17 +95,17 @@ static int	set_env_var_add(char *name, char *value, char ***envp)
 
 int	set_env_var(char *arg, char ***envp)
 {
-	char	*eq;
+	char	*name_end;
 	char	*name;
 	char	*value;
 	int		idx;
 	int		ret;
 
-	eq = ft_strchr(arg, '=');
-	if (!eq)
+	name_end = ft_strchr(arg, '=');
+	if (!name_end)
 		return (1);
-	name = ft_substr(arg, 0, eq - arg);
-	value = ft_strdup(eq + 1);
+	name = ft_substr(arg, 0, name_end - arg);
+	value = ft_strdup(name_end + 1);
 	if (!name || !value)
 	{
 		free(name);

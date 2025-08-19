@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:10:19 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/10 14:17:55 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/19 11:14:06 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ int	control_env(int argc)
 {
 	if (argc > 1)
 	{
-		write(1, "env: too many arguments\n", 23);
+		ft_putendl_fd("env: too many arguments", 2);
 		return (0);
 	}
 	return (1);

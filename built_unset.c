@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 18:03:45 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 11:13:09 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/19 22:53:30 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,10 +43,7 @@ static int	unset_one_var(char *var, int *status, char ***env)
 	}
 	idx = find_in_environ(var, *env);
 	if (idx >= 0)
-	{
-		if (remove_from_environ(idx, env) != 0)
-			*status = 1;
-	}
+		remove_from_environ(idx, env);
 	return (0);
 }
 

@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/05/18 20:09:08 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/13 09:40:54 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/20 00:04:24 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,9 +34,7 @@ static int	builtin_cd_path(char *path)
 {
 	if (chdir(path) != 0)
 	{
-		ft_putstr_fd("cd: ", 2);
-		ft_putstr_fd(path, 2);
-		ft_putendl_fd(": No such file or directory", 2);
+		perror("cd");
 		return (1);
 	}
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: sakdil < sakdil@student.42istanbul.com.    +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/07/11 11:06:23 by sakdil            #+#    #+#             */
-/*   Updated: 2025/08/12 11:14:12 by sakdil           ###   ########.fr       */
+/*   Updated: 2025/08/19 11:35:14 by sakdil           ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,19 +34,19 @@ static int	compare_keys(char *s1, char *s2)
 
 static void	sort_env(char **copy)
 {
-	int		n;
+	int		count;
 	int		i;
 	int		j;
 	char	*tmp;
 
-	n = 0;
+	count = 0;
 	i = 0;
-	while (copy[n])
-		n++;
-	while (i < n - 1)
+	while (copy[count])
+		count++;
+	while (i < count - 1)
 	{
 		j = 0;
-		while (j < n - i - 1)
+		while (j < count - i - 1)
 		{
 			if (compare_keys(copy[j], copy[j + 1]) > 0)
 			{
